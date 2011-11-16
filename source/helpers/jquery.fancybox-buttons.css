@@ -1,0 +1,75 @@
+#fancybox-buttons {
+	position: fixed;
+	top: 10px;
+	left: 0;
+	width: 100%;
+	z-index: 1005;
+}
+
+#fancybox-buttons ul {
+	display: block;
+	width: 170px;
+	height: 30px;
+	margin: 0 auto;
+	padding: 0;
+	list-style: none;
+	background: #111;
+	-webkit-box-shadow: 0 1px 3px #000,0 0 0 1px rgba(0,0,0,.7),inset 0 0 0 1px rgba(255,255,255,.05);
+	-moz-box-shadow: 0 1px 3px #000,0 0 0 1px rgba(0,0,0,.7),inset 0 0 0 1px rgba(255,255,255,.05);
+	background: #111 -webkit-gradient(linear,0% 0%,0% 100%,from(rgba(255,255,255,.2)),color-stop(.5,rgba(255,255,255,.15)),color-stop(.5,rgba(255,255,255,.1)),to(rgba(255,255,255,.15)));
+	background: #111 -moz-linear-gradient(top,rgba(255,255,255,.2) 0%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.1) 50%,rgba(255,255,255,.15) 100%);
+	border-radius: 3px;
+}
+
+#fancybox-buttons ul li {
+	float: left;
+}
+
+#fancybox-buttons a {
+	display: block;
+	width: 30px;
+	line-height: 30px;
+	text-indent: -9999px;
+	background-image: url('fancybox_buttons.png');
+	background-repeat: no-repeat;
+}
+
+#fancybox-buttons a.btnPrev {
+	width: 32px;
+	background-position: 6px 0;
+}
+
+#fancybox-buttons a.btnNext {
+	background-position: -33px 0;
+	border-right: 1px solid #3e3e3e;
+}
+
+#fancybox-buttons a.btnPlay {
+	background-position: 0 -30px;
+}
+
+#fancybox-buttons a.btnPlayOn {
+	background-position: -30px -30px;
+}
+
+#fancybox-buttons a.btnToggle {
+	background-position: 3px -60px;
+	border-left: 1px solid #111;
+	border-right: 1px solid #3e3e3e;
+	width: 35px
+}
+
+#fancybox-buttons a.btnToggleOn {
+	background-position: -27px -60px;
+}
+
+#fancybox-buttons a.btnClose {
+	border-left: 1px solid #111;
+	width: 38px;
+	background-position: -57px 0px;
+}
+
+#fancybox-buttons a.btnDisabled {
+	opacity : 0.5;
+	cursor: default;
+}
