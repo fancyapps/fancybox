@@ -55,16 +55,16 @@
 			// Override some properties
 			index: 0,
 			type: null,
-			url: null,
+			href: null,
 			content: null,
 			title: null,
 
 			// HTML templates
 			tpl: {
 				wrap: '<div class="fancybox-wrap"><div class="fancybox-outer"><div class="fancybox-inner"></div></div></div>',
-				image: '<img class="fancybox-image" src="{url}" alt="" />',
-				iframe: '<iframe class="fancybox-iframe" name="fancybox-frame{rnd}" frameborder="0" hspace="0" ' + ($.browser.msie ? 'allowtransparency="true""' : '') + ' scrolling="{scrolling}" src="{url}"></iframe>',
-				swf: '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="100%"><param name="wmode" value="transparent" /><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="{url}" /><embed src="{url}" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="100%" height="100%" wmode="transparent"></embed></object>',
+				image: '<img class="fancybox-image" src="{href}" alt="" />',
+				iframe: '<iframe class="fancybox-iframe" name="fancybox-frame{rnd}" frameborder="0" hspace="0" ' + ($.browser.msie ? 'allowtransparency="true""' : '') + ' scrolling="{scrolling}" src="{href}"></iframe>',
+				swf: '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="100%"><param name="wmode" value="transparent" /><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="{href}" /><embed src="{href}" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="100%" height="100%" wmode="transparent"></embed></object>',
 				error: '<p class="fancybox-error">The requested content cannot be loaded.<br/>Please try again later.</p>',
 				closeBtn: '<div title="Close" class="fancybox-item fancybox-close"></div>',
 				next: '<a title="Next" class="fancybox-item fancybox-next"><span></span></a>',
@@ -359,7 +359,7 @@
 			};
 		},
 
-		// unbind the keyboard / clicking actions
+		// Unbind the keyboard / clicking actions
 		unbindEvents: function () {
 			D.unbind('.fb');
 			W.unbind('.fb');
@@ -444,10 +444,11 @@
 
 		_start: function (index) {
 			var element = F.group[index] || null,
-				coming = $.extend(true, {}, F.opts, (element && $.metadata ? $(element).metadata() : {})),
+				coming = $.extend(true, {}, F.opts, element, (element && $.metadata ? $(element).metadata() : {})),
 				isDom = false,
 				rez = false,
-				url, type;
+				href,
+				type;
 
 			coming.index = index;
 			coming.element = element;
@@ -463,31 +464,32 @@
 			if (false === F.trigger('beforeLoad')) {
 				F.coming = null;
 				return;
+
 			} else {
 				coming = F.coming;
-				type = coming.type;
 			}
 
-			//If custom content exists than use it as element
-			if (coming.content) {
-				element = coming.content;
-			}
+			type = coming.type;
+			href = coming.href;
 
 			//Check if content type is set, if not, try to get
 			if (!type) {
-				url = coming.url;
+				//If custom content exists than use it as element
+				if (coming.content) {
+					element = coming.content;
+				}
 
-				//If element is object than we can detect if it is DOM element and get source path, if not - maybe it`s url
+				//If element is object than we can detect if it is DOM element and get source path, if not - maybe it`s href
 				if (typeof element === 'object') {
 					isDom = (element.nodeType || element instanceof $);
-					url = $(element).attr('href') || null;
+					href = $(element).attr('href') || null;
 
 				} else {
-					url = element;
+					href = element;
 				}
 
 				//If we have source path we can use it to load content ... 
-				if (url) {
+				if (href) {
 					if (isDom) {
 						rez = $(element).data('fancybox-type');
 
@@ -500,21 +502,21 @@
 					if (rez) {
 						type = rez;
 
-					} else if (F.isImage(url)) {
+					} else if (F.isImage(href)) {
 						type = 'image';
 
-					} else if (F.isSWF(url)) {
+					} else if (F.isSWF(href)) {
 						type = 'swf';
 
-					} else if (url.match(/^#/)) {
+					} else if (href.match(/^#/)) {
 						type = 'inline';
 
 					} else {
-						coming.content = url;
+						coming.content = href;
 					}
 
 					if (type === 'inline') {
-						coming.content = $(url);
+						coming.content = $(href);
 					}
 				}
 
@@ -531,7 +533,7 @@
 				}
 
 				coming.type = type;
-				coming.url = url;
+				coming.href = href;
 			}
 
 			F.coming = coming;
@@ -578,7 +580,7 @@
 				F._error();
 			};
 
-			F.imgPreload.src = F.coming.url;
+			F.imgPreload.src = F.coming.href;
 
 			if (!F.imgPreload.complete) {
 				F.showLoading();
@@ -589,7 +591,7 @@
 			F.showLoading();
 
 			F.ajaxLoad = $.ajax($.extend({}, F.coming.ajax, {
-				url: F.coming.url,
+				url: F.coming.href,
 				error: function (jqXHR, textStatus, errorThrown) {
 					if (textStatus !== 'abort' && jqXHR.status > 0) {
 						F.coming.content = errorThrown;
@@ -662,49 +664,49 @@
 				type = current.type;
 
 			switch (type) {
-			case 'inline':
-			case 'ajax':
-			case 'html':
-				if (type === 'inline') {
-					content = current.content.show().detach();
+				case 'inline':
+				case 'ajax':
+				case 'html':
+					if (type === 'inline') {
+						content = current.content.show().detach();
 
-					if (content.parent().hasClass('fancybox-inner')) {
-						content.parents('.fancybox-wrap').trigger('onReset').remove();
+						if (content.parent().hasClass('fancybox-inner')) {
+							content.parents('.fancybox-wrap').trigger('onReset').remove();
+						}
+
+						$(F.wrap).bind('onReset', function () {
+							content.appendTo('body').hide();
+						});
+
+					} else {
+						content = current.content;
 					}
 
-					$(F.wrap).bind('onReset', function () {
-						content.appendTo('body').hide();
-					});
+					if (current.autoSize) {
+						loadingBay = $('<div class="fancybox-tmp"></div>').appendTo($("body")).append(content);
 
-				} else {
-					content = current.content;
-				}
+						current.width = loadingBay.outerWidth();
+						current.height = loadingBay.outerHeight(true);
 
-				if (current.autoSize) {
-					loadingBay = $('<div class="fancybox-tmp"></div>').appendTo($("body")).append(content);
+						content = loadingBay.children().detach();
 
-					current.width = loadingBay.outerWidth();
-					current.height = loadingBay.outerHeight(true);
-
-					content = loadingBay.children().detach();
-
-					loadingBay.remove();
-				}
+						loadingBay.remove();
+					}
 
 				break;
 
-			case 'image':
-				content = current.tpl.image.replace('{url}', current.url);
+				case 'image':
+					content = current.tpl.image.replace('{href}', current.href);
 
-				current.aspectRatio = true;
+					current.aspectRatio = true;
 				break;
 
-			case 'swf':
-				content = current.tpl.swf.replace(/\{width\}/g, current.width).replace(/\{height\}/g, current.height).replace(/\{url\}/g, current.url);
+				case 'swf':
+					content = current.tpl.swf.replace(/\{width\}/g, current.width).replace(/\{height\}/g, current.height).replace(/\{href\}/g, current.href);
 				break;
 
-			case 'iframe':
-				content = current.tpl.iframe.replace('{url}', current.url).replace('{scrolling}', current.scrolling).replace('{rnd}', new Date().getTime());
+				case 'iframe':
+					content = current.tpl.iframe.replace('{href}', current.href).replace('{scrolling}', current.scrolling).replace('{rnd}', new Date().getTime());
 				break;
 			}
 
