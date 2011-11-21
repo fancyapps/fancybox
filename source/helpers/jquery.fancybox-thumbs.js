@@ -1,16 +1,25 @@
 (function ($) {
+	//Shortcut for fancyBox object
 	var F = $.fancybox;
 
+	//Add helper object
 	F.helpers.thumbs = {
 		wrap: null,
 		list: null,
 		width: 0,
 
+		//Get thumbnail source from element
+		source: function (el) {
+			var img = $(el).find('img');
+
+			return img.length ? img.attr('src') : el.href;
+		},
+
 		init: function (opts) {
 			var that = this,
 				list;
 
-			//Create list
+			//Build list structure
 			list = '';
 
 			for (var n = 0; n < F.group.length; n++) {
@@ -20,7 +29,7 @@
 			this.wrap = $('<div id="fancybox-thumbs"></div>').appendTo('body');
 			this.list = $('<ul>' + list + '</ul>').appendTo(this.wrap);
 
-			//Load thumbs
+			//Load each thumbnail
 			$.each(F.group, function (i) {
 				$("<img />").load(function () {
 					var width = this.width,
@@ -31,6 +40,7 @@
 						return;
 					}
 
+					//Calculate thumbnail width/height and center it
 					widthRatio = width / opts.width;
 					heightRatio = height / opts.height;
 					parent = that.list.children().eq(i).find('a');
@@ -66,6 +76,7 @@
 			this.list.width(this.width * (F.group.length + 1)).css('left', Math.floor($(window).width() * 0.5 - (F.current.index * this.width + this.width * 0.5)));
 		},
 
+		//Center list
 		update: function (opts) {
 			if (this.list) {
 				this.list.stop(true).animate({
@@ -75,21 +86,19 @@
 		},
 
 		beforeLoad: function (opts) {
+			//Remove self if gallery do not have at least two items 
 			if (F.group.length < 2) {
 				F.coming.helpers.thumbs = false;
 
 				return;
 			}
 
-			F.coming.margin[2] = opts.height + 30; //Increase bottom margin
-			F.coming.helpers.thumbs.source = function (el) {
-				var img = $(el).find('img');
-
-				return img.length ? img.attr('src') : el.href;
-			};
+			//Increase bottom margin to give space for thumbs
+			F.coming.margin[2] = opts.height + 30;
 		},
 
 		afterShow: function (opts) {
+			//Check if exists and create or update list
 			if (this.list) {
 				this.update(opts);
 
@@ -97,6 +106,7 @@
 				this.init(opts);
 			}
 
+			//Set active element
 			this.list.children().removeClass('active').eq(F.current.index).addClass('active');
 		},
 

@@ -33,7 +33,7 @@
 			aspectRatio: false,
 			topRatio: 0.5,
 
-			fixed: (!$.browser.msie || $.browser.version > 6) && $.support.boxModel, // Should set position to 'fixed' if content fits inside viewport
+			fixed: (!$.browser.msie || $.browser.version > 6) && $.support.boxModel,
 			scrolling: 'auto', // 'auto', 'yes' or 'no'
 			wrapCSS: 'fancybox-default',
 
@@ -729,7 +729,8 @@
 				maxWidth = F.current.maxWidth,
 				maxHeight = F.current.maxHeight,
 				minWidth = F.current.minWidth,
-				minHeight = F.current.minHeight;
+				minHeight = F.current.minHeight,
+				height_;
 
 			viewport.w -= (margin[1] + margin[3]);
 			viewport.h -= (margin[0] + margin[2]);
@@ -784,10 +785,12 @@
 
 			F.inner.width(width - padding2).height(height - padding2);
 			F.wrap.width(width);
-			//todo: iesetot height() kaut kaadaa variaaablii
+
+			height_ = F.wrap.height(); // Real wrap height
+
 			//Fit wrapper inside
-			if (width > maxWidth || F.wrap.height() > maxHeight) {
-				while ((width > maxWidth || F.wrap.height() > maxHeight) && width > minWidth && F.wrap.height() > minHeight) {
+			if (width > maxWidth || height_ > maxHeight) {
+				while ((width > maxWidth || height_ > maxHeight) && width > minWidth && height_ > minHeight) {
 					height = height - 10;
 
 					if (F.current.aspectRatio) {
@@ -804,12 +807,14 @@
 
 					F.inner.width(width - padding2).height(height - padding2);
 					F.wrap.width(width);
+
+					height_ = F.wrap.height();
 				}
 			}
 
 			F.current.dim = {
 				width: width,
-				height: F.wrap.height()
+				height: height_
 			};
 
 			F.current.canGrow = F.current.autoSize && height > minHeight && height < maxHeight;
@@ -819,7 +824,7 @@
 			if ((width - padding2) < F.current.width || (height - padding2) < F.current.height) {
 				F.current.canExpand = true;
 
-			} else if ((width > viewport.w || F.current.dim.height > viewport.h) && width > minWidth && height > minHeight) {
+			} else if ((width > viewport.w || height_ > viewport.h) && width > minWidth && height > minHeight) {
 				F.current.canShrink = true;
 			}
 		},
