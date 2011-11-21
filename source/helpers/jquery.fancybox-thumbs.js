@@ -67,7 +67,7 @@
 
 					$(this).hide().appendTo(parent).fadeIn(300);
 
-				}).attr('src', opts.source(this));
+				}).attr('src', opts.source ? opts.source(this) : that.source(this));
 			});
 
 			//Set initial width
