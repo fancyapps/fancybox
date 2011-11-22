@@ -378,7 +378,7 @@
 			if (keys) {
 				D.bind('keydown.fb', function (e) {
 					// Ignore key events within form elements
-					if ($.inArray(e.target.tagName.toLowerCase, ['input', 'textarea', 'select', 'button']) > -1) {
+					if ($.inArray(e.target.tagName.toLowerCase(), ['input', 'textarea', 'select', 'button']) > -1) {
 						return;
 					}
 
