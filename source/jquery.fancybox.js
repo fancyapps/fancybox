@@ -1,5 +1,5 @@
 /*! 
- * fancyBox 2.0
+ * fancyBox 2.0.1
  * Copyright 2011, Janis Skarnelis (www.fancyapps.com)
  * License: www.fancyapps.com/fancybox/#license
  *	
@@ -15,7 +15,7 @@
 
 	$.extend(F, {
 		// The current version of fancyBox
-		version: '2.0',
+		version: '2.0.1',
 
 		defaults: {
 			padding: 15,
@@ -33,7 +33,7 @@
 			aspectRatio: false,
 			topRatio: 0.5,
 
-			fixed: (!$.browser.msie || $.browser.version > 6) && $.support.boxModel,
+			fixed: !$.browser.msie || $.browser.version > 6,
 			scrolling: 'auto', // 'auto', 'yes' or 'no'
 			wrapCSS: 'fancybox-default',
 
@@ -409,7 +409,7 @@
 		},
 
 		trigger: function (event) {
-			var ret, obj = event === 'onCancel' || event === 'beforeLoad' ? 'coming' : 'current';
+			var ret, obj = $.inArray(event, ['onCancel', 'beforeLoad', 'afterLoad']) > -1 ? 'coming' : 'current';
 
 			if (!F[obj]) {
 				return;
@@ -444,50 +444,46 @@
 
 		_start: function (index) {
 			var element = F.group[index] || null,
-				coming = $.extend(true, {}, F.opts, element, (element && $.metadata ? $(element).metadata() : {})),
-				isDom = false,
-				rez = false,
+				isDom,
 				href,
-				type;
-
-			coming.index = index;
-			coming.element = element;
+				type,
+				rez;
+				coming = $.extend(true, {}, F.opts, ($.isPlainObject(element) ? element : {}), {
+					index : index,
+					element : element
+				});
 
 			// Convert margin property to array - top, right, bottom, left
 			if (typeof coming.margin === 'number') {
 				coming.margin = [coming.margin, coming.margin, coming.margin, coming.margin];
 			}
 
-			//Give a chance for callback or helpers to update item (type, title, etc)
+			//Give a chance for callback or helpers to update coming item (type, title, etc)
 			F.coming = coming;
 
 			if (false === F.trigger('beforeLoad')) {
 				F.coming = null;
 				return;
+			}
 
-			} else {
-				coming = F.coming;
+			//If custom content exists than use it as element
+			if (coming.content) {
+				element = coming.content;
+				type = 'html';
+			}
+
+			if (typeof element == 'object' && (element.nodeType || element instanceof $)) {
+				isDom = true;
+				coming.href = $(element).attr('href') || coming.href;
+				coming.title = $(element).attr('title') || coming.title;
 			}
 
 			type = coming.type;
 			href = coming.href;
+			element = coming.element;
 
 			//Check if content type is set, if not, try to get
 			if (!type) {
-				//If custom content exists than use it as element
-				if (coming.content) {
-					element = coming.content;
-				}
-
-				//If element is object than we can detect if it is DOM element and get source path, if not - maybe it`s href
-				if (typeof element === 'object') {
-					isDom = (element.nodeType || element instanceof $);
-					href = $(element).attr('href') || null;
-
-				} else {
-					href = element;
-				}
-
 				//If we have source path we can use it to load content ... 
 				if (href) {
 					if (isDom) {
@@ -514,26 +510,18 @@
 					} else {
 						coming.content = href;
 					}
-
-					if (type === 'inline') {
-						coming.content = $(href);
-					}
 				}
 
+				// ...if not - display element itself
 				if (!type) {
-					// ...if not - we can display given DOM element itself ..
-					if (isDom) {
-						type = 'inline';
-						coming.content = element;
-
-						// .. or assume that we have HTML 
-					} else if (coming.content) {
-						type = 'html';
-					}
+					type = isDom ? 'inline' : 'html';
 				}
 
 				coming.type = type;
-				coming.href = href;
+			}
+
+			if (!coming.content) {
+				coming.content = type === 'inline' && href ? $(href) : element;
 			}
 
 			F.coming = coming;
@@ -544,11 +532,13 @@
 			} else if (type === 'ajax') {
 				F._loadAjax();
 
-			} else if (type) {
-				F._afterLoad();
-
 			} else {
-				return F._error();
+				if (!type || (type === 'inline' && !coming.content.length)) {
+					F._error();
+
+				} else {
+					F._afterLoad();
+				}
 			}
 		},
 
@@ -615,7 +605,7 @@
 		_afterLoad: function () {
 			F.hideLoading();
 
-			if (F.current && false === F.trigger('afterLoad')) {
+			if (!F.coming || false === F.trigger('afterLoad', F.current)) {
 				F.coming = false;
 
 				return;

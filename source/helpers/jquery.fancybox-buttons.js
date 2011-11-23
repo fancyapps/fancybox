@@ -1,5 +1,5 @@
 (function ($) {
-	//Shortcut for fancyBox object
+	//shortcut for fancyBox object
 	var F = $.fancybox;
 
 	//Add helper object
@@ -8,7 +8,6 @@
 		list: null,
 		buttons: {},
 
-		//Recheck if can toggle size
 		update: function () {
 			var toggle = this.buttons.toggle.removeClass('btnDisabled btnToggleOn');
 
@@ -26,7 +25,6 @@
 			F.current.margin[0] += 30;
 		},
 
-		// Update slideshow button
 		onPlayStart: function () {
 			if (this.list) {
 				this.buttons.play.text('Pause').addClass('btnPlayOn');
@@ -39,10 +37,9 @@
 			}
 		},
 
-		afterShow: function () {
-			// Check if initialised
+		afterShow: function (opts) {
 			if (!this.list) {
-				this.list = $(this.tpl).appendTo('body');
+				this.list = $(opts.tpl || this.tpl).appendTo('body');
 
 				this.buttons = {
 					prev : this.list.find('.btnPrev'),
@@ -52,13 +49,14 @@
 				}
 			}
 
-			//Update navigation buttons
+			//Prev
 			if (F.current.index > 0 || F.current.loop) {
 				this.buttons.prev.removeClass('btnDisabled');
 			} else {
 				this.buttons.prev.addClass('btnDisabled');
 			}
 
+			//Next / Play
 			if (F.current.loop || F.current.index < F.group.length - 1) {
 				this.buttons.next.removeClass('btnDisabled');
 				this.buttons.play.removeClass('btnDisabled');
