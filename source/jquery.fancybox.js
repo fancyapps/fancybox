@@ -245,9 +245,9 @@
 						set();
 
 						D.bind({
-							'onCancel.player onComplete.player onUpdate.player': set,
-							'onClose.player': stop,
-							'onStart.player': clear
+							'onCancel.player afterShow.player onUpdate.player': set,
+							'beforeClose.player': stop,
+							'beforeLoad.player': clear
 						});
 
 						F.trigger('onPlayStart');
