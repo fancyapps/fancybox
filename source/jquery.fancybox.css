@@ -1,6 +1,4 @@
-/*
-*	FancyBox 2.0.1
-*/
+/*! fancyBox v2.0.2 fancyapps.com | fancyapps.com/fancybox/#license */
 .fancybox-tmp {
 	position: absolute;
 	top: -9999px;
@@ -85,7 +83,7 @@
 	width: 42px;
 	height: 42px;
 	background: url('fancybox_loading.gif');
-	opacity: 0.9;
+	opacity: 0.8;
 	cursor: pointer;
 	z-index: 1010;
 }
