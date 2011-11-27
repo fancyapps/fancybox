@@ -7,14 +7,14 @@ More information and examples: http://www.fancyapps.com/fancybox/
 
 License: http://www.fancyapps.com/fancybox/#license
 
-Copyright 2011 Janis Skarnelis - janis@fancyapps.com
+Copyright (c) 2011 Janis Skarnelis - janis@fancyapps.com
 
 
 How to use
 ----------
 
 To get started, download the plugin, unzip it and copy files to your website/application directory. 
-Load the the files in the <head> section of your HTML document, make sure you also add the jQuery library.
+Load files in the <head> section of your HTML document. Make sure you also add the jQuery library.
 
     <head>
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
@@ -22,9 +22,9 @@ Load the the files in the <head> section of your HTML document, make sure you al
         <script type="text/javascript" src="/fancybox/jquery.fancybox.pack.js"></script>
     </head>
 
-Create your links with a title if you want a title to be shown, and add a class:
+Create your links with a `title` if you want a title to be shown, and add a class:
 
-    <a href="/large_image.jpg" class="fancybox" title="Sample title"><img src="/small_image.jpg" /></a>
+    <a href="large_image.jpg" class="fancybox" title="Sample title"><img src="small_image.jpg" /></a>
 
 If you have a set of related items that you would like to group, 
 additionally include a group name in the `rel` attribute (or `data-fancybox-group` for HTML5)
