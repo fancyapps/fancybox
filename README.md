@@ -2,10 +2,10 @@ fancyBox
 ========
 
 fancyBox is a tool that offers a nice and elegant way to add zooming functionality for images, html content and multi-media on your webpages.
-More information at www.fancyapps.com/fancybox/
 
-Examples at http://fancyapps.com/fancybox/
-License: www.fancyapps.com/fancybox/#license
+More information and examples: http://www.fancyapps.com/fancybox/
+
+License: http://www.fancyapps.com/fancybox/#license
 
 Copyright 2011 Janis Skarnelis - janis@fancyapps.com
 
@@ -29,8 +29,8 @@ Create your links with a title if you want a title to be shown, and add a class:
 If you have a set of related items that you would like to group, 
 additionally include a group name in the `rel` attribute (or `data-fancybox-group` for HTML5)
 
-    <a href="/large_image_1.jpg" class="fancybox" data-fancybox-group="gallery" title="Sample title 1"><img src="/small_image_1.jpg" /></a>
-    <a href="/large_image_2.jpg" class="fancybox" data-fancybox-group="gallery" title="Sample title 1"><img src="/small_image_2.jpg" /></a>
+    <a href="large_image_1.jpg" class="fancybox" rel="gallery" title="Sample title 1"><img src="small_image_1.jpg" /></a>
+    <a href="large_image_2.jpg" class="fancybox" rel="gallery" title="Sample title 1"><img src="small_image_2.jpg" /></a>
 
 Initialise the script like this:
 
@@ -42,7 +42,7 @@ Initialise the script like this:
 
 Script uses the `href` attribute of the matched elements to obtain the location of the content and to figure out content type you want to display. You can specify type directly by adding classname (fancybox.image, fancybox.iframe, etc).
 
-    Ajax (note, requests are subject to the [same origin policy](http://en.wikipedia.org/wiki/Same_origin_policy)):
+    Ajax:
     <a href="/example.html" class="fancybox fancybox.ajax">Example</a>
 
     Iframe:
@@ -56,6 +56,8 @@ Script uses the `href` attribute of the matched elements to obtain the location 
 
     Image:
     <a href="example.jpg" class="fancybox">Example</a>
+
+Note, ajax requests are subject to the [same origin policy](http://en.wikipedia.org/wiki/Same_origin_policy).
 
 Advanced
 --------
