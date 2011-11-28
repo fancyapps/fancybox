@@ -27,10 +27,10 @@ Create your links with a `title` if you want a title to be shown, and add a clas
     <a href="large_image.jpg" class="fancybox" title="Sample title"><img src="small_image.jpg" /></a>
 
 If you have a set of related items that you would like to group, 
-additionally include a group name in the `rel` attribute (or `data-fancybox-group` for HTML5)
+additionally include a group name in the `rel` (or `data-fancybox-group`) attribute:
 
-    <a href="large_image_1.jpg" class="fancybox" rel="gallery" title="Sample title 1"><img src="small_image_1.jpg" /></a>
-    <a href="large_image_2.jpg" class="fancybox" rel="gallery" title="Sample title 1"><img src="small_image_2.jpg" /></a>
+    <a href="large_1.jpg" class="fancybox" rel="gallery" title="Sample title 1"><img src="small_1.jpg" /></a>
+    <a href="large_2.jpg" class="fancybox" rel="gallery" title="Sample title 1"><img src="small_2.jpg" /></a>
 
 Initialise the script like this:
 
@@ -66,12 +66,12 @@ Advanced
 ### Helpers
 
 Helpers provide a simple mechanism to extend the capabilities of fancyBox.
-There ar two built-in helpers - 'overlay' and 'title'. You can disable them or give custom options:
+There ar two built-in helpers - 'overlay' and 'title'. You can disable them or set custom options:
 
 	Disable 'overlay' helper and change title location:
 	$(".fancybox").fancybox({
         helpers:  {
-            overlay : null
+            overlay : null,
             title:  {
                 type : 'inside'
             }
@@ -80,6 +80,14 @@ There ar two built-in helpers - 'overlay' and 'title'. You can disable them or g
 
 
 ### API 
+
+Also available are event driven callback methods.  The `this` keyword refers to the curent or upcoming object (depends on callback method). Here is how you can change title:
+
+	$(".fancybox").fancybox({
+		afterLoad : function() {
+			this.title = 'Image ' + (this.index + 1) + ' of ' + this.group.length + (this.title ? ' - ' + this.title : '');
+		}
+	});
 
 It`s possible to open fancyBox programmatically in various ways:
 
@@ -113,7 +121,7 @@ It`s possible to open fancyBox programmatically in various ways:
         padding: 0    
     });
 
-There are several methods that allow you to control fancyBox, example:
+There are several methods that allow you to interact with and manipulate fancyBox, example:
 
     Close fancybox:
     $.fancybox.close(); 
