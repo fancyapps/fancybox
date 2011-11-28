@@ -59,8 +59,28 @@ Script uses the `href` attribute of the matched elements to obtain the location 
 
 Note, ajax requests are subject to the [same origin policy](http://en.wikipedia.org/wiki/Same_origin_policy).
 
+
 Advanced
 --------
+
+### Helpers
+
+Helpers provide a simple mechanism to extend the capabilities of fancyBox.
+There ar two built-in helpers - 'overlay' and 'title'. You can disable them or give custom options:
+
+	Disable 'overlay' helper and change title location:
+	$(".fancybox").fancybox({
+        helpers:  {
+            overlay : null
+            title:  {
+                type : 'inside'
+            }
+	    }
+	});
+
+
+### API 
+
 It`s possible to open fancyBox programmatically in various ways:
 
     HTML content:
@@ -93,9 +113,10 @@ It`s possible to open fancyBox programmatically in various ways:
         padding: 0    
     });
 
-Helpers
--------
+There are several methods that allow you to control fancyBox, example:
 
+    Close fancybox:
+    $.fancybox.close(); 
 
 
 Bug tracker
