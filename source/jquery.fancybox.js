@@ -50,6 +50,7 @@
 			autoPlay: false,
 			playSpeed: 3000,
 
+			modal: false,
 			loop: true,
 			ajax: {},
 			keys: {
@@ -474,10 +475,12 @@
 			if (coming.modal) {
 				$.extend(true, coming, {
 					closeBtn : false,
+					closeClick: false,
+					nextClick : false,
 					arrows : false,
 					mouseWheel : false,
 					keys : null,
-					helpers:  {
+					helpers: {
 						overlay : {
 							css: {
 								cursor : 'auto'
