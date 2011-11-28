@@ -1,3 +1,17 @@
+ /*!
+ * Buttons helper for fancyBox
+ * version: 1.0.1
+ * @requires fancyBox v2.0 or later
+ *
+ * Usage: 
+ *     $(".fancybox").fancybox({
+ *         buttons: {}
+ *     });
+ * 
+ * Options:
+ *     tpl - HTML template
+ * 
+ */
 (function ($) {
 	//shortcut for fancyBox object
 	var F = $.fancybox;
@@ -38,6 +52,8 @@
 		},
 
 		afterShow: function (opts) {
+			var buttons;
+			
 			if (!this.list) {
 				this.list = $(opts.tpl || this.tpl).appendTo('body');
 
@@ -48,22 +64,24 @@
 					toggle : this.list.find('.btnToggle')
 				}
 			}
+			
+			buttons = this.buttons;
 
 			//Prev
 			if (F.current.index > 0 || F.current.loop) {
-				this.buttons.prev.removeClass('btnDisabled');
+				buttons.prev.removeClass('btnDisabled');
 			} else {
-				this.buttons.prev.addClass('btnDisabled');
+				buttons.prev.addClass('btnDisabled');
 			}
 
 			//Next / Play
 			if (F.current.loop || F.current.index < F.group.length - 1) {
-				this.buttons.next.removeClass('btnDisabled');
-				this.buttons.play.removeClass('btnDisabled');
+				buttons.next.removeClass('btnDisabled');
+				buttons.play.removeClass('btnDisabled');
 
 			} else {
-				this.buttons.next.addClass('btnDisabled');
-				this.buttons.play.addClass('btnDisabled');
+				buttons.next.addClass('btnDisabled');
+				buttons.play.addClass('btnDisabled');
 			}
 
 			this.update();
@@ -73,7 +91,7 @@
 			this.update();
 		},
 
-		beforeClose: function (opts) {
+		beforeClose: function () {
 			if (this.list) {
 				this.list.remove();
 			}

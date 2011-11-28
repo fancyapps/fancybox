@@ -1,3 +1,22 @@
+ /*!
+ * Thumbnail helper for fancyBox
+ * version: 1.0.1
+ * @requires fancyBox v2.0 or later
+ *
+ * Usage: 
+ *     $(".fancybox").fancybox({
+ *         thumbs: {
+ *             width	: 50,
+ *             height	: 50
+ *         }
+ *     });
+ * 
+ * Options:
+ *     width - thumbnail width
+ *     height - thumbnail height
+ *     source - function to obtain the URL of the thumbnail image
+ * 
+ */
 (function ($) {
 	//Shortcut for fancyBox object
 	var F = $.fancybox;
@@ -8,7 +27,7 @@
 		list: null,
 		width: 0,
 
-		//Get thumbnail source from element
+		//Default function to obtain the URL of the thumbnail image
 		source: function (el) {
 			var img = $(el).find('img');
 
@@ -17,13 +36,16 @@
 
 		init: function (opts) {
 			var that = this,
-				list;
+				list,
+				thumbWidth = opts.width || 50,
+				thumbHeight = opts.height || 50,
+				thumbSource = opts.source || this.source;
 
 			//Build list structure
 			list = '';
 
 			for (var n = 0; n < F.group.length; n++) {
-				list += '<li><a style="width:' + opts.width + 'px;height:' + opts.height + 'px;" href="javascript:$.fancybox.jumpto(' + n + ');"></a></li>';
+				list += '<li><a style="width:' + thumbWidth + 'px;height:' + thumbHeight + 'px;" href="javascript:$.fancybox.jumpto(' + n + ');"></a></li>';
 			}
 
 			this.wrap = $('<div id="fancybox-thumbs"></div>').appendTo('body');
@@ -41,17 +63,17 @@
 					}
 
 					//Calculate thumbnail width/height and center it
-					widthRatio = width / opts.width;
-					heightRatio = height / opts.height;
+					widthRatio = width / thumbWidth;
+					heightRatio = height / thumbHeight;
 					parent = that.list.children().eq(i).find('a');
 
 					if (widthRatio >= 1 && heightRatio >= 1) {
 						if (widthRatio > heightRatio) {
 							width = Math.floor(width / heightRatio);
-							height = opts.height;
+							height = thumbHeight;
 
 						} else {
-							width = opts.width;
+							width = thumbWidth;
 							height = Math.floor(height / widthRatio);
 						}
 					}
@@ -59,15 +81,15 @@
 					$(this).css({
 						width: width,
 						height: height,
-						top: Math.floor(opts.height / 2 - height / 2),
-						left: Math.floor(opts.width / 2 - width / 2)
+						top: Math.floor(thumbHeight / 2 - height / 2),
+						left: Math.floor(thumbWidth / 2 - width / 2)
 					});
 
-					parent.width(opts.width).height(opts.height);
+					parent.width(thumbWidth).height(thumbHeight);
 
 					$(this).hide().appendTo(parent).fadeIn(300);
 
-				}).attr('src', opts.source ? opts.source(this) : that.source(this));
+				}).attr('src', thumbSource(this));
 			});
 
 			//Set initial width

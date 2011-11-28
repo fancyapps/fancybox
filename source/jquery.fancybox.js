@@ -1,6 +1,6 @@
  /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.2 (27/11/2011)
+ * version: 2.0.2 (28/11/2011)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -468,6 +468,24 @@
 			// Convert margin property to array - top, right, bottom, left
 			if (typeof coming.margin === 'number') {
 				coming.margin = [coming.margin, coming.margin, coming.margin, coming.margin];
+			}
+
+			// 'modal' propery is just a shortcut
+			if (coming.modal) {
+				$.extend(true, coming, {
+					closeBtn : false,
+					arrows : false,
+					mouseWheel : false,
+					keys : null,
+					helpers:  {
+						overlay : {
+							css: {
+								cursor : 'auto'
+							},
+							closeClick : false
+						}
+					}
+				});
 			}
 
 			//Give a chance for callback or helpers to update coming item (type, title, etc)

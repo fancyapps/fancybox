@@ -93,6 +93,10 @@ It`s possible to open fancyBox programmatically in various ways:
         padding: 0    
     });
 
+Helpers
+-------
+
+
 
 Bug tracker
 -----------
