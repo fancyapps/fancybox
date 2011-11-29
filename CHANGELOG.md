@@ -1,6 +1,10 @@
 fancyBox - Changelog
 =========
 
+### Version 2.0.3 - November 29, 2011
+
+* Fixed #29 - broken elastic transitions
+
 ### Version 2.0.2 - November 28, 2011
 
 * Fixed slidshow

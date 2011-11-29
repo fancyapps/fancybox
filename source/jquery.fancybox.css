@@ -1,13 +1,4 @@
-/*! fancyBox v2.0.2 fancyapps.com | fancyapps.com/fancybox/#license */
-.fancybox-tmp {
-	position: absolute;
-	top: -9999px;
-	left: -9999px;
-	padding: 0;
-	overflow: auto;
-	visibility: hidden;
-}
-
+/*! fancyBox v2.0.3 fancyapps.com | fancyapps.com/fancybox/#license */
 .fancybox-tmp iframe, .fancybox-tmp object {
 	vertical-align: top;
 	padding: 0;
@@ -150,6 +141,15 @@
 .fancybox-next:hover span {
 	left: auto;
 	right: 20px;
+}
+
+.fancybox-tmp {
+	position: absolute;
+	top: -9999px;
+	left: -9999px;
+	padding: 0;
+	overflow: visible;
+	visibility: hidden;
 }
 
 /* Overlay helper */

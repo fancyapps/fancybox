@@ -1,6 +1,6 @@
  /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.2 (28/11/2011)
+ * version: 2.0.3 (29/11/2011)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -20,7 +20,7 @@
 
 	$.extend(F, {
 		// The current version of fancyBox
-		version: '2.0.2',
+		version: '2.0.3',
 
 		defaults: {
 			padding: 15,
@@ -374,6 +374,10 @@
 
 		// Unbind the keyboard / clicking actions
 		unbindEvents: function () {
+			if (F.wrap) {
+				F.wrap.unbind('.fb');	
+			}
+
 			D.unbind('.fb');
 			W.unbind('.fb');
 		},
@@ -662,38 +666,40 @@
 				$(".fancybox-item").remove();
 
 				F.wrap.stop(true).removeClass('fancybox-opened');
+				F.inner.css('overflow', 'hidden');
 
 				F.transitions[F.current.prevMethod]();
 
 			} else {
 				$(".fancybox-wrap").stop().trigger('onReset').remove();
+
+				F.trigger('afterClose');
 			}
+
+			F.unbindEvents();
 
 			F.isOpen = false;
 			F.current = F.coming;
 			F.coming = false;
 
 			//Build the neccessary markup
-			F.wrap = $(F.current.tpl.wrap).addClass(F.current.wrapCSS).hide().appendTo('body');
+			F.wrap = $(F.current.tpl.wrap).addClass('fancybox-tmp ' + F.current.wrapCSS).appendTo('body');
 			F.outer = $('.fancybox-outer', F.wrap).css('padding', F.current.padding + 'px');
 			F.inner = $('.fancybox-inner', F.wrap);
 
 			F._setContent();
 
-			F.unbindEvents();
-			F.bindEvents();
-
 			//Give a chance for helpers or callbacks to update elements
 			F.trigger('beforeShow');
 
+			//Set initial dimensions and hide
 			F._setDimension();
 
-			if (F.isOpened) {
-				F.transitions[F.current.nextMethod]();
+			F.wrap.hide().removeClass('fancybox-tmp');
 
-			} else {
-				F.transitions[F.current.openMethod]();
-			}
+			F.bindEvents();
+
+			F.transitions[ F.isOpened ? F.current.nextMethod : F.current.openMethod ]();
 		},
 
 		_setContent: function () {
@@ -768,7 +774,8 @@
 				maxHeight = current.maxHeight,
 				minWidth = current.minWidth,
 				minHeight = current.minHeight,
-				height_;
+				height_,
+				space;
 
 			viewport.w -= (margin[1] + margin[3]);
 			viewport.h -= (margin[0] + margin[2]);
@@ -865,6 +872,11 @@
 			} else if ((width > viewport.w || height_ > viewport.h) && width > minWidth && height > minHeight) {
 				current.canShrink = true;
 			}
+
+			space = height_ - padding2;
+
+			F.innerSpace = space - F.inner.height();
+			F.outerSpace = space - F.outer.height();
 		},
 
 		_getPosition: function (a) {
@@ -1014,13 +1026,12 @@
 		},
 
 		zoomIn: function () {
-			var startPos, endPos, dim = F.current.dim,
-				space = dim.height - (F.current.padding * 2);
+			var current = F.current,
+				startPos,
+				endPos,
+				dim = current.dim;
 
-			F.innerSpace = space - F.inner.height();
-			F.outerSpace = space - F.outer.height();
-
-			if (F.current.openEffect === 'elastic') {
+			if (current.openEffect === 'elastic') {
 				endPos = $.extend({}, dim, F._getPosition(true));
 
 				//Remove "position" property
@@ -1028,23 +1039,23 @@
 
 				startPos = this.getOrigPosition();
 
-				if (F.current.openOpacity) {
+				if (current.openOpacity) {
 					startPos.opacity = 0;
 					endPos.opacity = 1;
 				}
 
 				F.wrap.css(startPos).show().animate(endPos, {
-					duration: F.current.openSpeed,
-					easing: F.current.openEasing,
+					duration: current.openSpeed,
+					easing: current.openEasing,
 					step: this.step,
 					complete: F._afterZoomIn
 				});
 
 			} else {
-				F.wrap.css($.extend({}, F.current.dim, F._getPosition()));
+				F.wrap.css($.extend({}, dim, F._getPosition()));
 
-				if (F.current.openEffect === 'fade') {
-					F.wrap.fadeIn(F.current.openSpeed, F._afterZoomIn);
+				if (current.openEffect === 'fade') {
+					F.wrap.fadeIn(current.openSpeed, F._afterZoomIn);
 
 				} else {
 					F.wrap.show();
@@ -1054,36 +1065,35 @@
 		},
 
 		zoomOut: function () {
-			var endPos, space = F.wrap.height() - (F.current.padding * 2);
+			var current = F.current,
+				endPos;
 
-			if (F.current.closeEffect === 'elastic') {
+			if (current.closeEffect === 'elastic') {
 				if (F.wrap.css('position') === 'fixed') {
 					F.wrap.css(F._getPosition(true));
 				}
 
-				F.innerSpace = space - F.inner.height();
-				F.outerSpace = space - F.outer.height();
-
 				endPos = this.getOrigPosition();
 
-				if (F.current.closeOpacity) {
+				if (current.closeOpacity) {
 					endPos.opacity = 0;
 				}
 
 				F.wrap.animate(endPos, {
-					duration: F.current.closeSpeed,
-					easing: F.current.closeEasing,
+					duration: current.closeSpeed,
+					easing: current.closeEasing,
 					step: this.step,
 					complete: F._afterZoomOut
 				});
 
 			} else {
-				F.wrap.fadeOut(F.current.closeEffect === 'fade' ? F.current.Speed : 0, F._afterZoomOut);
+				F.wrap.fadeOut(current.closeEffect === 'fade' ? current.closeSpeed : 0, F._afterZoomOut);
 			}
 		},
 
 		changeIn: function () {
-			var startPos;
+			var current = F.current,
+				startPos;
 
 			if (F.current.nextEffect === 'elastic') {
 				startPos = F._getPosition(true);
@@ -1094,15 +1104,15 @@
 					opacity: 1,
 					top: '+=200px'
 				}, {
-					duration: F.current.nextSpeed,
+					duration: current.nextSpeed,
 					complete: F._afterZoomIn
 				});
 
 			} else {
 				F.wrap.css(F._getPosition());
 
-				if (F.current.nextEffect === 'fade') {
-					F.wrap.hide().fadeIn(F.current.nextSpeed, F._afterZoomIn);
+				if (current.nextEffect === 'fade') {
+					F.wrap.hide().fadeIn(current.nextSpeed, F._afterZoomIn);
 
 				} else {
 					F.wrap.show();
