@@ -657,6 +657,21 @@
 			}));
 		},
 
+		_preload : function() {
+			var group = F.group,
+				index = F.current.index,
+				load = function(href) {
+					if (href && F.isImage(href)) {
+						new Image().src = href;
+					}
+				};
+
+			if (group.length > 1) {
+				load( $( group[ index + 1 ] || group[ 0 ] ).attr('href') );
+				load( $( group[ index - 1 ] || group[ group.length - 1 ] ).attr('href') );
+			}
+		},
+
 		_afterLoad: function () {
 			F.hideLoading();
 
@@ -702,6 +717,7 @@
 			F.wrap.hide().removeClass('fancybox-tmp');
 
 			F.bindEvents();
+			F._preload();
 
 			F.transitions[ F.isOpened ? F.current.nextMethod : F.current.openMethod ]();
 		},
