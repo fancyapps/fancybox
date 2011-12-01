@@ -793,6 +793,9 @@
 				maxHeight = Math.min(viewport.h, maxHeight);
 			}
 
+			minWidth = Math.min(width, minWidth);
+			minHeight = Math.min(width, minHeight);
+
 			maxWidth = Math.max(minWidth, maxWidth);
 			maxHeight = Math.max(minHeight, maxHeight);
 
