@@ -173,7 +173,7 @@
 			//Kill existing instances
 			F.close(true);
 
-			//extend the defaults
+			//Extend the defaults
 			F.opts = $.extend(true, {}, F.defaults, opts);
 			F.group = group;
 
@@ -418,7 +418,9 @@
 
 			if ($.fn.mousewheel && current.mouseWheel && F.group.length > 1) {
 				F.wrap.bind('mousewheel.fb', function (e, delta) {
-					if ($(e.target).get(0).clientHeight === 0 || $(e.target).get(0).scrollHeight === $(e.target).get(0).clientHeight) {
+					var target = $(e.target).get(0);
+
+					if (target.clientHeight === 0 || target.scrollHeight === target.clientHeight) {
 						e.preventDefault();
 
 						F[delta > 0 ? 'prev' : 'next']();
@@ -428,22 +430,22 @@
 		},
 
 		trigger: function (event) {
-			var ret, obj = $.inArray(event, ['onCancel', 'beforeLoad', 'afterLoad']) > -1 ? 'coming' : 'current';
+			var ret, obj = F[ $.inArray(event, ['onCancel', 'beforeLoad', 'afterLoad']) > -1 ? 'coming' : 'current' ];
 
-			if (!F[obj]) {
+			if (!obj) {
 				return;
 			}
 
-			if ($.isFunction(F[obj][event])) {
-				ret = F[obj][event].apply(F[obj], Array.prototype.slice.call(arguments, 1));
+			if ($.isFunction( obj[event] )) {
+				ret = obj[event].apply(obj, Array.prototype.slice.call(arguments, 1));
 			}
 
 			if (ret === false) {
 				return false;
 			}
 
-			if (F[obj].helpers) {
-				$.each(F[obj].helpers, function (helper, opts) {
+			if (obj.helpers) {
+				$.each(obj.helpers, function (helper, opts) {
 					if (opts && typeof F.helpers[helper] !== 'undefined' && $.isFunction(F.helpers[helper][event])) {
 						F.helpers[helper][event](opts);
 					}
@@ -454,11 +456,11 @@
 		},
 
 		isImage: function (str) {
-			return str && str.match(/\.(jpg|gif|png|bmp|jpeg)(.*)?$/i);
+			return ((str && str.match(/\.(jpg|gif|png|bmp|jpeg)(.*)?$/i)));
 		},
 
 		isSWF: function (str) {
-			return str && str.match(/\.(swf)(.*)?$/i);
+			return ((str && str.match(/\.(swf)(.*)?$/i)));
 		},
 
 		_start: function (index) {
@@ -764,7 +766,10 @@
 		},
 
 		_setDimension: function () {
-			var current = F.current,
+			var wrap = F.wrap,
+				outer = F.outer,
+				inner = F.inner,
+				current = F.current,
 				viewport = F.getViewport(),
 				margin = current.margin,
 				padding2 = current.padding * 2,
@@ -831,12 +836,12 @@
 			height = Math.round(height);
 
 			//Reset dimensions
-			$(F.wrap.add(F.outer).add(F.inner)).width('auto').height('auto');
+			$(wrap.add(outer).add(inner)).width('auto').height('auto');
 
-			F.inner.width(width - padding2).height(height - padding2);
-			F.wrap.width(width);
+			inner.width(width - padding2).height(height - padding2);
+			wrap.width(width);
 
-			height_ = F.wrap.height(); // Real wrap height
+			height_ = wrap.height(); // Real wrap height
 
 			//Fit wrapper inside
 			if (width > maxWidth || height_ > maxHeight) {
@@ -855,10 +860,10 @@
 						width = width - 10;
 					}
 
-					F.inner.width(width - padding2).height(height - padding2);
-					F.wrap.width(width);
+					inner.width(width - padding2).height(height - padding2);
+					wrap.width(width);
 
-					height_ = F.wrap.height();
+					height_ = wrap.height();
 				}
 			}
 
@@ -880,13 +885,14 @@
 
 			space = height_ - padding2;
 
-			F.innerSpace = space - F.inner.height();
-			F.outerSpace = space - F.outer.height();
+			F.innerSpace = space - inner.height();
+			F.outerSpace = space - outer.height();
 		},
 
 		_getPosition: function (a) {
-			var viewport = F.getViewport(),
-				margin = F.current.margin,
+			var current = F.current,
+				viewport = F.getViewport(),
+				margin = current.margin,
 				width = F.wrap.width() + margin[1] + margin[3],
 				height = F.wrap.height() + margin[0] + margin[2],
 				rez = {
@@ -895,7 +901,7 @@
 					left: margin[3] + viewport.x
 				};
 
-			if (F.current.fixed && (!a || a[0] === false) && height <= viewport.h && width <= viewport.w) {
+			if (current.fixed && (!a || a[0] === false) && height <= viewport.h && width <= viewport.w) {
 				rez = {
 					position: 'fixed',
 					top: margin[0],
@@ -903,7 +909,7 @@
 				};
 			}
 
-			rez.top = Math.ceil(Math.max(rez.top, rez.top + ((viewport.h - height) * F.current.topRatio))) + 'px';
+			rez.top = Math.ceil(Math.max(rez.top, rez.top + ((viewport.h - height) * current.topRatio))) + 'px';
 			rez.left = Math.ceil(Math.max(rez.left, rez.left + ((viewport.w - width) * 0.5))) + 'px';
 
 			return rez;
@@ -927,7 +933,7 @@
 
 			//Create a close button
 			if (current.closeBtn) {
-				$(F.current.tpl.closeBtn).appendTo(F.wrap).bind('click.fb', F.close);
+				$(current.tpl.closeBtn).appendTo(F.wrap).bind('click.fb', F.close);
 			}
 
 			//Create navigation arrows
@@ -1031,7 +1037,8 @@
 		},
 
 		zoomIn: function () {
-			var current = F.current,
+			var wrap = F.wrap,
+				current = F.current,
 				startPos,
 				endPos,
 				dim = current.dim;
@@ -1049,7 +1056,7 @@
 					endPos.opacity = 1;
 				}
 
-				F.wrap.css(startPos).show().animate(endPos, {
+				wrap.css(startPos).show().animate(endPos, {
 					duration: current.openSpeed,
 					easing: current.openEasing,
 					step: this.step,
@@ -1057,25 +1064,26 @@
 				});
 
 			} else {
-				F.wrap.css($.extend({}, dim, F._getPosition()));
+				wrap.css($.extend({}, dim, F._getPosition()));
 
 				if (current.openEffect === 'fade') {
-					F.wrap.fadeIn(current.openSpeed, F._afterZoomIn);
+					wrap.fadeIn(current.openSpeed, F._afterZoomIn);
 
 				} else {
-					F.wrap.show();
+					wrap.show();
 					F._afterZoomIn();
 				}
 			}
 		},
 
 		zoomOut: function () {
-			var current = F.current,
+			var wrap = F.wrap,
+				current = F.current,
 				endPos;
 
 			if (current.closeEffect === 'elastic') {
-				if (F.wrap.css('position') === 'fixed') {
-					F.wrap.css(F._getPosition(true));
+				if (wrap.css('position') === 'fixed') {
+					wrap.css(F._getPosition(true));
 				}
 
 				endPos = this.getOrigPosition();
@@ -1084,7 +1092,7 @@
 					endPos.opacity = 0;
 				}
 
-				F.wrap.animate(endPos, {
+				wrap.animate(endPos, {
 					duration: current.closeSpeed,
 					easing: current.closeEasing,
 					step: this.step,
@@ -1092,20 +1100,21 @@
 				});
 
 			} else {
-				F.wrap.fadeOut(current.closeEffect === 'fade' ? current.closeSpeed : 0, F._afterZoomOut);
+				wrap.fadeOut(current.closeEffect === 'fade' ? current.closeSpeed : 0, F._afterZoomOut);
 			}
 		},
 
 		changeIn: function () {
-			var current = F.current,
+			var wrap = F.wrap,
+				current = F.current,
 				startPos;
 
-			if (F.current.nextEffect === 'elastic') {
+			if (current.nextEffect === 'elastic') {
 				startPos = F._getPosition(true);
 				startPos.opacity = 0;
 				startPos.top = (parseInt(startPos.top, 10) - 200) + 'px';
 
-				F.wrap.css(startPos).show().animate({
+				wrap.css(startPos).show().animate({
 					opacity: 1,
 					top: '+=200px'
 				}, {
@@ -1114,36 +1123,38 @@
 				});
 
 			} else {
-				F.wrap.css(F._getPosition());
+				wrap.css(F._getPosition());
 
 				if (current.nextEffect === 'fade') {
-					F.wrap.hide().fadeIn(current.nextSpeed, F._afterZoomIn);
+					wrap.hide().fadeIn(current.nextSpeed, F._afterZoomIn);
 
 				} else {
-					F.wrap.show();
+					wrap.show();
 					F._afterZoomIn();
 				}
 			}
 		},
 
 		changeOut: function () {
-			function cleanUp() {
-				$(this).trigger('onReset').remove();
-			}
+			var wrap = F.wrap,
+				current = F.current,
+				cleanUp = function () {
+					$(this).trigger('onReset').remove();
+				};
 
-			F.wrap.removeClass('fancybox-opened');
+			wrap.removeClass('fancybox-opened');
 
-			if (F.current.prevEffect === 'elastic') {
-				F.wrap.animate({
+			if (current.prevEffect === 'elastic') {
+				wrap.animate({
 					'opacity': 0,
 					top: '+=200px'
 				}, {
-					duration: F.current.prevSpeed,
+					duration: current.prevSpeed,
 					complete: cleanUp
 				});
 
 			} else {
-				F.wrap.fadeOut(F.current.prevEffect === 'fade' ? F.current.prevSpeed : 0, cleanUp);
+				wrap.fadeOut(current.prevEffect === 'fade' ? current.prevSpeed : 0, cleanUp);
 			}
 		}
 	};
@@ -1242,33 +1253,35 @@
 			selector = this.selector || '';
 
 		function run(e) {
-			var group = [], relType = false, relVal = $(this).data('fancybox-group');
+			var group = [], relType = false, relVal;
 
-			e.preventDefault();
+			if (!(e.ctrlKey || e.altKey || e.shiftKey || e.metaKey)) {
+				e.preventDefault();
 
-			// Check if element has 'data-fancybox-group' attribute, if not - use 'rel'
-			if (typeof relVal !== 'undefined') {
-				relType = relVal ? 'data-fancybox-group' : false;
+				relVal = $(this).data('fancybox-group');
 
-			} else if (this.rel && this.rel !== '' && this.rel !== 'nofollow') {
-				relVal = this.rel;
-				relType = 'rel';
+				// Check if element has 'data-fancybox-group' attribute, if not - use 'rel'
+				if (typeof relVal !== 'undefined') {
+					relType = relVal ? 'data-fancybox-group' : false;
+
+				} else if (this.rel && this.rel !== '' && this.rel !== 'nofollow') {
+					relVal = this.rel;
+					relType = 'rel';
+				}
+
+				if (relType) {
+					group = selector.length ? $(selector).filter('[' + relType + '="' + relVal + '"]') : $('[' + relType + '="' + relVal + '"]');
+				}
+
+				if (group.length) {
+					opts.index = group.index(this);
+
+					F.open(group.get(), opts);
+
+				} else {
+					F.open(this, opts);
+				}
 			}
-
-			if (relType) {
-				group = selector.length ? $(selector).filter('[' + relType + '="' + relVal + '"]') : $('[' + relType + '="' + relVal + '"]');
-			}
-
-			if (group.length) {
-				opts.index = group.index(this);
-
-				F.open(group.get(), opts);
-
-			} else {
-				F.open(this, opts);
-			}
-
-			return false;
 		}
 
 		if (selector) {
