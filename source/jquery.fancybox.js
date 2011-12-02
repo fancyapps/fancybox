@@ -38,7 +38,7 @@
 			aspectRatio: false,
 			topRatio: 0.5,
 
-			fixed: !$.browser.msie || $.browser.version > 6,
+			fixed: !$.browser.msie || $.browser.version > 6 || !document.documentElement.hasOwnProperty('ontouchstart'),
 			scrolling: 'auto', // 'auto', 'yes' or 'no'
 			wrapCSS: 'fancybox-default',
 
@@ -81,14 +81,14 @@
 			// Properties for each animation type
 			// Opening fancyBox
 			openEffect: 'fade', // 'elastic', 'fade' or 'none'
-			openSpeed: 500,
+			openSpeed: 300,
 			openEasing: 'swing',
 			openOpacity: true,
 			openMethod: 'zoomIn',
 
 			// Closing fancyBox
 			closeEffect: 'fade', // 'elastic', 'fade' or 'none'
-			closeSpeed: 500,
+			closeSpeed: 300,
 			closeEasing: 'swing',
 			closeOpacity: true,
 			closeMethod: 'zoomOut',
@@ -120,8 +120,8 @@
 				title: {
 					type: 'float' // 'float', 'inside', 'outside' or 'over'
 				}
-			},
-
+			}
+/*
 			// Callbacks
 			onCancel: $.noop, // If canceling
 			beforeLoad: $.noop, // Before loading
@@ -130,6 +130,7 @@
 			afterShow: $.noop, // After opening
 			beforeClose: $.noop, // Before closing
 			afterClose: $.noop // After closing
+*/
 		},
 
 		//Current state
@@ -227,6 +228,7 @@
 			}
 		},
 
+		// Start/stop slideshow
 		play: function (a) {
 			var clear = function () {
 					clearTimeout(F.player.timer);
@@ -456,23 +458,35 @@
 		},
 
 		isImage: function (str) {
-			return ((str && str.match(/\.(jpg|gif|png|bmp|jpeg)(.*)?$/i)));
+			return str && str.match(/\.(jpg|gif|png|bmp|jpeg)(.*)?$/i);
 		},
 
 		isSWF: function (str) {
-			return ((str && str.match(/\.(swf)(.*)?$/i)));
+			return str && str.match(/\.(swf)(.*)?$/i);
 		},
 
 		_start: function (index) {
-			var element = F.group[index] || null,
+			var coming = {},
+				element = F.group[index] || null,
 				isDom,
 				href,
 				type,
-				rez,
-				coming = $.extend(true, {}, F.opts, ($.isPlainObject(element) ? element : {}), {
-					index : index,
-					element : element
-				});
+				rez;
+
+			if (typeof element === 'object' && (element.nodeType || element instanceof $)) {
+				isDom = true;
+
+				if ($.metadata) {
+					coming = $(element).metadata();
+				}
+			}
+
+			coming = $.extend(true, {}, F.opts, {index : index, element : element}, ($.isPlainObject(element) ? element : coming));
+
+			// Re-check overridable options
+			$.each(['href', 'title', 'content', 'type'], function(i,v) {
+				coming[v] = F.opts[ v ] || (isDom && $(element).attr( v )) || coming[ v ] || null;
+			});
 
 			// Convert margin property to array - top, right, bottom, left
 			if (typeof coming.margin === 'number') {
@@ -507,16 +521,6 @@
 				return;
 			}
 
-			if (typeof element === 'object' && (element.nodeType || element instanceof $)) {
-				isDom = true;
-				coming.href = $(element).attr('href') || coming.href;
-				coming.title = $(element).attr('title') || coming.title;
-
-				if ($.metadata) {
-					$.extend(coming, $(element).metadata());	
-				}
-			}
-
 			type = coming.type;
 			href = coming.href;
 
@@ -527,14 +531,11 @@
 
 					if (!rez && element.className) {
 						rez = element.className.match(/fancybox\.(\w+)/);
-						rez = rez ? rez[1] : false;
+						type = rez ? rez[1] : null;
 					}
 				}
 
-				if (rez) {
-					type = rez;
-
-				} else if (href) {
+				if (!type && href) {
 					if (F.isImage(href)) {
 						type = 'image';
 
@@ -556,9 +557,7 @@
 
 			// Check before try to load; 'inline' and 'html' types need content, others - href
 			if (type === 'inline' || type === 'html') {
-				if (!coming.content) {
-					coming.content = type === 'inline' && href ? $(href) : element;
-				}
+				coming.content = coming.content || (type === 'inline' && href ? $(href) : element);
 
 				if (!coming.content.length) {
 					type = null;
@@ -730,8 +729,10 @@
 				case 'inline':
 				case 'ajax':
 				case 'html':
-					if (type === 'inline') {
-						content = current.content.show().detach();
+					content = current.content;
+
+					if (type === 'inline' && content instanceof $) {
+						content = content.show().detach();
 
 						if (content.parent().hasClass('fancybox-inner')) {
 							content.parents('.fancybox-wrap').trigger('onReset').remove();
@@ -740,9 +741,6 @@
 						$(F.wrap).bind('onReset', function () {
 							content.appendTo('body').hide();
 						});
-
-					} else {
-						content = current.content;
 					}
 
 					if (current.autoSize) {
@@ -1269,7 +1267,7 @@
 			selector = this.selector || '';
 
 		function run(e) {
-			var group = [], relType = false, relVal;
+			var group = [], relType, relVal, rel = this.rel;
 
 			if (!(e.ctrlKey || e.altKey || e.shiftKey || e.metaKey)) {
 				e.preventDefault();
@@ -1280,8 +1278,8 @@
 				if (typeof relVal !== 'undefined') {
 					relType = relVal ? 'data-fancybox-group' : false;
 
-				} else if (this.rel && this.rel !== '' && this.rel !== 'nofollow') {
-					relVal = this.rel;
+				} else if (rel && rel !== '' && rel !== 'nofollow') {
+					relVal = rel;
 					relType = 'rel';
 				}
 
