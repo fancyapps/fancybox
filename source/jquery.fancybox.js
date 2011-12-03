@@ -1243,7 +1243,7 @@
 		beforeShow: function (opts) {
 			var title, text = F.current.title;
 
-			if (text) {
+			if (text && F.current.content != F.current.tpl.error) {
 				title = $('<div class="fancybox-title fancybox-title-' + opts.type + '-wrap">' + text + '</div>').appendTo('body');
 
 				if (opts.type === 'float') {
