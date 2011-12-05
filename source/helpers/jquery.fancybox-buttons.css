@@ -1,9 +1,16 @@
 #fancybox-buttons {
 	position: fixed;
-	top: 10px;
 	left: 0;
 	width: 100%;
 	z-index: 1005;
+}
+
+#fancybox-buttons.top {
+	top: 10px;
+}
+
+#fancybox-buttons.bottom {
+	bottom: 10px;
 }
 
 #fancybox-buttons ul {

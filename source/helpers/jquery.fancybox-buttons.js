@@ -1,15 +1,18 @@
  /*!
  * Buttons helper for fancyBox
- * version: 1.0.1
+ * version: 1.0.2
  * @requires fancyBox v2.0 or later
  *
  * Usage: 
  *     $(".fancybox").fancybox({
- *         buttons: {}
+ *         buttons: {
+ *             position : 'top'
+ *         }
  *     });
  * 
  * Options:
  *     tpl - HTML template
+ *     position - 'top' or 'bottom'
  * 
  */
 (function ($) {
@@ -18,7 +21,7 @@
 
 	//Add helper object
 	F.helpers.buttons = {
-		tpl: '<div id="fancybox-buttons"><ul><li><a class="btnPrev" title="Previous" href="javascript:$.fancybox.prev();">Previous</a></li><li><a class="btnPlay" title="Slideshow" href="javascript:$.fancybox.play();;">Play</a></li><li><a class="btnNext" title="Next" href="javascript:$.fancybox.next();">Next</a></li><li><a class="btnToggle" title="Toggle size" href="javascript:$.fancybox.toggle();">Toggle</a></li><li><a class="btnClose" title="Close" href="javascript:$.fancybox.close();">Close</a></li></ul></div>',
+		tpl: '<div id="fancybox-buttons"><ul><li><a class="btnPrev" title="Previous" href="javascript:;">Previous</a></li><li><a class="btnPlay" title="Slideshow" href="javascript:;">Play</a></li><li><a class="btnNext" title="Next" href="javascript:;">Next</a></li><li><a class="btnToggle" title="Toggle size" href="javascript:;">Toggle</a></li><li><a class="btnClose" title="Close" href="javascript:jQuery.fancybox.close();">Close</a></li></ul></div>',
 		list: null,
 		buttons: {},
 
@@ -34,9 +37,9 @@
 			}
 		},
 
-		beforeShow: function () {
+		beforeShow: function (opts) {
 			//Increase top margin to give space for buttons
-			F.current.margin[0] += 30;
+			F.current.margin[ opts && opts.position === 'bottom' ? 2 : 0 ] += 30;
 		},
 
 		onPlayStart: function () {
@@ -55,13 +58,13 @@
 			var buttons;
 			
 			if (!this.list) {
-				this.list = $(opts.tpl || this.tpl).appendTo('body');
+				this.list = $(opts.tpl || this.tpl).addClass(opts.position || 'top').appendTo('body');
 
 				this.buttons = {
-					prev : this.list.find('.btnPrev'),
-					next : this.list.find('.btnNext'),
-					play : this.list.find('.btnPlay'),
-					toggle : this.list.find('.btnToggle')
+					prev : this.list.find('.btnPrev').click( F.prev ),
+					next : this.list.find('.btnNext').click( F.next ),
+					play : this.list.find('.btnPlay').click( F.play ),
+					toggle : this.list.find('.btnToggle').click( F.toggle )
 				}
 			}
 			

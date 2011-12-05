@@ -1,6 +1,6 @@
  /*!
  * Thumbnail helper for fancyBox
- * version: 1.0.1
+ * version: 1.0.2
  * @requires fancyBox v2.0 or later
  *
  * Usage: 
@@ -45,7 +45,7 @@
 			list = '';
 
 			for (var n = 0; n < F.group.length; n++) {
-				list += '<li><a style="width:' + thumbWidth + 'px;height:' + thumbHeight + 'px;" href="javascript:$.fancybox.jumpto(' + n + ');"></a></li>';
+				list += '<li><a style="width:' + thumbWidth + 'px;height:' + thumbHeight + 'px;" href="javascript:jQuery.fancybox.jumpto(' + n + ');"></a></li>';
 			}
 
 			this.wrap = $('<div id="fancybox-thumbs"></div>').appendTo('body');
