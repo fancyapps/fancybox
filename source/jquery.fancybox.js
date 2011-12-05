@@ -120,8 +120,8 @@
 				title: {
 					type: 'float' // 'float', 'inside', 'outside' or 'over'
 				}
-			}
-/*
+			},
+
 			// Callbacks
 			onCancel: $.noop, // If canceling
 			beforeLoad: $.noop, // Before loading
@@ -130,7 +130,6 @@
 			afterShow: $.noop, // After opening
 			beforeClose: $.noop, // Before closing
 			afterClose: $.noop // After closing
-*/
 		},
 
 		//Current state
@@ -592,15 +591,18 @@
 				F._afterLoad();
 
 			} else {
-				F._error();
+				F._error( 'type' );
 			}
 		},
 
-		_error: function () {
-			F.coming.type = 'html';
-			F.coming.minHeight = 0;
-			F.coming.autoSize = true;
-			F.coming.content = F.coming.tpl.error;
+		_error: function ( type ) {
+			$.extend(F.coming, {
+				type : 'html',
+				autoSize : true,
+				minHeight : '0',
+				hasError : type,
+				content : F.coming.tpl.error
+			});
 
 			F._afterLoad();
 		},
@@ -621,7 +623,7 @@
 			F.imgPreload.onerror = function () {
 				this.onload = this.onerror = null;
 
-				F._error();
+				F._error( 'image' );
 			};
 
 			F.imgPreload.src = F.coming.href;
@@ -638,9 +640,7 @@
 				url: F.coming.href,
 				error: function (jqXHR, textStatus, errorThrown) {
 					if (textStatus !== 'abort') {
-						F.coming.content = errorThrown;
-
-						F._error();
+						F._error( 'ajax' );
 
 					} else {
 						F.hideLoading();
