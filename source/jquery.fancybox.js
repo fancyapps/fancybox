@@ -252,13 +252,13 @@
 					if (F.current && (F.current.loop || F.current.index < F.group.length - 1)) {
 						F.player.isActive = true;
 
-						set();
-
 						$('body').bind({
-							'onCancel.player afterShow.player onUpdate.player': set,
-							'beforeClose.player': stop,
+							'afterShow.player onUpdate.player': set,
+							'onCancel.player beforeClose.player': stop,
 							'beforeLoad.player': clear
 						});
+
+						set();
 
 						F.trigger('onPlayStart');
 					}
