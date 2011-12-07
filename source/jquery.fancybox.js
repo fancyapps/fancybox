@@ -252,13 +252,13 @@
 					if (F.current && (F.current.loop || F.current.index < F.group.length - 1)) {
 						F.player.isActive = true;
 
-						set();
-
 						$('body').bind({
-							'onCancel.player afterShow.player onUpdate.player': set,
-							'beforeClose.player': stop,
+							'afterShow.player onUpdate.player': set,
+							'onCancel.player beforeClose.player': stop,
 							'beforeLoad.player': clear
 						});
+
+						set();
 
 						F.trigger('onPlayStart');
 					}
@@ -448,7 +448,7 @@
 			if (obj.helpers) {
 				$.each(obj.helpers, function (helper, opts) {
 					if (opts && typeof F.helpers[helper] !== 'undefined' && $.isFunction(F.helpers[helper][event])) {
-						F.helpers[helper][event](opts);
+						F.helpers[helper][event](opts, obj);
 					}
 				});
 			}
@@ -638,15 +638,15 @@
 
 			F.ajaxLoad = $.ajax($.extend({}, F.coming.ajax, {
 				url: F.coming.href,
-				error: function (jqXHR, textStatus, errorThrown) {
+				error: function (jqXHR, textStatus) {
 					if (textStatus !== 'abort') {
-						F._error( 'ajax' );
+						F._error( 'ajax', jqXHR );
 
 					} else {
 						F.hideLoading();
 					}
 				},
-				success: function (data, textStatus, jqXHR) {
+				success: function (data, textStatus) {
 					if (textStatus === 'success') {
 						F.coming.content = data;
 

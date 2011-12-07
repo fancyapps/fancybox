@@ -16,7 +16,7 @@
  * 
  */
 (function ($) {
-	//shortcut for fancyBox object
+	//Shortcut for fancyBox object
 	var F = $.fancybox;
 
 	//Add helper object
@@ -37,9 +37,17 @@
 			}
 		},
 
-		beforeShow: function (opts) {
+		beforeLoad: function (opts) {
+			//Remove self if gallery do not have at least two items
+			if (F.group.length < 2) {
+				F.coming.helpers.buttons = false;
+				F.coming.closeBtn = true;
+
+				return;
+			}
+
 			//Increase top margin to give space for buttons
-			F.current.margin[ opts && opts.position === 'bottom' ? 2 : 0 ] += 30;
+			F.coming.margin[ opts && opts.position === 'bottom' ? 2 : 0 ] += 30;
 		},
 
 		onPlayStart: function () {
@@ -56,7 +64,7 @@
 
 		afterShow: function (opts) {
 			var buttons;
-			
+
 			if (!this.list) {
 				this.list = $(opts.tpl || this.tpl).addClass(opts.position || 'top').appendTo('body');
 
@@ -67,7 +75,7 @@
 					toggle : this.list.find('.btnToggle').click( F.toggle )
 				}
 			}
-			
+
 			buttons = this.buttons;
 
 			//Prev
