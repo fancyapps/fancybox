@@ -30,15 +30,18 @@
 
 #fancybox-buttons ul li {
 	float: left;
+	margin: 0;
+	padding: 0;
 }
 
 #fancybox-buttons a {
 	display: block;
 	width: 30px;
-	line-height: 30px;
+	height: 30px;
 	text-indent: -9999px;
 	background-image: url('fancybox_buttons.png');
 	background-repeat: no-repeat;
+	outline: none;
 }
 
 #fancybox-buttons a.btnPrev {

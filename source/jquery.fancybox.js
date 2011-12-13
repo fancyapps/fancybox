@@ -1,6 +1,6 @@
  /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.3 (29/11/2011)
+ * version: 2.0.4 (12/12/2011)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -20,7 +20,7 @@
 
 	$.extend(F, {
 		// The current version of fancyBox
-		version: '2.0.3',
+		version: '2.0.4',
 
 		defaults: {
 			padding: 15,
@@ -81,14 +81,14 @@
 			// Properties for each animation type
 			// Opening fancyBox
 			openEffect: 'fade', // 'elastic', 'fade' or 'none'
-			openSpeed: 300,
+			openSpeed: 250,
 			openEasing: 'swing',
 			openOpacity: true,
 			openMethod: 'zoomIn',
 
 			// Closing fancyBox
 			closeEffect: 'fade', // 'elastic', 'fade' or 'none'
-			closeSpeed: 300,
+			closeSpeed: 250,
 			closeEasing: 'swing',
 			closeOpacity: true,
 			closeMethod: 'zoomOut',
@@ -109,11 +109,10 @@
 			helpers: {
 				overlay: {
 					speedIn: 0,
-					speedOut: 0,
-					opacity: 0.85,
+					speedOut: 300,
+					opacity: 0.8,
 					css: {
-						cursor: 'pointer',
-						'background-color': 'rgba(0, 0, 0, 0.85)' //Browsers who don`t support rgba will fall back to default color value defined at CSS file
+						cursor: 'pointer'
 					},
 					closeClick: true
 				},
@@ -942,7 +941,7 @@
 
 			//Assign a click event
 			if (current.closeClick || current.nextClick) {
-				F.inner.bind('click.fb', current.nextClick ? F.next : F.close);
+				F.inner.css('cursor', 'pointer').bind('click.fb', current.nextClick ? F.next : F.close);
 			}
 
 			//Create a close button

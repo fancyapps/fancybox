@@ -21,7 +21,7 @@
 
 	//Add helper object
 	F.helpers.buttons = {
-		tpl: '<div id="fancybox-buttons"><ul><li><a class="btnPrev" title="Previous" href="javascript:;">Previous</a></li><li><a class="btnPlay" title="Slideshow" href="javascript:;">Play</a></li><li><a class="btnNext" title="Next" href="javascript:;">Next</a></li><li><a class="btnToggle" title="Toggle size" href="javascript:;">Toggle</a></li><li><a class="btnClose" title="Close" href="javascript:jQuery.fancybox.close();">Close</a></li></ul></div>',
+		tpl: '<div id="fancybox-buttons"><ul><li><a class="btnPrev" title="Previous" href="javascript:;"></a></li><li><a class="btnPlay" title="Start slideshow" href="javascript:;"></a></li><li><a class="btnNext" title="Next" href="javascript:;"></a></li><li><a class="btnToggle" title="Toggle size" href="javascript:;"></a></li><li><a class="btnClose" title="Close" href="javascript:jQuery.fancybox.close();"></a></li></ul></div>',
 		list: null,
 		buttons: {},
 
@@ -47,18 +47,18 @@
 			}
 
 			//Increase top margin to give space for buttons
-			F.coming.margin[ opts && opts.position === 'bottom' ? 2 : 0 ] += 30;
+			F.coming.margin[ opts.position === 'bottom' ? 2 : 0 ] += 30;
 		},
 
 		onPlayStart: function () {
 			if (this.list) {
-				this.buttons.play.text('Pause').addClass('btnPlayOn');
+				this.buttons.play.attr('title', 'Pause slideshow').addClass('btnPlayOn');
 			}
 		},
 
 		onPlayEnd: function () {
 			if (this.list) {
-				this.buttons.play.text('Play').removeClass('btnPlayOn');
+				this.buttons.play.attr('title', 'Start slideshow').removeClass('btnPlayOn');
 			}
 		},
 

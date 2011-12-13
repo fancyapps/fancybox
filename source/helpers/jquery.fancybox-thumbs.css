@@ -1,10 +1,17 @@
 #fancybox-thumbs {
 	position: fixed;
-	bottom: 2px;
 	left: 0px;
 	width: 100%;
 	overflow: hidden;
 	z-index: 1005;
+}
+
+#fancybox-thumbs.bottom {
+	bottom: 2px;
+}
+
+#fancybox-thumbs.top {
+	top: 2px;
 }
 
 #fancybox-thumbs ul {
@@ -36,6 +43,7 @@
 	overflow: hidden;
 	border: 1px solid #222;
 	background: #111;
+	outline: none;
 }
 
 #fancybox-thumbs ul li img {
