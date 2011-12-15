@@ -1292,6 +1292,8 @@
 					F.open(group.get(), opts);
 
 				} else {
+					opts.index = 0;
+
 					F.open(this, opts);
 				}
 			}
