@@ -92,6 +92,21 @@
 					overlay : null
 				}
 			});
+			
+			$(".fancybox-modal").fancybox({
+				modal: true,
+				type: 'inline'
+			});
+			
+			$(".close-window").click(function() {
+				$.fancybox.close();
+			});
+			
+			$(".fancybox-modal-close").fancybox({
+				modal: true,
+				type: 'inline',
+				closeBtn: true
+			});
 
 			/*
 				Button helper. Disable animations, hide close button, change title type and content
@@ -193,6 +208,34 @@
 			</p>
 		</div>
 	</div>
+	
+	<h3>Modal Demonstrations</h3>
+	<ul>
+		<li><a class="fancybox-modal" href="#modal1" title="Default Modal">Default Modal (Requires Inside Close Button)</a></li>
+		<li><a class="fancybox-modal-close" href="#modal2" title="Modal with Outside Close Button">Modal with Outside Close Button</a></li>
+	</ul>
+	
+	<div style="display: none;">
+		<div id="modal1" style="width:400px;">
+			<h3>Etiam quis mi eu elit</h3>
+			<p>
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam quis mi eu elit tempor facilisis id et neque. Nulla sit amet sem sapien. Vestibulum imperdiet porta ante ac ornare. Nulla et lorem eu nibh adipiscing ultricies nec at lacus. Cras laoreet ultricies sem, at blandit mi eleifend aliquam. Nunc enim ipsum, vehicula non pretium varius, cursus ac tortor. Vivamus fringilla congue laoreet. Quisque ultrices sodales orci, quis rhoncus justo auctor in. Phasellus dui eros, bibendum eu feugiat ornare, faucibus eu mi. Nunc aliquet tempus sem, id aliquam diam varius ac. Maecenas nisl nunc, molestie vitae eleifend vel, iaculis sed magna. Aenean tempus lacus vitae orci posuere porttitor eget non felis. Donec lectus elit, aliquam nec eleifend sit amet, vestibulum sed nunc.
+			</p>
+			<p>
+				<input type="button" value="Close Window" class="close-window" />
+			</p>
+		</div>
+	</div>
+	
+	<div style="display: none;">
+		<div id="modal2" style="width:400px;">
+			<h3>Etiam quis mi eu elit</h3>
+			<p>
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam quis mi eu elit tempor facilisis id et neque. Nulla sit amet sem sapien. Vestibulum imperdiet porta ante ac ornare. Nulla et lorem eu nibh adipiscing ultricies nec at lacus. Cras laoreet ultricies sem, at blandit mi eleifend aliquam. Nunc enim ipsum, vehicula non pretium varius, cursus ac tortor. Vivamus fringilla congue laoreet. Quisque ultrices sodales orci, quis rhoncus justo auctor in. Phasellus dui eros, bibendum eu feugiat ornare, faucibus eu mi. Nunc aliquet tempus sem, id aliquam diam varius ac. Maecenas nisl nunc, molestie vitae eleifend vel, iaculis sed magna. Aenean tempus lacus vitae orci posuere porttitor eget non felis. Donec lectus elit, aliquam nec eleifend sit amet, vestibulum sed nunc.
+			</p>
+		</div>
+	</div>
+
 
 	<h3>Button helper</h3>
 	<p>
