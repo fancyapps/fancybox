@@ -131,6 +131,26 @@
 			afterClose: $.noop // After closing
 		},
 
+		// Parameter Shortcuts
+		shortcuts : {
+			modal : {
+				closeBtn : false,
+				closeClick: false,
+				nextClick : false,
+				arrows : false,
+				mouseWheel : false,
+				keys : null,
+				helpers: {
+					overlay : {
+						css: {
+							cursor : 'auto'
+						},
+						closeClick : false
+					}
+				}
+			}
+		},
+
 		//Current state
 		group: {}, // Selected group
 		opts: {}, // Group options
@@ -171,7 +191,12 @@
 
 			//Kill existing instances
 			F.close(true);
-
+			
+			opts = F._applyShortcuts(opts);
+			$.each(group, function(idx, g) {
+				group[idx] = F._applyShortcuts(g);
+			});
+			
 			//Extend the defaults
 			F.opts = $.extend(true, {}, F.defaults, opts);
 			F.group = group;
@@ -462,7 +487,19 @@
 		isSWF: function (str) {
 			return str && str.match(/\.(swf)(.*)?$/i);
 		},
+		_applyShortcuts: function(opts) {
+			if (!opts) {
+				return opts;
+			}
+			
+			$.each(F.shortcuts, function(shortcutName, shortcut) {
+				if (opts[shortcutName] === true) {
+					opts = $.extend(true, {}, shortcut, opts);
+				}
+			});
 
+			return opts;
+		},
 		_start: function (index) {
 			var coming = {},
 				element = F.group[index] || null,
@@ -489,26 +526,6 @@
 			// Convert margin property to array - top, right, bottom, left
 			if (typeof coming.margin === 'number') {
 				coming.margin = [coming.margin, coming.margin, coming.margin, coming.margin];
-			}
-
-			// 'modal' propery is just a shortcut
-			if (coming.modal) {
-				$.extend(true, coming, {
-					closeBtn : false,
-					closeClick: false,
-					nextClick : false,
-					arrows : false,
-					mouseWheel : false,
-					keys : null,
-					helpers: {
-						overlay : {
-							css: {
-								cursor : 'auto'
-							},
-							closeClick : false
-						}
-					}
-				});
 			}
 
 			//Give a chance for callback or helpers to update coming item (type, title, etc)
