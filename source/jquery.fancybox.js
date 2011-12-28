@@ -1,6 +1,6 @@
  /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.4 (12/12/2011)
+ * version: 2.0.4 (28/12/2011)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -159,10 +159,10 @@
 		 *	Static methods
 		 */
 
-		open: function (group, opts) {
+		open: function (group, opts, index) {
 			// Normalize group
 			if (!$.isArray(group)) {
-				group = [group];
+				group = group.jquery ? $(group).get() : [group];
 			}
 
 			if (!group.length) {
@@ -172,11 +172,13 @@
 			//Kill existing instances
 			F.close(true);
 
+			F.isActive = true;
+
 			//Extend the defaults
 			F.opts = $.extend(true, {}, F.defaults, opts);
 			F.group = group;
 
-			F._start(F.opts.index || 0);
+			F._start(index || 0);
 		},
 
 		cancel: function () {
@@ -420,7 +422,7 @@
 				F.wrap.bind('mousewheel.fb', function (e, delta) {
 					var target = $(e.target).get(0);
 
-					if (target.clientHeight === 0 || target.scrollHeight === target.clientHeight) {
+					if (target.clientHeight === 0 || (target.scrollHeight === target.clientHeight && target.scrollWidth === target.clientWidth)) {
 						e.preventDefault();
 
 						F[delta > 0 ? 'prev' : 'next']();
@@ -555,7 +557,7 @@
 
 			// Check before try to load; 'inline' and 'html' types need content, others - href
 			if (type === 'inline' || type === 'html') {
-				coming.content = coming.content || (type === 'inline' && href ? $(href) : element);
+				coming.content = coming.content || (type === 'inline' && href ? $(href) : $(element));
 
 				if (!coming.content.length) {
 					type = null;
@@ -772,7 +774,7 @@
 
 			if ($.inArray(type, ['image', 'swf', 'iframe']) > -1) {
 				current.autoSize = false;
-				current.scrolling = false;
+				current.scrolling = type === 'iframe' ? 'auto' : 'visible';
 			}
 
 			F.inner.append(content);
@@ -929,7 +931,7 @@
 		},
 
 		_afterZoomIn: function () {
-			var current = F.current;
+			var current = F.current, scrolling = current.scrolling;
 
 			F.isOpen = F.isOpened = true;
 
@@ -937,7 +939,7 @@
 
 			F.update();
 
-			F.inner.css('overflow', current.scrolling === 'auto' ? 'auto' : (current.scrolling === 'yes' ? 'scroll' : 'hidden'));
+			F.inner.css('overflow', scrolling === 'yes' ? 'scroll' : (current.scrolling === 'no' ? 'hidden' : scrolling));
 
 			//Assign a click event
 			if (current.closeClick || current.nextClick) {
@@ -978,6 +980,7 @@
 				group: {},
 				opts: {},
 				current: null,
+				isActive: false,
 				isOpened: false,
 				isOpen: false,
 				wrap: null,
@@ -1203,9 +1206,16 @@
 				return;
 			}
 
-			this.overlay = $('<div id="fancybox-overlay"></div>').css(opts.css || {
-				background: 'black'
-			}).appendTo('body');
+			opts = $.extend(true, {
+				speedIn : 'fast',
+				closeClick : true,
+				opacity : 1,
+				css : {
+					background: 'black'
+				}
+			}, opts);
+
+			this.overlay = $('<div id="fancybox-overlay"></div>').css(opts.css).appendTo('body');
 
 			this.update();
 
@@ -1215,7 +1225,7 @@
 
 			W.bind("resize.fb", $.proxy(this.update, this));
 
-			this.overlay.fadeTo(opts.speedIn || "fast", opts.opacity || 1);
+			this.overlay.fadeTo(opts.speedIn, opts.opacity);
 		},
 
 		onUpdate: function () {
@@ -1263,41 +1273,29 @@
 	// jQuery plugin initialization
 	$.fn.fancybox = function (options) {
 		var opts = options || {},
-			selector = this.selector || '';
+			that = $(this),
+			selector = this.selector || '',
+			run = function(e) {
+				var group = this, index = 0, relType = 'rel', relVal = this.rel;
 
-		function run(e) {
-			var group = [], relType, relVal, rel = this.rel;
+				if (!(e.ctrlKey || e.altKey || e.shiftKey || e.metaKey)) {
+					e.preventDefault();
 
-			if (!(e.ctrlKey || e.altKey || e.shiftKey || e.metaKey)) {
-				e.preventDefault();
+					if (!relVal) {
+						relType = 'data-fancybox-group';
+						relVal = $(this).data('fancybox-group');
+					}
 
-				relVal = $(this).data('fancybox-group');
+					if (relVal && relVal !== '' && relVal !== 'nofollow') {
+						group = selector.length ? $(selector) : that;
+						group = group.filter('[' + relType + '="' + relVal + '"]');
 
-				// Check if element has 'data-fancybox-group' attribute, if not - use 'rel'
-				if (typeof relVal !== 'undefined') {
-					relType = relVal ? 'data-fancybox-group' : false;
+						index = group.index(this)
+					}
 
-				} else if (rel && rel !== '' && rel !== 'nofollow') {
-					relVal = rel;
-					relType = 'rel';
-				}
-
-				if (relType) {
-					group = selector.length ? $(selector).filter('[' + relType + '="' + relVal + '"]') : $('[' + relType + '="' + relVal + '"]');
-				}
-
-				if (group.length) {
-					opts.index = group.index(this);
-
-					F.open(group.get(), opts);
-
-				} else {
-					opts.index = 0;
-
-					F.open(this, opts);
+					F.open(group, opts, index);
 				}
 			}
-		}
 
 		if (selector) {
 			D.undelegate(selector, 'click.fb-start').delegate(selector, 'click.fb-start', run);
