@@ -1,9 +1,16 @@
 fancyBox - Changelog
 =========
 
+### Version 2.0.4 - December 12, 2011
+
+* Fixed #47 - fix overriding properties
+* Add option 'position' to thumbnail and button helpers
+
+
 ### Version 2.0.3 - November 29, 2011
 
 * Fixed #29 - broken elastic transitions
+
 
 ### Version 2.0.2 - November 28, 2011
 

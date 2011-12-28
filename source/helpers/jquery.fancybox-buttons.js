@@ -16,12 +16,12 @@
  * 
  */
 (function ($) {
-	//shortcut for fancyBox object
+	//Shortcut for fancyBox object
 	var F = $.fancybox;
 
 	//Add helper object
 	F.helpers.buttons = {
-		tpl: '<div id="fancybox-buttons"><ul><li><a class="btnPrev" title="Previous" href="javascript:;">Previous</a></li><li><a class="btnPlay" title="Slideshow" href="javascript:;">Play</a></li><li><a class="btnNext" title="Next" href="javascript:;">Next</a></li><li><a class="btnToggle" title="Toggle size" href="javascript:;">Toggle</a></li><li><a class="btnClose" title="Close" href="javascript:jQuery.fancybox.close();">Close</a></li></ul></div>',
+		tpl: '<div id="fancybox-buttons"><ul><li><a class="btnPrev" title="Previous" href="javascript:;"></a></li><li><a class="btnPlay" title="Start slideshow" href="javascript:;"></a></li><li><a class="btnNext" title="Next" href="javascript:;"></a></li><li><a class="btnToggle" title="Toggle size" href="javascript:;"></a></li><li><a class="btnClose" title="Close" href="javascript:jQuery.fancybox.close();"></a></li></ul></div>',
 		list: null,
 		buttons: {},
 
@@ -37,26 +37,34 @@
 			}
 		},
 
-		beforeShow: function (opts) {
+		beforeLoad: function (opts) {
+			//Remove self if gallery do not have at least two items
+			if (F.group.length < 2) {
+				F.coming.helpers.buttons = false;
+				F.coming.closeBtn = true;
+
+				return;
+			}
+
 			//Increase top margin to give space for buttons
-			F.current.margin[ opts && opts.position === 'bottom' ? 2 : 0 ] += 30;
+			F.coming.margin[ opts.position === 'bottom' ? 2 : 0 ] += 30;
 		},
 
 		onPlayStart: function () {
 			if (this.list) {
-				this.buttons.play.text('Pause').addClass('btnPlayOn');
+				this.buttons.play.attr('title', 'Pause slideshow').addClass('btnPlayOn');
 			}
 		},
 
 		onPlayEnd: function () {
 			if (this.list) {
-				this.buttons.play.text('Play').removeClass('btnPlayOn');
+				this.buttons.play.attr('title', 'Start slideshow').removeClass('btnPlayOn');
 			}
 		},
 
 		afterShow: function (opts) {
 			var buttons;
-			
+
 			if (!this.list) {
 				this.list = $(opts.tpl || this.tpl).addClass(opts.position || 'top').appendTo('body');
 
@@ -67,7 +75,7 @@
 					toggle : this.list.find('.btnToggle').click( F.toggle )
 				}
 			}
-			
+
 			buttons = this.buttons;
 
 			//Prev

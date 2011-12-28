@@ -1,4 +1,4 @@
-/*! fancyBox v2.0.3 fancyapps.com | fancyapps.com/fancybox/#license */
+/*! fancyBox v2.0.4 fancyapps.com | fancyapps.com/fancybox/#license */
 .fancybox-tmp iframe, .fancybox-tmp object {
 	vertical-align: top;
 	padding: 0;
@@ -192,7 +192,7 @@
 	margin-right: -100%;
 	padding: 2px 20px;
 	background: transparent; /* Fallback for web browsers that doesn't support RGBa */
-	background: rgba(0, 0, 0, 0.7);
+	background: rgba(0, 0, 0, 0.8);
 	-webkit-border-radius: 15px;
 	   -moz-border-radius: 15px;
 			border-radius: 15px;
