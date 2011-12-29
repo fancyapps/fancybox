@@ -870,7 +870,7 @@
 			}
 
 			minWidth = Math.min(width, minWidth);
-			minHeight = Math.min(width, minHeight);
+			minHeight = Math.min(height, minHeight);
 
 			maxWidth = Math.max(minWidth, maxWidth);
 			maxHeight = Math.max(minHeight, maxHeight);
