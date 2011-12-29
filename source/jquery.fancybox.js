@@ -753,12 +753,8 @@
 					content = current.tpl.swf.replace(/\{width\}/g, current.width).replace(/\{height\}/g, current.height).replace(/\{href\}/g, current.href);
 				break;
 			}
-			
-			if (type === 'image' || type === 'swf') {
-					current.autoSize = false;
-					current.scrolling = 'visible';
 
-			} else if (type === 'iframe' ) {
+			if (type === 'iframe' ) {
 				current.scrolling = 'auto';
 
 				content = $(current.tpl.iframe.replace('{rnd}', new Date().getTime()) ).attr({
@@ -808,6 +804,11 @@
 				}
 
 			} else {
+				if (type === 'image' || type === 'swf') {
+					current.autoSize = false;
+					current.scrolling = 'visible';
+				}
+
 				F.inner.append(content);
 			}
 
