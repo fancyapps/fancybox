@@ -1,6 +1,6 @@
  /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.4 (29/12/2011)
+ * version: 2.0.4 (30/12/2011)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -598,7 +598,7 @@
 			$.extend(F.coming, {
 				type : 'html',
 				autoSize : true,
-				minHeight : '0',
+				minHeight : 0,
 				hasError : type,
 				content : F.coming.tpl.error
 			});
@@ -657,16 +657,11 @@
 
 		_preload: function() {
 			var group = F.group,
-				index = F.current.index,
-				load = function(href) {
-					if (href && F.isImage(href)) {
-						new Image().src = href;
-					}
-				};
+				index = F.current.index;
 
 			if (group.length > 1) {
-				load( $( group[ index + 1 ] || group[ 0 ] ).attr('href') );
-				load( $( group[ index - 1 ] || group[ group.length - 1 ] ).attr('href') );
+				new Image().src = $( group[ index + 1 ] || group[ 0 ] ).attr('href');
+				new Image().src = $( group[ index - 1 ] || group[ group.length - 1 ] ).attr('href');
 			}
 		},
 

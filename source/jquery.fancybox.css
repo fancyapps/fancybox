@@ -73,7 +73,8 @@
 	margin-left: -21px;
 	width: 42px;
 	height: 42px;
-	background: url('fancybox_loading.gif');
+	background: #000 url('fancybox_loading.gif') center center no-repeat;
+	border-radius: 5px;
 	opacity: 0.8;
 	cursor: pointer;
 	z-index: 1010;
