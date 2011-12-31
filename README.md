@@ -66,7 +66,7 @@ Advanced
 ### Helpers
 
 Helpers provide a simple mechanism to extend the capabilities of fancyBox.
-There ar two built-in helpers - 'overlay' and 'title'. You can disable them or set custom options:
+There are two built-in helpers - 'overlay' and 'title'. You can disable them or set custom options:
 
 	Disable 'overlay' helper and change title location:
 	$(".fancybox").fancybox({
@@ -81,7 +81,7 @@ There ar two built-in helpers - 'overlay' and 'title'. You can disable them or s
 
 ### API 
 
-Also available are event driven callback methods.  The `this` keyword refers to the curent or upcoming object (depends on callback method). Here is how you can change title:
+Also available are event driven callback methods.  The `this` keyword refers to the current or upcoming object (depends on callback method). Here is how you can change title:
 
 	$(".fancybox").fancybox({
 		afterLoad : function() {
