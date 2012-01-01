@@ -691,6 +691,7 @@
 			F.unbindEvents();
 
 			F.isOpen = false;
+			F.previous = F.current;
 			F.current = F.coming;
 			F.coming = false;
 
@@ -1168,20 +1169,42 @@
 				wrap.fadeOut(current.closeEffect === 'fade' ? current.closeSpeed : 0, F._afterZoomOut);
 			}
 		},
+		
+		checkDirection: function(oldItem, newItem) {
+			var direction = false;
+			
+			if (typeof(oldItem) !== 'undefined' && oldItem !== null) {				
+				direction = (oldItem.index < newItem.index) ? 'forwards' : 'backwards';
+				return direction;
+				
+			}
+			
+			return false;
+		},
 
 		changeIn: function () {
 			var wrap = F.wrap,
 				current = F.current,
-				startPos;
+				startPos,
+				direction = F.transitions.checkDirection(F.previous, F.current),
+				transitionAmount = '200px';
 
 			if (current.nextEffect === 'elastic') {
 				startPos = F._getPosition(true);
 				startPos.opacity = 0;
-				startPos.top = (parseInt(startPos.top, 10) - 200) + 'px';
+				
+				if (direction && direction === 'backwards') {
+					startPos.top = (parseInt(startPos.top, 10) + 200) + 'px';
+					transitionAmount = '-=' + transitionAmount;
+				}
+				else {
+					startPos.top = (parseInt(startPos.top, 10) - 200) + 'px';
+					transitionAmount = '+=' + transitionAmount;
+				}
 
 				wrap.css(startPos).show().animate({
 					opacity: 1,
-					top: '+=200px'
+					top: transitionAmount
 				}, {
 					duration: current.nextSpeed,
 					complete: F._afterZoomIn
@@ -1205,14 +1228,23 @@
 				current = F.current,
 				cleanUp = function () {
 					$(this).trigger('onReset').remove();
-				};
+				},
+				direction = F.transitions.checkDirection(F.current, F.coming),
+				transitionAmount = '200px';
 
 			wrap.removeClass('fancybox-opened');
 
 			if (current.prevEffect === 'elastic') {
+				if (direction && direction === 'backwards') {
+					transitionAmount = '-=' + transitionAmount;
+				}
+				else {
+					transitionAmount = '+=' + transitionAmount;
+				}
+				
 				wrap.animate({
 					'opacity': 0,
-					top: '+=200px'
+					top: transitionAmount
 				}, {
 					duration: current.prevSpeed,
 					complete: cleanUp
