@@ -115,33 +115,26 @@
 .fancybox-prev span, .fancybox-next span {
 	position: absolute;
 	top: 50%;
-	left: -9999px;
 	width: 36px;
 	height: 36px;
 	margin-top: -18px;
 	cursor: pointer;
+	visibility: hidden;
 	z-index: 1003;
 }
 
 .fancybox-prev span {
+	left: 20px;
 	background-position: 0 -36px;
 }
 
 .fancybox-next span {
+	right: 20px;
 	background-position: 0 -72px;
 }
 
-.fancybox-prev:hover, .fancybox-next:hover {
+.fancybox-prev:hover span, .fancybox-next:hover span {
 	visibility: visible;
-}
-
-.fancybox-prev:hover span {
-	left: 20px;
-}
-
-.fancybox-next:hover span {
-	left: auto;
-	right: 20px;
 }
 
 .fancybox-tmp {
