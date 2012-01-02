@@ -38,7 +38,7 @@
 			aspectRatio: false,
 			topRatio: 0.5,
 
-			fixed: !$.browser.msie || $.browser.version > 6 || !document.documentElement.hasOwnProperty('ontouchstart'),
+			fixed: !($.browser.msie && $.browser.version <= 6) && typeof document.createTouch == "undefined",
 			scrolling: 'auto', // 'auto', 'yes' or 'no'
 			wrapCSS: 'fancybox-default',
 
@@ -780,7 +780,7 @@
 							current.autoSize = false;
 						}
 
-						if (iframe.data('ready') == false) {
+						if (iframe.data('ready') === false) {
 							F.hideLoading();
 
 							if (height) {
@@ -1371,12 +1371,12 @@
 						group = selector.length ? $(selector) : that;
 						group = group.filter('[' + relType + '="' + relVal + '"]');
 
-						index = group.index(this)
+						index = group.index(this);
 					}
 
 					F.open(group, opts, index);
 				}
-			}
+			};
 
 		if (selector) {
 			D.undelegate(selector, 'click.fb-start').delegate(selector, 'click.fb-start', run);
