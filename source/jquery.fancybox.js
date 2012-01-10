@@ -1,6 +1,6 @@
  /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.4 (30/12/2011)
+ * version: 2.0.4 (10/01/2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -595,6 +595,8 @@
 		},
 
 		_error: function ( type ) {
+			F.hideLoading();
+
 			$.extend(F.coming, {
 				type : 'html',
 				autoSize : true,
@@ -627,7 +629,7 @@
 
 			F.imgPreload.src = F.coming.href;
 
-			if (!F.imgPreload.complete) {
+			if (!F.imgPreload.width) {
 				F.showLoading();
 			}
 		},
@@ -700,7 +702,6 @@
 			F.inner = $('.fancybox-inner', F.wrap);
 
 			F._setContent();
-
 		},
 
 		_setContent: function () {
@@ -727,9 +728,18 @@
 
 					if (current.autoSize) {
 						loadingBay = $('<div class="fancybox-tmp"></div>').appendTo('body').append(content);
+						current.width = loadingBay.width();
+						current.height = loadingBay.height();
 
-						current.width = loadingBay.outerWidth();
-						current.height = loadingBay.outerHeight(true);
+						// Re-check to fix 1px bug in some browsers
+						loadingBay.width( F.current.width );
+
+						if (loadingBay.height() > current.height) {
+							loadingBay.width(current.width + 1);
+
+							current.width = loadingBay.width();
+							current.height = loadingBay.height();
+						}
 
 						content = loadingBay.contents().detach();
 
@@ -749,7 +759,7 @@
 				break;
 			}
 
-			if (type === 'iframe' ) {
+			if (type === 'iframe') {
 				current.scrolling = 'auto';
 
 				content = $(current.tpl.iframe.replace('{rnd}', new Date().getTime()) ).attr({
@@ -988,7 +998,7 @@
 
 			F.update();
 
-			F.inner.css('overflow', scrolling === 'yes' ? 'scroll' : (current.scrolling === 'no' ? 'hidden' : scrolling));
+			F.inner.css('overflow', scrolling === 'yes' ? 'scroll' : (scrolling === 'no' ? 'hidden' : scrolling));
 
 			//Assign a click event
 			if (current.closeClick || current.nextClick) {
