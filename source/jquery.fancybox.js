@@ -1,6 +1,6 @@
  /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.4 (10/01/2012)
+ * version: 2.0.4 (12/01/2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -579,6 +579,7 @@
 			*/
 
 			coming.group = F.group;
+			coming.isDom = isDom;
 
 			if (type === 'image') {
 				F._loadImage();
@@ -1055,35 +1056,43 @@
 
 	F.transitions = {
 		getOrigPosition: function () {
-			var element = F.current.element,
+			var current = F.current,
+				element = current.element,
+				padding = current.padding,
+				orig = $(current.orig),
 				pos = {},
 				width = 50,
 				height = 50,
-				image, viewport;
+				viewport;
 
-			if (element && element.nodeName && $(element).is(':visible')) {
-				image = $(element).find('img:first');
+			if (!orig.length && current.isDom && $(element).is(':visible')) {
+				orig = $(element).find('img:first');
 
-				if (image.length) {
-					pos = image.offset();
-					width = image.outerWidth();
-					height = image.outerHeight();
+				if (!orig.length) {
+					orig = $(element);
+				}
+			}
 
-				} else {
-					pos = $(element).offset();
+			if (orig.length) {
+				pos = orig.offset();
+
+				if (orig.is('img')) {
+					width = orig.outerWidth();
+					height = orig.outerHeight();
 				}
 
 			} else {
 				viewport = F.getViewport();
+
 				pos.top = viewport.y + (viewport.h - height) * 0.5;
 				pos.left = viewport.x + (viewport.w - width) * 0.5;
 			}
 
 			pos = {
-				top: Math.ceil(pos.top) + 'px',
-				left: Math.ceil(pos.left) + 'px',
-				width: Math.ceil(width) + 'px',
-				height: Math.ceil(height) + 'px'
+				top: Math.ceil(pos.top - padding) + 'px',
+				left: Math.ceil(pos.left - padding) + 'px',
+				width: Math.ceil(width + padding * 2) + 'px',
+				height: Math.ceil(height + padding * 2) + 'px'
 			};
 
 			return pos;
@@ -1131,6 +1140,8 @@
 					endPos.opacity = 1;
 				}
 
+				F.outer.add(F.inner).width('auto').height('auto');
+
 				wrap.css(startPos).show().animate(endPos, {
 					duration: current.openSpeed,
 					easing: current.openEasing,
@@ -1140,7 +1151,6 @@
 
 			} else {
 				wrap.css($.extend({}, dim, F._getPosition()));
-
 				if (current.openEffect === 'fade') {
 					wrap.fadeIn(current.openSpeed, F._afterZoomIn);
 
