@@ -9,7 +9,7 @@
  * Copyright 2011 Janis Skarnelis - janis@fancyapps.com
  *
  */
-(function (window, document, $, undefined) {
+(function (window, document, $) {
 	var W = $(window),
 		D = $(document),
 		F = $.fancybox = function () {
@@ -20,7 +20,7 @@
 
 	$.extend(F, {
 		// The current version of fancyBox
-		version: '2.0.5',
+		version: '2.0.4',
 
 		defaults: {
 			padding: 15,
