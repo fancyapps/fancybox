@@ -1,6 +1,6 @@
  /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.4 (12/01/2012)
+ * version: 2.0.4 (18/01/2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -9,7 +9,7 @@
  * Copyright 2011 Janis Skarnelis - janis@fancyapps.com
  *
  */
-(function (window, document, $) {
+(function (window, document, $, undefined) {
 	var W = $(window),
 		D = $(document),
 		F = $.fancybox = function () {
@@ -20,7 +20,7 @@
 
 	$.extend(F, {
 		// The current version of fancyBox
-		version: '2.0.4',
+		version: '2.0.5',
 
 		defaults: {
 			padding: 15,
@@ -159,7 +159,7 @@
 		 *	Static methods
 		 */
 
-		open: function (group, opts, index) {
+		open: function (group, opts) {
 			// Normalize group
 			if (!$.isArray(group)) {
 				group = group.jquery ? $(group).get() : [group];
@@ -178,7 +178,7 @@
 			F.opts = $.extend(true, {}, F.defaults, opts);
 			F.group = group;
 
-			F._start(index || 0);
+			F._start(F.opts.index || 0);
 		},
 
 		cancel: function () {
@@ -471,7 +471,7 @@
 				type,
 				rez;
 
-			if (typeof element === 'object' && (element.nodeType || element instanceof $)) {
+			if (element && typeof element === 'object' && (element.nodeType || element instanceof $)) {
 				isDom = true;
 
 				if ($.metadata) {
@@ -761,13 +761,14 @@
 			}
 
 			if (type === 'iframe') {
-				current.scrolling = 'auto';
+				content = $(current.tpl.iframe.replace('{rnd}', new Date().getTime()) )
+					.attr({
+						'scrolling' : current.scrolling,
+						'src' : current.href
+					})
+					.appendTo( F.inner );
 
-				content = $(current.tpl.iframe.replace('{rnd}', new Date().getTime()) ).attr({
-					'scrolling' : current.scrolling,
-					'src' : current.href
-				})
-				.appendTo( F.inner );
+				current.scrolling = 'auto';
 
 				// Set auto height for iframes
 				if (current.autoSize) {
@@ -1341,11 +1342,11 @@
 
 	// jQuery plugin initialization
 	$.fn.fancybox = function (options) {
-		var opts = options || {},
-			that = $(this),
+		var that = $(this),
 			selector = this.selector || '',
+			index,
 			run = function(e) {
-				var group = this, index = 0, relType = 'rel', relVal = this.rel;
+				var what = this, relType = 'rel', relVal = what[ relType ];
 
 				if (!(e.ctrlKey || e.altKey || e.shiftKey || e.metaKey)) {
 					e.preventDefault();
@@ -1356,21 +1357,26 @@
 					}
 
 					if (relVal && relVal !== '' && relVal !== 'nofollow') {
-						group = selector.length ? $(selector) : that;
-						group = group.filter('[' + relType + '="' + relVal + '"]');
+						what = selector.length ? $(selector) : that;
+						what = what.filter('[' + relType + '="' + relVal + '"]');
 
-						index = group.index(this);
+						if (!index) {
+							options.index = what.index(this);
+						}
 					}
 
-					F.open(group, opts, index);
+					F.open(what, options);
 				}
 			};
+
+		options = options || {};
+		index = options.index || false;
 
 		if (selector) {
 			D.undelegate(selector, 'click.fb-start').delegate(selector, 'click.fb-start', run);
 
 		} else {
-			$(this).unbind('click.fb-start').bind('click.fb-start', run);
+			that.unbind('click.fb-start').bind('click.fb-start', run);
 		}
 
 		return this;
