@@ -360,7 +360,7 @@
 		showLoading: function () {
 			F.hideLoading();
 
-			$('<div id="fancybox-loading"></div>').click(F.cancel).appendTo('body');
+			$('<div id="fancybox-loading"><div></div></div>').click(F.cancel).appendTo('body');
 		},
 
 		getViewport: function () {

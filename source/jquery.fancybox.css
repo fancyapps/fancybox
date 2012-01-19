@@ -65,23 +65,26 @@
 	max-height: 100%;
 }
 
+#fancybox-loading, .fancybox-close, .fancybox-prev span, .fancybox-next span {
+	background-image: url('fancybox_sprite.png');
+}
+
 #fancybox-loading {
 	position: fixed;
 	top: 50%;
 	left: 50%;
-	margin-top: -21px;
-	margin-left: -21px;
-	width: 42px;
-	height: 42px;
-	background: #000 url('fancybox_loading.gif') center center no-repeat;
-	border-radius: 5px;
+	margin-top: -22px;
+	margin-left: -22px;
+	background-position: 0 -108px;
 	opacity: 0.8;
 	cursor: pointer;
 	z-index: 1010;
 }
 
-.fancybox-close, .fancybox-prev span, .fancybox-next span {
-	background-image: url('fancybox_sprite.png');
+#fancybox-loading div {
+	width: 44px;
+	height: 44px;
+	background: url('fancybox_loading.gif') center center no-repeat;
 }
 
 .fancybox-close {
