@@ -1,6 +1,6 @@
  /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.4 (18/01/2012)
+ * version: 2.0.4 (26/01/2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -16,7 +16,8 @@
 			F.open.apply( this, arguments );
 		},
 		didResize = false,
-		resizeTimer = null;
+		resizeTimer = null,
+		autoSizeTimer = null;
 
 	$.extend(F, {
 		// The current version of fancyBox
@@ -37,6 +38,9 @@
 			fitToView: true,
 			aspectRatio: false,
 			topRatio: 0.5,
+
+			autoSizeCheck: true,
+			autoSizeInterval: 500,
 
 			fixed: !($.browser.msie && $.browser.version <= 6) && typeof document.createTouch == "undefined",
 			scrolling: 'auto', // 'auto', 'yes' or 'no'
@@ -70,7 +74,7 @@
 			tpl: {
 				wrap: '<div class="fancybox-wrap"><div class="fancybox-outer"><div class="fancybox-inner"></div></div></div>',
 				image: '<img class="fancybox-image" src="{href}" alt="" />',
-				iframe: '<iframe class="fancybox-iframe" name="fancybox-frame{rnd}" frameborder="0" hspace="0" ' + ($.browser.msie ? 'allowtransparency="true""' : '') + '></iframe>',
+				iframe: '<iframe class="fancybox-iframe" name="fancybox-frame{rnd}" frameborder="0" hspace="0" ' + ($.browser.msie ? 'allowtransparency="true""' : '') + ' scrolling="{scrolling}" src="{href}"></iframe>',
 				swf: '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="100%"><param name="wmode" value="transparent" /><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="{href}" /><embed src="{href}" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="100%" height="100%" wmode="transparent"></embed></object>',
 				error: '<p class="fancybox-error">The requested content cannot be loaded.<br/>Please try again later.</p>',
 				closeBtn: '<div title="Close" class="fancybox-item fancybox-close"></div>',
@@ -323,13 +327,22 @@
 
 							if (F.current) {
 								if (F.current.autoSize) {
-									F.inner.height('auto');
-									F.current.height = F.inner.height();
+									if (F.current.type == 'iframe') {
+										var height = F.inner.find("iframe").contents().find("html").height();
+
+										if (height > 0) {
+											F.inner.height(height + 10);
+											F.current.height = F.inner.height();
+										}
+									} else {
+										F.inner.height('auto');
+										F.current.height = F.inner.height();
+									}
 								}
 
 								F._setDimension();
 
-								if (F.current.canGrow) {
+								if (F.current.canGrow && (F.current.autoSize && F.current.type != 'iframe' || ! F.current.autoSize)) {
 									F.inner.height('auto');
 								}
 
@@ -391,6 +404,34 @@
 			}
 
 			W.bind('resize.fb, orientationchange.fb', F.update);
+
+			if (current.type == 'iframe') {
+
+				F.inner.find("iframe").load(F.update);
+
+				if (current.autoSizeCheck) {
+
+					if (F.inner.find("iframe").length === 0) {
+						clearInterval(autoSizeTimer);
+					} else {
+
+						var pHeight = F.inner.find("iframe").contents().find("body").height();
+
+						autoSizeTimer = setInterval(function() {
+							var cHeight = F.inner.find("iframe").contents().find("body").height();
+
+							if (cHeight != pHeight) {
+								pHeight = cHeight;
+								F.update();
+							}
+
+						}, current.autoSizeInterval);
+
+					}
+
+				}
+
+			}
 
 			if (keys) {
 				D.bind('keydown.fb', function (e) {
@@ -758,66 +799,21 @@
 				case 'swf':
 					content = current.tpl.swf.replace(/\{width\}/g, current.width).replace(/\{height\}/g, current.height).replace(/\{href\}/g, current.href);
 				break;
+
+				case 'iframe':
+					content = current.tpl.iframe.replace('{href}', current.href).replace('{scrolling}', current.scrolling).replace('{rnd}', new Date().getTime());
+				break;
 			}
 
-			if (type === 'iframe') {
-				content = $(current.tpl.iframe.replace('{rnd}', new Date().getTime()) )
-					.attr({
-						'scrolling' : current.scrolling,
-						'src' : current.href
-					})
-					.appendTo( F.inner );
-
-				current.scrolling = 'auto';
-
-				// Set auto height for iframes
-				if (current.autoSize) {
-					F.wrap.width( current.width );
-
-					F.showLoading();
-
-					content.data('ready', false).bind('load', function() {
-						var iframe = $(this), 
-							height;
-
-						try {
-							if (this.contentWindow.document.location) {
-								height = iframe.contents().find('body').height() + 12;
-
-								iframe.height( height );
-							}
-
-						} catch (e) {
-							current.autoSize = false;
-						}
-
-						if (iframe.data('ready') === false) {
-							F.hideLoading();
-
-							if (height) {
-								F.current.height = height;
-							}
-
-							F._beforeShow();
-
-							iframe.data('ready', true);
-
-						} else if (height) {
-							F.update();	
-						}
-					});
-
-					return;
-				}
-
-			} else {
-				if (type === 'image' || type === 'swf') {
+			if ($.inArray(type, ['image', 'swf', 'iframe']) > -1) {
+				if (type != 'iframe') {
 					current.autoSize = false;
-					current.scrolling = 'visible';
 				}
 
-				F.inner.append(content);
+				current.scrolling = false;
 			}
+
+			F.inner.append(content);
 
 			F._beforeShow();
 		},
