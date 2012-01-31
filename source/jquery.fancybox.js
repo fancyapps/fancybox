@@ -640,6 +640,7 @@
 
 			F.ajaxLoad = $.ajax($.extend({}, F.coming.ajax, {
 				url: F.coming.href,
+				dataType: 'html',
 				error: function (jqXHR, textStatus) {
 					if (textStatus !== 'abort') {
 						F._error( 'ajax', jqXHR );
