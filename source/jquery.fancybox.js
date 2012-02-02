@@ -1,6 +1,6 @@
  /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.4 (18/01/2012)
+ * version: 2.0.4 (02/02/2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -52,7 +52,7 @@
 
 			modal: false,
 			loop: true,
-			ajax: {},
+			ajax: { dataType: 'html' },
 			keys: {
 				next: [13, 32, 34, 39, 40], // enter, space, page down, right arrow, down arrow
 				prev: [8, 33, 37, 38], // backspace, page up, left arrow, up arrow
@@ -1346,31 +1346,30 @@
 			selector = this.selector || '',
 			index,
 			run = function(e) {
-				var what = this, relType = 'rel', relVal = what[ relType ];
+				var what = this, relType = 'rel', relVal = what[ relType ], idx = index;
 
 				if (!(e.ctrlKey || e.altKey || e.shiftKey || e.metaKey)) {
 					e.preventDefault();
 
 					if (!relVal) {
 						relType = 'data-fancybox-group';
-						relVal = $(this).data('fancybox-group');
+						relVal = $(what).attr('data-fancybox-group');
 					}
 
 					if (relVal && relVal !== '' && relVal !== 'nofollow') {
 						what = selector.length ? $(selector) : that;
 						what = what.filter('[' + relType + '="' + relVal + '"]');
-
-						if (!index) {
-							options.index = what.index(this);
-						}
+						idx = what.index(this);
 					}
+
+					options.index = idx;
 
 					F.open(what, options);
 				}
 			};
 
 		options = options || {};
-		index = options.index || false;
+		index = options.index || 0;
 
 		if (selector) {
 			D.undelegate(selector, 'click.fb-start').delegate(selector, 'click.fb-start', run);
