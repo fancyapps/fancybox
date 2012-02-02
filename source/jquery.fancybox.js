@@ -1305,7 +1305,8 @@
 
 		afterClose: function (opts) {
 			if (this.overlay) {
-				this.overlay.fadeOut(opts.speedOut || "fast", function () {
+
+				this.overlay.fadeOut(opts.speedOut || 0, function () {
 					$(this).remove();
 				});
 			}
