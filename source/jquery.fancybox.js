@@ -1,6 +1,6 @@
  /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.4 (02/02/2012)
+ * version: 2.0.4 (08/02/2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -160,17 +160,13 @@
 		 */
 
 		open: function (group, opts) {
-			// Normalize group
-			if (!$.isArray(group)) {
-				group = group.jquery ? $(group).get() : [group];
-			}
-
-			if (!group.length) {
-				return;
-			}
-
 			//Kill existing instances
 			F.close(true);
+
+			//Normalize group
+			if (group && !$.isArray(group)) {
+				group = group instanceof $ ? $(group).get() : [group];
+			}
 
 			F.isActive = true;
 
@@ -471,7 +467,7 @@
 				type,
 				rez;
 
-			if (element && typeof element === 'object' && (element.nodeType || element instanceof $)) {
+			if (element && (element.nodeType || element instanceof $)) {
 				isDom = true;
 
 				if ($.metadata) {
@@ -520,7 +516,7 @@
 			}
 
 			type = coming.type;
-			href = coming.href;
+			href = coming.href || ($.type(element) === "string" ? element : null);
 
 			///Check if content type is set, if not, try to get
 			if (!type) {
@@ -555,18 +551,16 @@
 
 			// Check before try to load; 'inline' and 'html' types need content, others - href
 			if (type === 'inline' || type === 'html') {
-				coming.content = coming.content || (type === 'inline' && href ? $(href) : $(element));
+				if (!coming.content) {
+					coming.content = type === 'inline' ? $( href || element) : element;
+				}
 
-				if (!coming.content.length) {
+				if (!coming.content || !coming.content.length) {
 					type = null;
 				}
 
-			} else {
-				coming.href = href || element;
-
-				if (!coming.href) {
-					type = null;
-				}
+			} else if (!href) {
+				type = null;
 			}
 
 			/*
@@ -580,6 +574,7 @@
 
 			coming.group = F.group;
 			coming.isDom = isDom;
+			coming.href = href;
 
 			if (type === 'image') {
 				F._loadImage();
