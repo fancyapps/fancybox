@@ -1004,17 +1004,17 @@
 
 			//Create a close button
 			if (current.closeBtn) {
-				$(current.tpl.closeBtn).appendTo(F.wrap).bind('click.fb', F.close);
+				$(current.tpl.closeBtn).appendTo(F.outer).bind('click.fb', F.close);
 			}
 
 			//Create navigation arrows
 			if (current.arrows && F.group.length > 1) {
 				if (current.loop || current.index > 0) {
-					$(current.tpl.prev).appendTo(F.wrap).bind('click.fb', F.prev);
+					$(current.tpl.prev).appendTo(F.inner).bind('click.fb', F.prev);
 				}
 
 				if (current.loop || current.index < F.group.length - 1) {
-					$(current.tpl.next).appendTo(F.wrap).bind('click.fb', F.next);
+					$(current.tpl.next).appendTo(F.inner).bind('click.fb', F.next);
 				}
 			}
 
