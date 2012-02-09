@@ -1,6 +1,6 @@
  /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.4 (08/02/2012)
+ * version: 2.0.4 (09/02/2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -49,6 +49,7 @@
 			mouseWheel: true,
 			autoPlay: false,
 			playSpeed: 3000,
+			preload : 3,
 
 			modal: false,
 			loop: true,
@@ -655,11 +656,22 @@
 
 		_preload: function() {
 			var group = F.group,
-				index = F.current.index;
+				current = F.current,
+				len = group.length,
+				item,
+				href;
 
-			if (group.length > 1) {
-				new Image().src = $( group[ index + 1 ] || group[ 0 ] ).attr('href');
-				new Image().src = $( group[ index - 1 ] || group[ group.length - 1 ] ).attr('href');
+			if (!current.preload || group.length < 2) {
+				return;
+			}
+
+			for (var i = 1; i <= Math.min(current.preload, len - 1); i++) {
+				item = group[ (current.index + i ) % len ];
+				href = $( item ).attr('href') || item;
+
+				if (href) {
+					new Image().src = href;
+				}
 			}
 		},
 
