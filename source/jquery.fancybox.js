@@ -636,6 +636,7 @@
 
 			F.ajaxLoad = $.ajax($.extend({}, F.coming.ajax, {
 				url: F.coming.href,
+				headers: { 'X-FancyBox': true },
 				error: function (jqXHR, textStatus) {
 					if (textStatus !== 'abort') {
 						F._error( 'ajax', jqXHR );
