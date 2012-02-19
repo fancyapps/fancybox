@@ -1222,6 +1222,7 @@
 					top: '+=200px'
 				}, {
 					duration: current.nextSpeed,
+					easing: current.nextEasing,
 					complete: F._afterZoomIn
 				});
 
@@ -1253,6 +1254,7 @@
 					top: '+=200px'
 				}, {
 					duration: current.prevSpeed,
+					easing: current.prevEasing,
 					complete: cleanUp
 				});
 
