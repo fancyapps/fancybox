@@ -567,7 +567,7 @@
 						coming.content = $( href.replace(/.*(?=#[^\s]+$)/, '') ); //strip for ie7
 
 					} else {
-						coming.content =  element;
+						coming.content = element;
 					}
 				}
 
@@ -892,12 +892,6 @@
 				maxWidth = Math.min(viewport.w, maxWidth);
 				maxHeight = Math.min(viewport.h, maxHeight);
 			}
-
-			minWidth = Math.min(width, minWidth);
-			minHeight = Math.min(height, minHeight);
-
-			maxWidth = Math.max(minWidth, maxWidth);
-			maxHeight = Math.max(minHeight, maxHeight);
 
 			if (current.aspectRatio) {
 				if (width > maxWidth) {
