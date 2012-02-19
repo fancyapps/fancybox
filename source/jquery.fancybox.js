@@ -387,7 +387,7 @@
 		// Unbind the keyboard / clicking actions
 		unbindEvents: function () {
 			if (F.wrap) {
-				F.wrap.unbind('.fb');	
+				F.wrap.unbind('.fb');
 			}
 
 			D.unbind('.fb');
@@ -798,7 +798,7 @@
 
 					F.showLoading();
 
-					content.data('ready', false).bind('load', function() {
+					content.data('ready', false).appendTo(F.inner).bind('load', function() {
 						var iframe = $(this), height;
 
 						try {
@@ -813,6 +813,7 @@
 						}
 
 						if (iframe.data('ready') === false) {
+
 							F.hideLoading();
 
 							if (height) {
@@ -824,10 +825,10 @@
 							iframe.data('ready', true);
 
 						} else if (height) {
-							F.update();	
+							F.update();
 						}
 
-					}).appendTo(F.inner).attr('src', current.href);
+					}).attr('src', current.href);
 
 					return;
 
@@ -857,7 +858,7 @@
 			F.bindEvents();
 			F._preloadImages();
 
-			F.transitions[ F.isOpened ? F.current.nextMethod : F.current.openMethod ]();	
+			F.transitions[ F.isOpened ? F.current.nextMethod : F.current.openMethod ]();
 		},
 
 		_setDimension: function () {
@@ -1160,7 +1161,9 @@
 
 				F.outer.add(F.inner).width('auto').height('auto');
 
-				wrap.css(startPos).show().animate(endPos, {
+				wrap.css(startPos).show();
+
+				wrap.animate(endPos, {
 					duration: current.openSpeed,
 					easing: current.openEasing,
 					step: this.step,
@@ -1169,6 +1172,7 @@
 
 			} else {
 				wrap.css($.extend({}, dim, F._getPosition()));
+
 				if (current.openEffect === 'fade') {
 					wrap.fadeIn(current.openSpeed, F._afterZoomIn);
 
