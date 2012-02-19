@@ -176,6 +176,12 @@
 
 			//Extend the defaults
 			F.opts = $.extend(true, {}, F.defaults, opts);
+
+			//All options are merged recursive except keys
+			if (typeof opts.keys !== 'undefined') {
+				F.opts.keys = opts.keys ? $.extend({}, F.defaults.keys, opts.keys) : false;
+			}
+
 			F.group = group;
 
 			F._start(F.opts.index || 0);
