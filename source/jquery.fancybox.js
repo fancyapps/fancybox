@@ -1,6 +1,6 @@
  /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.4 (09/02/2012)
+ * version: 2.0.4 (19/02/2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -16,7 +16,8 @@
 			F.open.apply( this, arguments );
 		},
 		didResize = false,
-		resizeTimer = null;
+		resizeTimer = null,
+		isMobile = typeof document.createTouch !== "undefined";
 
 	$.extend(F, {
 		// The current version of fancyBox
@@ -34,11 +35,13 @@
 			maxHeight: 9999,
 
 			autoSize: true,
+			autoResize: !isMobile,
+			autoCenter : !isMobile,
 			fitToView: true,
 			aspectRatio: false,
 			topRatio: 0.5,
 
-			fixed: !($.browser.msie && $.browser.version <= 6) && typeof document.createTouch == "undefined",
+			fixed: !($.browser.msie && $.browser.version <= 6) && !isMobile,
 			scrolling: 'auto', // 'auto', 'yes' or 'no'
 			wrapCSS: 'fancybox-default',
 
@@ -53,7 +56,7 @@
 
 			modal: false,
 			loop: true,
-			ajax: { dataType: 'html' },
+			ajax: { dataType: 'html', headers: { 'X-fancyBox': true } },
 			keys: {
 				next: [13, 32, 34, 39, 40], // enter, space, page down, right arrow, down arrow
 				prev: [8, 33, 37, 38], // backspace, page up, left arrow, up arrow
@@ -71,12 +74,12 @@
 			tpl: {
 				wrap: '<div class="fancybox-wrap"><div class="fancybox-outer"><div class="fancybox-inner"></div></div></div>',
 				image: '<img class="fancybox-image" src="{href}" alt="" />',
-				iframe: '<iframe class="fancybox-iframe" name="fancybox-frame{rnd}" frameborder="0" hspace="0" ' + ($.browser.msie ? 'allowtransparency="true""' : '') + '></iframe>',
+				iframe: '<iframe class="fancybox-iframe" name="fancybox-frame{rnd}" frameborder="0" hspace="0"' + ($.browser.msie ? ' allowtransparency="true"' : '') + '></iframe>',
 				swf: '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="100%"><param name="wmode" value="transparent" /><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="{href}" /><embed src="{href}" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="100%" height="100%" wmode="transparent"></embed></object>',
 				error: '<p class="fancybox-error">The requested content cannot be loaded.<br/>Please try again later.</p>',
 				closeBtn: '<div title="Close" class="fancybox-item fancybox-close"></div>',
-				next: '<a title="Next" class="fancybox-item fancybox-next"><span></span></a>',
-				prev: '<a title="Previous" class="fancybox-item fancybox-prev"><span></span></a>'
+				next: '<a title="Next" class="fancybox-nav fancybox-next"><span></span></a>',
+				prev: '<a title="Previous" class="fancybox-nav fancybox-prev"><span></span></a>'
 			},
 
 			// Properties for each animation type
@@ -216,7 +219,7 @@
 			} else {
 				F.isOpen = F.isOpened = false;
 
-				$(".fancybox-item").remove();
+				$(".fancybox-item, .fancybox-nav").remove();
 
 				F.wrap.stop(true).removeClass('fancybox-opened');
 				F.inner.css('overflow', 'hidden');
@@ -310,27 +313,33 @@
 			}
 		},
 
-		update: function () {
+		update: function (e) {
 			if (F.isOpen) {
 				// It's a very bad idea to attach handlers to the window scroll event, run this code after a delay
 				if (!didResize) {
 					resizeTimer = setTimeout(function () {
+						var current = F.current;
+
 						if (didResize) {
 							didResize = false;
 
-							if (F.current) {
-								if (F.current.autoSize) {
-									F.inner.height('auto');
-									F.current.height = F.inner.height();
+							if (current) {
+								if (current.autoResize || (e && e.type === 'orientationchange')) {
+									if (current.autoSize) {
+										F.inner.height('auto');
+										current.height = F.inner.height();
+									}
+
+									F._setDimension();
+
+									if (current.canGrow) {
+										F.inner.height('auto');
+									}
 								}
 
-								F._setDimension();
-
-								if (F.current.canGrow) {
-									F.inner.height('auto');
+								if (current.autoCenter) {
+									F.reposition();
 								}
-
-								F.reposition();
 
 								F.trigger('onUpdate');
 							}
@@ -423,7 +432,7 @@
 						F[delta > 0 ? 'prev' : 'next']();
 					}
 				});
-			}
+			}	
 		},
 
 		trigger: function (event) {
@@ -553,7 +562,13 @@
 			// Check before try to load; 'inline' and 'html' types need content, others - href
 			if (type === 'inline' || type === 'html') {
 				if (!coming.content) {
-					coming.content = type === 'inline' ? $( href || element) : element;
+					if (type === 'inline') {
+						href = href || element;
+						coming.content = $( href.replace(/.*(?=#[^\s]+$)/, '') ); //strip for ie7
+
+					} else {
+						coming.content =  element;
+					}
 				}
 
 				if (!coming.content || !coming.content.length) {
@@ -654,7 +669,7 @@
 			}));
 		},
 
-		_preload: function() {
+		_preloadImages: function() {
 			var group = F.group,
 				current = F.current,
 				len = group.length,
@@ -702,10 +717,10 @@
 
 			F.isOpen = false;
 			F.current = F.coming;
-			F.coming = false;
+			F.coming = null;
 
 			//Build the neccessary markup
-			F.wrap = $(F.current.tpl.wrap).addClass('fancybox-tmp ' + F.current.wrapCSS).appendTo('body');
+			F.wrap = $(F.current.tpl.wrap).addClass('fancybox-' + (isMobile ? 'mobile' : 'desktop') + ' fancybox-tmp ' + F.current.wrapCSS).appendTo('body');
 			F.outer = $('.fancybox-outer', F.wrap).css('padding', F.current.padding + 'px');
 			F.inner = $('.fancybox-inner', F.wrap);
 
@@ -713,8 +728,7 @@
 		},
 
 		_setContent: function () {
-			var content, loadingBay, iframe, current = F.current,
-				type = current.type;
+			var content, loadingBay, iframe, current = F.current, type = current.type;
 
 			switch (type) {
 				case 'inline':
@@ -722,7 +736,7 @@
 				case 'html':
 					content = current.content;
 
-					if (type === 'inline' && content instanceof $) {
+					if (content instanceof $) {
 						content = content.show().detach();
 
 						if (content.parent().hasClass('fancybox-inner')) {
@@ -735,7 +749,7 @@
 					}
 
 					if (current.autoSize) {
-						loadingBay = $('<div class="fancybox-tmp"></div>').appendTo('body').append(content);
+						loadingBay = $('<div class="fancybox-tmp ' + F.current.wrapCSS + '"></div>').appendTo('body').append(content);
 						current.width = loadingBay.width();
 						current.height = loadingBay.height();
 
@@ -768,24 +782,18 @@
 			}
 
 			if (type === 'iframe') {
-				content = $(current.tpl.iframe.replace('{rnd}', new Date().getTime()) )
-					.attr({
-						'scrolling' : current.scrolling,
-						'src' : current.href
-					})
-					.appendTo( F.inner );
+				content = $(current.tpl.iframe.replace('{rnd}', new Date().getTime()) ).attr('scrolling', current.scrolling);
 
 				current.scrolling = 'auto';
 
 				// Set auto height for iframes
 				if (current.autoSize) {
-					F.wrap.width( current.width );
+					content.width( current.width );
 
 					F.showLoading();
 
 					content.data('ready', false).bind('load', function() {
-						var iframe = $(this), 
-							height;
+						var iframe = $(this), height;
 
 						try {
 							if (this.contentWindow.document.location) {
@@ -812,19 +820,21 @@
 						} else if (height) {
 							F.update();	
 						}
-					});
+
+					}).appendTo(F.inner).attr('src', current.href);
 
 					return;
+
+				} else {
+					content.attr('src', current.href);
 				}
 
-			} else {
-				if (type === 'image' || type === 'swf') {
-					current.autoSize = false;
-					current.scrolling = 'visible';
-				}
-
-				F.inner.append(content);
+			} else if (type === 'image' || type === 'swf') {
+				current.autoSize = false;
+				current.scrolling = 'visible';
 			}
+
+			F.inner.append(content);
 
 			F._beforeShow();
 		},
@@ -839,7 +849,7 @@
 			F.wrap.hide().removeClass('fancybox-tmp');
 
 			F.bindEvents();
-			F._preload();
+			F._preloadImages();
 
 			F.transitions[ F.isOpened ? F.current.nextMethod : F.current.openMethod ]();	
 		},

@@ -13,6 +13,7 @@
 }
 
 .fancybox-outer {
+	position: relative;
 	padding: 0;
 	margin: 0;
 	background: #f9f9f9;
@@ -97,7 +98,7 @@
 	z-index: 1004;
 }
 
-.fancybox-prev, .fancybox-next {
+.fancybox-nav {
 	position: absolute;
 	top: 0;
 	width: 40%;
@@ -115,14 +116,13 @@
 	right: 0;
 }
 
-.fancybox-prev span, .fancybox-next span {
+.fancybox-nav span {
 	position: absolute;
 	top: 50%;
 	width: 36px;
 	height: 36px;
 	margin-top: -18px;
 	cursor: pointer;
-	visibility: hidden;
 	z-index: 1003;
 }
 
@@ -136,7 +136,11 @@
 	background-position: 0 -72px;
 }
 
-.fancybox-prev:hover span, .fancybox-next:hover span {
+.fancybox-nav span {
+	visibility: hidden;
+}
+
+.fancybox-nav:hover span {
 	visibility: visible;
 }
 
