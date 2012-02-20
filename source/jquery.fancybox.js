@@ -1,6 +1,6 @@
  /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.4 (19/02/2012)
+ * version: 2.0.4 (20/02/2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -29,8 +29,8 @@
 
 			width: 800,
 			height: 600,
-			minWidth: 200,
-			minHeight: 200,
+			minWidth: 100,
+			minHeight: 50,
 			maxWidth: 9999,
 			maxHeight: 9999,
 
@@ -178,7 +178,7 @@
 			F.opts = $.extend(true, {}, F.defaults, opts);
 
 			//All options are merged recursive except keys
-			if (typeof opts.keys !== 'undefined') {
+			if ($.isPlainObject(opts) && typeof opts.keys !== 'undefined') {
 				F.opts.keys = opts.keys ? $.extend({}, F.defaults.keys, opts.keys) : false;
 			}
 
@@ -532,7 +532,7 @@
 			}
 
 			type = coming.type;
-			href = coming.href || ($.type(element) === "string" ? element : null);
+			href = coming.href || element;
 
 			///Check if content type is set, if not, try to get
 			if (!type) {
@@ -545,7 +545,7 @@
 					}
 				}
 
-				if (!type && href) {
+				if (!type && $.type(href) === "string") {
 					if (F.isImage(href)) {
 						type = 'image';
 
@@ -569,8 +569,7 @@
 			if (type === 'inline' || type === 'html') {
 				if (!coming.content) {
 					if (type === 'inline') {
-						href = href || element;
-						coming.content = $( href.replace(/.*(?=#[^\s]+$)/, '') ); //strip for ie7
+						coming.content = $( $.type(href) === "string" ? href.replace(/.*(?=#[^\s]+$)/, '') : href ); //strip for ie7
 
 					} else {
 						coming.content = element;
