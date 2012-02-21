@@ -1,12 +1,12 @@
  /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.4 (20/02/2012)
+ * version: 2.0.5 (21/02/2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
  * License: www.fancyapps.com/fancybox/#license
  *
- * Copyright 2011 Janis Skarnelis - janis@fancyapps.com
+ * Copyright 2012 Janis Skarnelis - janis@fancyapps.com
  *
  */
 (function (window, document, $) {
@@ -21,7 +21,7 @@
 
 	$.extend(F, {
 		// The current version of fancyBox
-		version: '2.0.4',
+		version: '2.0.5',
 
 		defaults: {
 			padding: 15,
@@ -30,7 +30,7 @@
 			width: 800,
 			height: 600,
 			minWidth: 100,
-			minHeight: 50,
+			minHeight: 100,
 			maxWidth: 9999,
 			maxHeight: 9999,
 
@@ -722,7 +722,6 @@
 
 			F.isOpen = false;
 			F.current = F.coming;
-			F.coming = null;
 
 			//Build the neccessary markup
 			F.wrap = $(F.current.tpl.wrap).addClass('fancybox-' + (isMobile ? 'mobile' : 'desktop') + ' fancybox-tmp ' + F.current.wrapCSS).appendTo('body');
@@ -797,34 +796,40 @@
 
 					F.showLoading();
 
-					content.data('ready', false).appendTo(F.inner).bind('load', function() {
-						var iframe = $(this), height;
+					content.data('ready', false).appendTo(F.inner).bind({
+						onCancel : function() {
+							$(this).unbind();
 
-						try {
-							if (this.contentWindow.document.location) {
-								height = iframe.contents().find('body').height() + 12;
+							F._afterZoomOut();
+						},
+						load : function() {
+							var iframe = $(this), height;
 
-								iframe.height( height );
+							try {
+								if (this.contentWindow.document.location) {
+									height = iframe.contents().find('body').height() + 12;
+
+									iframe.height( height );
+								}
+
+							} catch (e) {
+								current.autoSize = false;
 							}
 
-						} catch (e) {
-							current.autoSize = false;
-						}
+							if (iframe.data('ready') === false) {
+								F.hideLoading();
 
-						if (iframe.data('ready') === false) {
+								if (height) {
+									F.current.height = height;
+								}
 
-							F.hideLoading();
+								F._beforeShow();
 
-							if (height) {
-								F.current.height = height;
+								iframe.data('ready', true);
+
+							} else if (height) {
+								F.update();
 							}
-
-							F._beforeShow();
-
-							iframe.data('ready', true);
-
-						} else if (height) {
-							F.update();
 						}
 
 					}).attr('src', current.href);
@@ -846,6 +851,8 @@
 		},
 
 		_beforeShow : function() {
+			F.coming = null;
+
 			//Give a chance for helpers or callbacks to update elements
 			F.trigger('beforeShow');
 
