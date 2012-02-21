@@ -1,10 +1,31 @@
 fancyBox - Changelog
 =========
 
+### Version 2.0.5 - February 21, 2012
+
+* Fixed #155 - easing for prev/next animations
+* Fixed #153 - overriding "keys" options
+* Fixed #147 - IE7 problem with #hash links
+* Fixed #130 - changing dynamically data-fancybox-group
+* Fixed #126 - obey minWidth/minHeight
+* Fixed #118 - placement of loading icon and navigation arrows
+* Fixed #101 - "index" option not working
+* Fixed #94 - "orig" option not working
+* Fixed #80 - does not work on IE6
+* Fixed #72 - can't set overlay opacity to 0
+* Fixed #63 - properly set gallery index
+* New option "autoCenter" - toggles centering on window resize or scroll, disabled for mobile devices by default
+* New option "autoResize" - toggles responsivity, disabled for mobile devices by default
+* New option "preload" - number of images to preload
+* New feature to target mobile/desktop browsers using CSS, see #108
+* Changed ajax option defaults to "{ dataType: 'html', headers: { 'X-fancyBox': true } }", see #150 and #128
+* Updated loading icon for IE7, IE8
+* Calculates height of the iframe if 'autoSize' is set to 'true' and the iframe is on the same domain as the main page
+
 ### Version 2.0.4 - December 12, 2011
 
 * Fixed #47 - fix overriding properties
-* Add option 'position' to thumbnail and button helpers
+* New option "position" to thumbnail and button helpers
 
 
 ### Version 2.0.3 - November 29, 2011
