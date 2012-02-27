@@ -1,6 +1,6 @@
  /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.5 (21/02/2012)
+ * version: 2.0.5 (27/02/2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -10,6 +10,8 @@
  *
  */
 (function (window, document, $) {
+	"use strict";
+
 	var W = $(window),
 		D = $(document),
 		F = $.fancybox = function () {
@@ -430,15 +432,15 @@
 
 			if ($.fn.mousewheel && current.mouseWheel && F.group.length > 1) {
 				F.wrap.bind('mousewheel.fb', function (e, delta) {
-					var target = $(e.target).get(0);
+					var target = e.target || null;
 
-					if (target.clientHeight === 0 || (target.scrollHeight === target.clientHeight && target.scrollWidth === target.clientWidth)) {
+					if (delta !== 0 && (!target || target.clientHeight === 0 || (target.scrollHeight === target.clientHeight && target.scrollWidth === target.clientWidth))) {
 						e.preventDefault();
 
 						F[delta > 0 ? 'prev' : 'next']();
 					}
 				});
-			}	
+			}
 		},
 
 		trigger: function (event) {
@@ -679,13 +681,15 @@
 				current = F.current,
 				len = group.length,
 				item,
-				href;
+				href,
+				i,
+				cnt = Math.min(current.preload, len - 1);
 
 			if (!current.preload || group.length < 2) {
 				return;
 			}
 
-			for (var i = 1; i <= Math.min(current.preload, len - 1); i++) {
+			for (i = 1; i <= cnt; i += 1) {
 				item = group[ (current.index + i ) % len ];
 				href = $( item ).attr('href') || item;
 
@@ -732,7 +736,7 @@
 		},
 
 		_setContent: function () {
-			var content, loadingBay, iframe, current = F.current, type = current.type;
+			var content, loadingBay, current = F.current, type = current.type;
 
 			switch (type) {
 				case 'inline':
@@ -835,10 +839,9 @@
 					}).attr('src', current.href);
 
 					return;
-
-				} else {
-					content.attr('src', current.href);
 				}
+
+				content.attr('src', current.href);
 
 			} else if (type === 'image' || type === 'swf') {
 				current.autoSize = false;
@@ -1028,7 +1031,11 @@
 
 			//Assign a click event
 			if (current.closeClick || current.nextClick) {
-				F.inner.css('cursor', 'pointer').bind('click.fb', current.nextClick ? F.next : F.close);
+				F.inner.css('cursor', 'pointer').bind('click.fb', function(e) {
+					if (!$(e.target).is('a')) {
+						F[ current.closeClick ? 'close' : 'next' ]();
+					}
+				});
 			}
 
 			//Create a close button
