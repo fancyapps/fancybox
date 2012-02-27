@@ -1,6 +1,6 @@
  /*!
  * Thumbnail helper for fancyBox
- * version: 1.0.2
+ * version: 1.0.3
  * @requires fancyBox v2.0 or later
  *
  * Usage: 
@@ -30,7 +30,13 @@
 
 		//Default function to obtain the URL of the thumbnail image
 		source: function (el) {
-			var img = $(el).find('img');
+			var img;
+
+			if ($.type(el) === 'string') {
+				return el;
+			}
+
+			img = $(el).find('img');
 
 			return img.length ? img.attr('src') : el.href;
 		},
@@ -90,7 +96,7 @@
 
 					$(this).hide().appendTo(parent).fadeIn(300);
 
-				}).attr('src', thumbSource(this));
+				}).attr('src', thumbSource( F.group[ i ] ));
 			});
 
 			//Set initial width
