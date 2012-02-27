@@ -111,6 +111,9 @@
 			prevEasing: 'swing',
 			prevMethod: 'changeOut',
 
+            		// Set default group element
+            		groupAttr: 'data-fancybox-group',
+
 			// Enabled helpers
 			helpers: {
 				overlay: {
@@ -1389,8 +1392,11 @@
 					e.preventDefault();
 
 					if (!relVal) {
-						relType = 'data-fancybox-group';
-						relVal = $(what).attr('data-fancybox-group');
+						if (!options.groupAttr) {
+			                            options.groupAttr = F.defaults.groupAttr;
+			                        }
+			                        relType = options.groupAttr;//'data-fancybox-group';
+			                        relVal = $(what).attr(options.groupAttr);//$(what).attr('data-fancybox-group');
 					}
 
 					if (relVal && relVal !== '' && relVal !== 'nofollow') {
