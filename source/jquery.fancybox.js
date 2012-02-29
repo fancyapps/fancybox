@@ -1,6 +1,6 @@
  /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.4 (26/01/2012)
+ * version: 2.0.4 (18/01/2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -405,7 +405,7 @@
 
 			W.bind('resize.fb, orientationchange.fb', F.update);
 
-			if (current.type == 'iframe') {
+			if (current.type == 'iframe' && F.inner !== null) {
 
 				F.inner.find("iframe").load(F.update);
 
@@ -418,6 +418,11 @@
 						var pHeight = F.inner.find("iframe").contents().find("body").height();
 
 						autoSizeTimer = setInterval(function() {
+							if (F.inner === null)
+							{
+								return;
+							}
+
 							var cHeight = F.inner.find("iframe").contents().find("body").height();
 
 							if (cHeight != pHeight) {
@@ -869,7 +874,7 @@
 
 			if (current.fitToView) {
 				maxWidth = Math.min(viewport.w, maxWidth);
-				maxHeight = Math.min(viewport.h, maxHeight);
+				maxHeight = Math.min(viewport.h - 50, maxHeight);
 			}
 
 			minWidth = Math.min(width, minWidth);
