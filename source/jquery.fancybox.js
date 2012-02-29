@@ -1019,7 +1019,11 @@
 		},
 
 		_afterZoomIn: function () {
-			var current = F.current, scrolling = current.scrolling;
+			var current = F.current, scrolling = current ? current.scrolling : 'no';
+
+			if (!current) {
+				return;
+			}
 
 			F.isOpen = F.isOpened = true;
 
@@ -1341,7 +1345,6 @@
 
 		afterClose: function (opts) {
 			if (this.overlay) {
-
 				this.overlay.fadeOut(opts.speedOut || 0, function () {
 					$(this).remove();
 				});
@@ -1383,14 +1386,17 @@
 			selector = this.selector || '',
 			index,
 			run = function(e) {
-				var what = this, relType = 'rel', relVal = what[ relType ], idx = index;
+				var what = this, idx = index, relType, relVal;
 
 				if (!(e.ctrlKey || e.altKey || e.shiftKey || e.metaKey)) {
 					e.preventDefault();
 
+					relType = options.groupAttr || 'data-fancybox-group';
+					relVal = $(what).attr(relType);
+
 					if (!relVal) {
-						relType = 'data-fancybox-group';
-						relVal = $(what).attr('data-fancybox-group');
+						relType = 'rel';
+						relVal = what[ relType ];
 					}
 
 					if (relVal && relVal !== '' && relVal !== 'nofollow') {
