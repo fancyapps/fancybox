@@ -9,17 +9,18 @@
  * Copyright 2012 Janis Skarnelis - janis@fancyapps.com
  *
  */
-(function (window, document, $) {
+(function (window, document, undefined) {
 	"use strict";
 
-	var W = $(window),
+	var $ = window.jQuery,
+		W = $(window),
 		D = $(document),
 		F = $.fancybox = function () {
 			F.open.apply( this, arguments );
 		},
 		didResize = false,
 		resizeTimer = null,
-		isMobile = typeof document.createTouch !== "undefined",
+		isMobile = document.createTouch !== undefined,
 		isString = function(str) {
 			return $.type(str) === "string";
 		};
@@ -165,8 +166,8 @@
 		helpers: {},
 
 		/*
-		 *	Static methods
-		 */
+		*	Static methods
+		*/
 
 		open: function (group, opts) {
 			//Kill existing instances
@@ -183,7 +184,7 @@
 			F.opts = $.extend(true, {}, F.defaults, opts);
 
 			//All options are merged recursive except keys
-			if ($.isPlainObject(opts) && typeof opts.keys !== 'undefined') {
+			if ($.isPlainObject(opts) && opts.keys !== undefined) {
 				F.opts.keys = opts.keys ? $.extend({}, F.defaults.keys, opts.keys) : false;
 			}
 
@@ -311,16 +312,20 @@
 				}
 			}
 
-			if (typeof F.group[index] !== 'undefined') {
+			if (F.group[index] !== undefined) {
 				F.cancel();
 
 				F._start(index);
 			}
 		},
 
-		reposition: function (a) {
+		reposition: function (a, b) {
 			if (F.isOpen) {
-				F.wrap.css(F._getPosition(a));
+				if (b && b.type === 'scroll') {
+					F.wrap.stop().animate(F._getPosition(a), 100);
+				} else {
+					F.wrap.css(F._getPosition(a));
+				}
 			}
 		},
 
@@ -335,7 +340,7 @@
 							didResize = false;
 
 							if (current) {
-								if (current.autoResize || (e && e.type === 'orientationchange')) {
+								if (e && (e.type === 'orientationchange' || (current.autoResize && e.type === 'resize'))) {
 									if (current.autoSize) {
 										F.inner.height('auto');
 										current.height = F.inner.height();
@@ -349,7 +354,7 @@
 								}
 
 								if (current.autoCenter) {
-									F.reposition();
+									F.reposition(null, e);
 								}
 
 								F.trigger('onUpdate');
@@ -409,6 +414,10 @@
 
 			W.bind('resize.fb, orientationchange.fb', F.update);
 
+			if (!current.fixed && current.autoCenter) {
+				W.bind("scroll.fb", F.update);
+			}
+
 			if (keys) {
 				D.bind('keydown.fb', function (e) {
 					var code;
@@ -463,7 +472,7 @@
 
 			if (obj.helpers) {
 				$.each(obj.helpers, function (helper, opts) {
-					if (opts && typeof F.helpers[helper] !== 'undefined' && $.isFunction(F.helpers[helper][event])) {
+					if (opts && F.helpers[helper] !== undefined && $.isFunction(F.helpers[helper][event])) {
 						F.helpers[helper][event](opts, obj);
 					}
 				});
@@ -598,9 +607,9 @@
 				}
 
 			*/
-			
+
 			hrefParts = href.split(/\s+/, 2);
-			
+
 			coming.group = F.group;
 			coming.isDom = isDom;
 			coming.href = hrefParts.shift();
@@ -743,19 +752,16 @@
 		},
 
 		_setContent: function () {
-			var content, loadingBay, current = F.current, type = current.type;
+			var current = F.current, content = current.content, type = current.type, loadingBay;
 
 			switch (type) {
 				case 'inline':
 				case 'ajax':
 				case 'html':
-					content
-						= current.selector
-						? $("<div>").html(current.content).find(current.selector).html()
-						: current.content
-						;
+					if (current.selector) {
+						content = $("<div>").html(content).find(current.selector);
 
-					if (content instanceof $) {
+					} else if (content instanceof $) {
 						content = content.show().detach();
 
 						if (content.parent().hasClass('fancybox-inner')) {
@@ -1015,7 +1021,7 @@
 					left: margin[3] + viewport.x
 				};
 
-			if (current.fixed && (!a || a[0] === false) && height <= viewport.h && width <= viewport.w) {
+			if (current.autoCenter && current.fixed && (!a || a[0] === false) && height <= viewport.h && width <= viewport.w) {
 				rez = {
 					position: 'fixed',
 					top: margin[0],
@@ -1100,8 +1106,8 @@
 	});
 
 	/*
-	 *	Default transitions
-	 */
+	*	Default transitions
+	*/
 
 	F.transitions = {
 		getOrigPosition: function () {
@@ -1299,8 +1305,8 @@
 	};
 
 	/*
-	 *	Overlay helper
-	 */
+	*	Overlay helper
+	*/
 
 	F.helpers.overlay = {
 		overlay: null,
@@ -1368,8 +1374,8 @@
 	};
 
 	/*
-	 *	Title helper
-	 */
+	*	Title helper
+	*/
 
 	F.helpers.title = {
 		beforeShow: function (opts) {
@@ -1437,4 +1443,4 @@
 		return this;
 	};
 
-}(window, document, jQuery));
+}(window, document));
