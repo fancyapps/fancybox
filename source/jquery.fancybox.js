@@ -19,7 +19,10 @@
 		},
 		didResize = false,
 		resizeTimer = null,
-		isMobile = typeof document.createTouch !== "undefined";
+		isMobile = typeof document.createTouch !== "undefined",
+		isString = function(str) {
+			return $.type(str) === "string";
+		};
 
 	$.extend(F, {
 		// The current version of fancyBox
@@ -470,11 +473,11 @@
 		},
 
 		isImage: function (str) {
-			return str && str.match(/\.(jpg|gif|png|bmp|jpeg)(.*)?$/i);
+			return str && str.toString().match(/\.(jpg|gif|png|bmp|jpeg)(.*)?$/i);
 		},
 
 		isSWF: function (str) {
-			return str && str.match(/\.(swf)(.*)?$/i);
+			return str && str.toString().match(/\.(swf)(.*)?$/i);
 		},
 
 		_start: function (index) {
@@ -547,7 +550,7 @@
 					}
 				}
 
-				if (!type && $.type(href) === "string") {
+				if (!type && isString(href)) {
 					if (F.isImage(href)) {
 						type = 'image';
 
@@ -571,7 +574,7 @@
 			if (type === 'inline' || type === 'html') {
 				if (!coming.content) {
 					if (type === 'inline') {
-						coming.content = $( $.type(href) === "string" ? href.replace(/.*(?=#[^\s]+$)/, '') : href ); //strip for ie7
+						coming.content = $( isString(href) ? href.replace(/.*(?=#[^\s]+$)/, '') : href ); //strip for ie7
 
 					} else {
 						coming.content = element;
@@ -693,7 +696,7 @@
 				item = group[ (current.index + i ) % len ];
 				href = $( item ).attr('href') || item;
 
-				if (href) {
+				if (item.type === 'image' || F.isImage(href)) {
 					new Image().src = href;
 				}
 			}
@@ -1035,8 +1038,10 @@
 
 			//Assign a click event
 			if (current.closeClick || current.nextClick) {
+				//This is not the perfect solution but arrows have to be next to content so their height will match
+				// and I do not want another wrapper around content
 				F.inner.css('cursor', 'pointer').bind('click.fb', function(e) {
-					if (!$(e.target).is('a')) {
+					if (!$(e.target).is('a') && !$(e.target).parent().is('a')) {
 						F[ current.closeClick ? 'close' : 'next' ]();
 					}
 				});
