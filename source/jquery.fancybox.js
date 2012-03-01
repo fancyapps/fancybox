@@ -486,7 +486,8 @@
 				isDom,
 				href,
 				type,
-				rez;
+				rez,
+				hrefParts;
 
 			if (element && (element.nodeType || element instanceof $)) {
 				isDom = true;
@@ -597,10 +598,13 @@
 				}
 
 			*/
-
+			
+			hrefParts = href.split(/\s+/, 2);
+			
 			coming.group = F.group;
 			coming.isDom = isDom;
-			coming.href = href;
+			coming.href = hrefParts.shift();
+			coming.selector = hrefParts.shift();
 
 			if (type === 'image') {
 				F._loadImage();
@@ -745,7 +749,11 @@
 				case 'inline':
 				case 'ajax':
 				case 'html':
-					content = current.content;
+					content
+						= current.selector
+						? $("<div>").html(current.content).find(current.selector).html()
+						: current.content
+						;
 
 					if (content instanceof $) {
 						content = content.show().detach();
