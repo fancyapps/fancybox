@@ -1,6 +1,6 @@
  /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.5 (27/02/2012)
+ * version: 2.0.5 (02/03/2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -322,7 +322,7 @@
 		reposition: function (a, b) {
 			if (F.isOpen) {
 				if (b && b.type === 'scroll') {
-					F.wrap.stop().animate(F._getPosition(a), 100);
+					F.wrap.stop().animate(F._getPosition(a), 200);
 				} else {
 					F.wrap.css(F._getPosition(a));
 				}
@@ -340,7 +340,7 @@
 							didResize = false;
 
 							if (current) {
-								if (e && (e.type === 'orientationchange' || (current.autoResize && e.type === 'resize'))) {
+								if (!e || (e && (e.type === 'orientationchange' || (current.autoResize && e.type === 'resize')))) {
 									if (current.autoSize) {
 										F.inner.height('auto');
 										current.height = F.inner.height();
@@ -376,11 +376,21 @@
 		},
 
 		hideLoading: function () {
+			D.unbind('keypress.fb');
+
 			$("#fancybox-loading").remove();
 		},
 
 		showLoading: function () {
 			F.hideLoading();
+
+			//If user will press the escape-button, the request will be canceled
+			D.bind('keypress.fb', function(e) {
+				if (e.keyCode == 27) {
+					e.preventDefault();
+					F.cancel();
+				}
+			});
 
 			$('<div id="fancybox-loading"><div></div></div>').click(F.cancel).appendTo('body');
 		},
@@ -472,7 +482,7 @@
 
 			if (obj.helpers) {
 				$.each(obj.helpers, function (helper, opts) {
-					if (opts && F.helpers[helper] !== undefined && $.isFunction(F.helpers[helper][event])) {
+					if (opts && $.isPlainObject(F.helpers[helper]) && $.isFunction(F.helpers[helper][event])) {
 						F.helpers[helper][event](opts, obj);
 					}
 				});
@@ -675,7 +685,7 @@
 			F.ajaxLoad = $.ajax($.extend({}, F.coming.ajax, {
 				url: F.coming.href,
 				error: function (jqXHR, textStatus) {
-					if (textStatus !== 'abort') {
+					if (F.coming && textStatus !== 'abort') {
 						F._error( 'ajax', jqXHR );
 
 					} else {
