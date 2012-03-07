@@ -438,7 +438,7 @@
 						F[delta > 0 ? 'prev' : 'next']();
 					}
 				});
-			}	
+			}
 		},
 
 		trigger: function (event) {
@@ -725,7 +725,14 @@
 
 			//Build the neccessary markup
 			F.wrap = $(F.current.tpl.wrap).addClass('fancybox-' + (isMobile ? 'mobile' : 'desktop') + ' fancybox-tmp ' + F.current.wrapCSS).appendTo('body');
-			F.outer = $('.fancybox-outer', F.wrap).css('padding', F.current.padding + 'px');
+			if (typeof F.current.padding == "object")
+			{
+				F.outer = $('.fancybox-outer', F.wrap).css('padding-top', F.current.padding[0] + 'px').css('padding-right', F.current.padding[1] + 'px').css('padding-bottom', F.current.padding[2] + 'px').css('padding-left', F.current.padding[3] + 'px');
+			}
+			else
+			{
+				F.outer = $('.fancybox-outer', F.wrap).css('padding', F.current.padding + 'px');
+			}
 			F.inner = $('.fancybox-inner', F.wrap);
 
 			F._setContent();
@@ -874,7 +881,8 @@
 				current = F.current,
 				viewport = F.getViewport(),
 				margin = current.margin,
-				padding2 = current.padding * 2,
+				paddingW = current.padding * 2,
+				paddingH = current.padding * 2,
 				width = current.width,
 				height = current.height,
 				maxWidth = current.maxWidth,
@@ -888,18 +896,25 @@
 			viewport.w -= (margin[1] + margin[3]);
 			viewport.h -= (margin[0] + margin[2]);
 
+			if (typeof current.padding == "object")
+			{
+				paddingW = current.padding[1] + current.padding[3];
+				paddingH = current.padding[0] + current.padding[2];
+			}
+
+
 			if (width.toString().indexOf('%') > -1) {
-				width = (((viewport.w - padding2) * parseFloat(width)) / 100);
+				width = (((viewport.w - paddingW) * parseFloat(width)) / 100);
 			}
 
 			if (height.toString().indexOf('%') > -1) {
-				height = (((viewport.h - padding2) * parseFloat(height)) / 100);
+				height = (((viewport.h - paddingH) * parseFloat(height)) / 100);
 			}
 
 			ratio = width / height;
 
-			width += padding2;
-			height += padding2;
+			width += paddingW;
+			height += paddingH;
 
 			if (current.fitToView) {
 				maxWidth = Math.min(viewport.w, maxWidth);
@@ -909,22 +924,22 @@
 			if (current.aspectRatio) {
 				if (width > maxWidth) {
 					width = maxWidth;
-					height = ((width - padding2) / ratio) + padding2;
+					height = ((width - paddingW) / ratio) + paddingW;
 				}
 
 				if (height > maxHeight) {
 					height = maxHeight;
-					width = ((height - padding2) * ratio) + padding2;
+					width = ((height - paddingH) * ratio) + paddingH;
 				}
 
 				if (width < minWidth) {
 					width = minWidth;
-					height = ((width - padding2) / ratio) + padding2;
+					height = ((width - paddingW) / ratio) + paddingW;
 				}
 
 				if (height < minHeight) {
 					height = minHeight;
-					width = ((height - padding2) * ratio) + padding2;
+					width = ((height - paddingW) * ratio) + paddingW;
 				}
 
 			} else {
@@ -938,7 +953,7 @@
 			//Reset dimensions
 			$(wrap.add(outer).add(inner)).width('auto').height('auto');
 
-			inner.width(width - padding2).height(height - padding2);
+			inner.width(width - paddingW).height(height - paddingH);
 			wrap.width(width);
 
 			height_ = wrap.height(); // Real wrap height
@@ -949,18 +964,18 @@
 					height = height - 10;
 
 					if (current.aspectRatio) {
-						width = Math.round(((height - padding2) * ratio) + padding2);
+						width = Math.round(((height - paddingH) * ratio) + paddingH);
 
 						if (width < minWidth) {
 							width = minWidth;
-							height = ((width - padding2) / ratio) + padding2;
+							height = ((width - paddingW) / ratio) + paddingW;
 						}
 
 					} else {
 						width = width - 10;
 					}
 
-					inner.width(width - padding2).height(height - padding2);
+					inner.width(width - paddingW).height(height - paddingW);
 					wrap.width(width);
 
 					height_ = wrap.height();
@@ -976,14 +991,14 @@
 			current.canShrink = false;
 			current.canExpand = false;
 
-			if ((width - padding2) < current.width || (height - padding2) < current.height) {
+			if ((width - paddingW) < current.width || (height - paddingW) < current.height) {
 				current.canExpand = true;
 
 			} else if ((width > viewport.w || height_ > viewport.h) && width > minWidth && height > minHeight) {
 				current.canShrink = true;
 			}
 
-			space = height_ - padding2;
+			space = height_ - paddingH;
 
 			F.innerSpace = space - inner.height();
 			F.outerSpace = space - outer.height();
@@ -1112,13 +1127,24 @@
 				pos.top = viewport.y + (viewport.h - height) * 0.5;
 				pos.left = viewport.x + (viewport.w - width) * 0.5;
 			}
-
-			pos = {
-				top: Math.ceil(pos.top - padding) + 'px',
-				left: Math.ceil(pos.left - padding) + 'px',
-				width: Math.ceil(width + padding * 2) + 'px',
-				height: Math.ceil(height + padding * 2) + 'px'
-			};
+			if (typeof current.padding == "object")
+			{
+				pos = {
+					top: Math.ceil(pos.top - padding[0]) + 'px',
+					left: Math.ceil(pos.left - padding[3]) + 'px',
+					width: Math.ceil(width + padding[1] + padding[3]) + 'px',
+					height: Math.ceil(height +  padding[0] + padding[2]) + 'px'
+				};
+			}
+			else
+			{
+				pos = {
+					top: Math.ceil(pos.top - padding) + 'px',
+					left: Math.ceil(pos.left - padding) + 'px',
+					width: Math.ceil(width + padding * 2) + 'px',
+					height: Math.ceil(height + padding * 2) + 'px'
+				};
+			}
 
 			return pos;
 		},
@@ -1127,7 +1153,13 @@
 			var ratio, innerValue, outerValue;
 
 			if (fx.prop === 'width' || fx.prop === 'height') {
-				innerValue = outerValue = Math.ceil(now - (F.current.padding * 2));
+				var padding = F.current.padding * 2;
+				if (typeof F.current.padding  == "object")
+				{
+					padding = F.current.padding[1] + F.current.padding[3];
+				}
+
+				innerValue = outerValue = Math.ceil(now - padding);
 
 				if (fx.prop === 'height') {
 					ratio = (now - fx.start) / (fx.end - fx.start);
