@@ -733,6 +733,7 @@
 			{
 				F.outer = $('.fancybox-outer', F.wrap).css('padding', F.current.padding + 'px');
 			}
+
 			F.inner = $('.fancybox-inner', F.wrap);
 
 			F._setContent();
@@ -924,17 +925,17 @@
 			if (current.aspectRatio) {
 				if (width > maxWidth) {
 					width = maxWidth;
-					height = ((width - paddingW) / ratio) + paddingW;
+					height = ((width - paddingW) / ratio) + paddingH;
 				}
 
 				if (height > maxHeight) {
 					height = maxHeight;
-					width = ((height - paddingH) * ratio) + paddingH;
+					width = ((height - paddingH) * ratio) + paddingW;
 				}
 
 				if (width < minWidth) {
 					width = minWidth;
-					height = ((width - paddingW) / ratio) + paddingW;
+					height = ((width - paddingW) / ratio) + paddingH;
 				}
 
 				if (height < minHeight) {
