@@ -23,6 +23,9 @@
 		isMobile = document.createTouch !== undefined,
 		isString = function(str) {
 			return $.type(str) === "string";
+		},
+		isPercentage = function($str) {
+			return $str.toString().indexOf('%') > -1;
 		};
 
 	$.extend(F, {
@@ -766,7 +769,12 @@
 		},
 
 		_setContent: function () {
-			var current = F.current, content = current.content, type = current.type, loadingBay;
+			var current = F.current,
+				content = current.content,
+				type = current.type,
+				loadingBay,
+				maxWidth = current.maxWidth,
+				maxHeight = current.maxHeight;
 
 			switch (type) {
 				case 'inline':
@@ -788,7 +796,12 @@
 					}
 
 					if (current.autoSize) {
-						loadingBay = $('<div class="fancybox-wrap ' + F.current.wrapCSS + ' fancybox-tmp"></div>').appendTo('body').append(content);
+						loadingBay = $('<div class="fancybox-wrap ' + F.current.wrapCSS + ' fancybox-tmp"></div>')
+							.appendTo('body')
+							.css('maxWidth', isPercentage(maxWidth) ? maxWidth : maxWidth + 'px')
+							.css('maxHeight', isPercentage(maxHeight) ? maxHeight : maxHeight + 'px')
+							.append(content);
+
 						current.width = loadingBay.width();
 						current.height = loadingBay.height();
 
@@ -923,11 +936,11 @@
 			viewport.w -= (margin[1] + margin[3]);
 			viewport.h -= (margin[0] + margin[2]);
 
-			if (width.toString().indexOf('%') > -1) {
+			if (isPercentage(width)) {
 				width = (((viewport.w - padding2) * parseFloat(width)) / 100);
 			}
 
-			if (height.toString().indexOf('%') > -1) {
+			if (isPercentage(height)) {
 				height = (((viewport.h - padding2) * parseFloat(height)) / 100);
 			}
 
@@ -939,6 +952,9 @@
 			if (current.fitToView) {
 				maxWidth = Math.min(viewport.w, maxWidth);
 				maxHeight = Math.min(viewport.h, maxHeight);
+			} else {
+				maxWidth += padding2;
+				maxHeight += padding2;
 			}
 
 			if (current.aspectRatio) {
