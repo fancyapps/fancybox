@@ -433,7 +433,7 @@
 					var code;
 
 					// Ignore key combinations and key events within form elements
-					if (!e.ctrlKey && !e.altKey && !e.shiftKey && !e.metaKey && $.inArray(e.target.tagName.toLowerCase(), ['input', 'textarea', 'select', 'button']) < 0) {
+					if (!e.ctrlKey && !e.altKey && !e.shiftKey && !e.metaKey && $.inArray(e.target.tagName.toLowerCase(), ['input', 'textarea', 'select', 'button']) < 0 && !$(e.target).is('[contenteditable]')) {
 						code = e.keyCode;
 
 						if ($.inArray(code, keys.close) > -1) {
