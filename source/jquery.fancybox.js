@@ -776,11 +776,11 @@
 						content = $('<div>').html(content).find(current.selector);
 
 					} else if (content instanceof $) {
-						content = content.show().detach();
-
 						if (content.parent().hasClass('fancybox-inner')) {
-							content.parents('.fancybox-wrap').trigger('onReset').remove();
+							content.parents('.fancybox-wrap').unbind('onReset');
 						}
+
+						content = content.show().detach();
 
 						$(F.wrap).bind('onReset', function () {
 							content.appendTo('body').hide();
