@@ -1,6 +1,6 @@
- /*!
+/*!
  * fancyBox - jQuery Plugin
- * version: 2.0.5 (02/03/2012)
+ * version: 2.0.5 (19/03/2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -166,8 +166,8 @@
 		helpers: {},
 
 		/*
-		*	Static methods
-		*/
+		 *	Static methods
+		 */
 
 		open: function (group, opts) {
 			//Kill existing instances
@@ -610,20 +610,24 @@
 			}
 
 			/*
-				Add reference to the group, so it`s possible to access from callbacks, example:
+			 * Add reference to the group, so it`s possible to access from callbacks, example:
+			 * afterLoad : function() {
+			 * 	this.title = 'Image ' + (this.index + 1) + ' of ' + this.group.length + (this.title ? ' - ' + this.title : '');
+			 * }
+			 */
 
-				afterLoad : function() {
-					this.title = 'Image ' + (this.index + 1) + ' of ' + this.group.length + (this.title ? ' - ' + this.title : '');
-				}
+			if (isString(href)) {
+				hrefParts = href.split(/\s+/, 2);
 
-			*/
+				coming.href = hrefParts.shift();
+				coming.selector = hrefParts.shift();
 
-			hrefParts = href.split(/\s+/, 2);
+			} else {
+				coming.href = href;
+			}
 
 			coming.group = F.group;
 			coming.isDom = isDom;
-			coming.href = hrefParts.shift();
-			coming.selector = hrefParts.shift();
 
 			if (type === 'image') {
 				F._loadImage();
@@ -769,7 +773,7 @@
 				case 'ajax':
 				case 'html':
 					if (current.selector) {
-						content = $("<div>").html(content).find(current.selector);
+						content = $('<div>').html(content).find(current.selector);
 
 					} else if (content instanceof $) {
 						content = content.show().detach();
@@ -784,7 +788,7 @@
 					}
 
 					if (current.autoSize) {
-						loadingBay = $('<div class="fancybox-tmp ' + F.current.wrapCSS + '"></div>').appendTo('body').append(content);
+						loadingBay = $('<div class="fancybox-wrap ' + F.current.wrapCSS + ' fancybox-tmp"></div>').appendTo('body').append(content);
 						current.width = loadingBay.width();
 						current.height = loadingBay.height();
 
@@ -803,17 +807,17 @@
 						loadingBay.remove();
 					}
 
-				break;
+					break;
 
 				case 'image':
 					content = current.tpl.image.replace('{href}', current.href);
 
 					current.aspectRatio = true;
-				break;
+					break;
 
 				case 'swf':
 					content = current.tpl.swf.replace(/\{width\}/g, current.width).replace(/\{height\}/g, current.height).replace(/\{href\}/g, current.href);
-				break;
+					break;
 			}
 
 			if (type === 'iframe') {
@@ -845,6 +849,7 @@
 
 							} catch (e) {
 								current.autoSize = false;
+
 							}
 
 							if (iframe.data('ready') === false) {
@@ -1015,6 +1020,7 @@
 
 			space = height_ - padding2;
 
+
 			F.innerSpace = space - inner.height();
 			F.outerSpace = space - outer.height();
 		},
@@ -1056,8 +1062,6 @@
 
 			F.wrap.addClass('fancybox-opened').css('overflow', 'visible');
 
-			F.update();
-
 			F.inner.css('overflow', scrolling === 'yes' ? 'scroll' : (scrolling === 'no' ? 'hidden' : scrolling));
 
 			//Assign a click event
@@ -1089,6 +1093,8 @@
 
 			F.trigger('afterShow');
 
+			F.update();
+
 			if (F.opts.autoPlay && !F.player.isActive) {
 				F.opts.autoPlay = false;
 
@@ -1116,8 +1122,8 @@
 	});
 
 	/*
-	*	Default transitions
-	*/
+	 *	Default transitions
+	 */
 
 	F.transitions = {
 		getOrigPosition: function () {
@@ -1315,8 +1321,8 @@
 	};
 
 	/*
-	*	Overlay helper
-	*/
+	 *	Overlay helper
+	 */
 
 	F.helpers.overlay = {
 		overlay: null,
@@ -1384,8 +1390,8 @@
 	};
 
 	/*
-	*	Title helper
-	*/
+	 *	Title helper
+	 */
 
 	F.helpers.title = {
 		beforeShow: function (opts) {
