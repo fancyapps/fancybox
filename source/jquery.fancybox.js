@@ -619,16 +619,14 @@
 			 * }
 			 */
 
-			if (isString(href)) {
+			if (type === 'ajax' && isString(href)) {
 				hrefParts = href.split(/\s+/, 2);
 
-				coming.href = hrefParts.shift();
+				href = hrefParts.shift();
 				coming.selector = hrefParts.shift();
-
-			} else {
-				coming.href = href;
 			}
 
+			coming.href = href;
 			coming.group = F.group;
 			coming.isDom = isDom;
 
