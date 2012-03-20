@@ -24,8 +24,8 @@
 		isString = function(str) {
 			return $.type(str) === "string";
 		},
-		isPercentage = function($str) {
-			return $str.toString().indexOf('%') > -1;
+		isPercentage = function(str) {
+			return isString(str) && str.indexOf('%') > -1;
 		};
 
 	$.extend(F, {
@@ -322,12 +322,12 @@
 			}
 		},
 
-		reposition: function (a, b) {
+		reposition: function (absolute, e) {
 			if (F.isOpen) {
-				if (b && b.type === 'scroll') {
-					F.wrap.stop().animate(F._getPosition(a), 200);
+				if (e && e.type === 'scroll') {
+					F.wrap.stop().animate(F._getPosition(absolute), 200);
 				} else {
-					F.wrap.css(F._getPosition(a));
+					F.wrap.css(F._getPosition(absolute));
 				}
 			}
 		},
@@ -389,7 +389,7 @@
 
 			//If user will press the escape-button, the request will be canceled
 			D.bind('keypress.fb', function(e) {
-				if (e.keyCode == 27) {
+				if (e.keyCode === 27) {
 					e.preventDefault();
 					F.cancel();
 				}
@@ -495,11 +495,11 @@
 		},
 
 		isImage: function (str) {
-			return str && str.toString().match(/\.(jpg|gif|png|bmp|jpeg)(.*)?$/i);
+			return isString(str) && str.match(/\.(jpg|gif|png|bmp|jpeg)(.*)?$/i);
 		},
 
 		isSWF: function (str) {
-			return str && str.toString().match(/\.(swf)(.*)?$/i);
+			return isString(str) && str.match(/\.(swf)(.*)?$/i);
 		},
 
 		_start: function (index) {
@@ -660,9 +660,9 @@
 
 		_loadImage: function () {
 			// Reset preload image so it is later possible to check "complete" property
-			F.imgPreload = new Image();
+			var img = F.imgPreload = new Image();
 
-			F.imgPreload.onload = function () {
+			img.onload = function () {
 				this.onload = this.onerror = null;
 
 				F.coming.width = this.width;
@@ -671,15 +671,15 @@
 				F._afterLoad();
 			};
 
-			F.imgPreload.onerror = function () {
+			img.onerror = function () {
 				this.onload = this.onerror = null;
 
 				F._error( 'image' );
 			};
 
-			F.imgPreload.src = F.coming.href;
+			img.src = F.coming.href;
 
-			if (!F.imgPreload.width) {
+			if (!img.width) {
 				F.showLoading();
 			}
 		},
@@ -759,7 +759,7 @@
 			F.current = F.coming;
 
 			//Build the neccessary markup
-			F.wrap = $(F.current.tpl.wrap).addClass('fancybox-' + (isMobile ? 'mobile' : 'desktop') + ' fancybox-tmp ' + F.current.wrapCSS).appendTo('body');
+			F.wrap = $(F.current.tpl.wrap).addClass('fancybox-' + (isMobile ? 'mobile' : 'desktop') + ' fancybox-' + F.current.type + ' fancybox-tmp ' + F.current.wrapCSS).appendTo('body');
 			F.outer = $('.fancybox-outer', F.wrap).css('padding', F.current.padding + 'px');
 			F.inner = $('.fancybox-inner', F.wrap);
 
@@ -771,6 +771,8 @@
 				content = current.content,
 				type = current.type,
 				loadingBay,
+				minWidth = current.minWidth,
+				minHeight = current.minHeight,
 				maxWidth = current.maxWidth,
 				maxHeight = current.maxHeight;
 
@@ -796,8 +798,12 @@
 					if (current.autoSize) {
 						loadingBay = $('<div class="fancybox-wrap ' + F.current.wrapCSS + ' fancybox-tmp"></div>')
 							.appendTo('body')
-							.css('maxWidth', isPercentage(maxWidth) ? maxWidth : maxWidth + 'px')
-							.css('maxHeight', isPercentage(maxHeight) ? maxHeight : maxHeight + 'px')
+							.css({
+								minWidth : isPercentage(minWidth) ? minWidth : minWidth + 'px',
+								minHeight : isPercentage(minHeight) ? minHeight : minHeight + 'px',
+								maxWidth : isPercentage(maxWidth) ? maxWidth : maxWidth + 'px',
+								maxHeight : isPercentage(maxHeight) ? maxHeight : maxWidth + 'px'
+							})
 							.append(content);
 
 						current.width = loadingBay.width();
@@ -834,7 +840,7 @@
 			if (type === 'iframe') {
 				content = $(current.tpl.iframe.replace('{rnd}', new Date().getTime()) ).attr('scrolling', current.scrolling);
 
-				current.scrolling = 'auto';
+				current.scrolling = isMobile ? 'scroll' : 'auto';
 
 				// Set auto height for iframes
 				if (current.autoSize) {
@@ -860,7 +866,6 @@
 
 							} catch (e) {
 								current.autoSize = false;
-
 							}
 
 							if (iframe.data('ready') === false) {
@@ -1033,7 +1038,6 @@
 			}
 
 			space = height_ - padding2;
-
 
 			F.innerSpace = space - inner.height();
 			F.outerSpace = space - outer.height();
