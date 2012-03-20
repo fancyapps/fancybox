@@ -1,6 +1,6 @@
 /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.5 (19/03/2012)
+ * version: 2.0.5 (20/03/2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -802,7 +802,7 @@
 								minWidth : isPercentage(minWidth) ? minWidth : minWidth + 'px',
 								minHeight : isPercentage(minHeight) ? minHeight : minHeight + 'px',
 								maxWidth : isPercentage(maxWidth) ? maxWidth : maxWidth + 'px',
-								maxHeight : isPercentage(maxHeight) ? maxHeight : maxWidth + 'px'
+								maxHeight : isPercentage(maxHeight) ? maxHeight : maxHeight + 'px'
 							})
 							.append(content);
 
@@ -1348,8 +1348,10 @@
 		update: function () {
 			var width, scrollWidth, offsetWidth;
 
-			//Reset width/height so it will not mess
-			this.overlay.width(0).height(0);
+			if (!isMobile) {
+				//Reset width/height so it will not mess
+				this.overlay.width(0).height(0);
+			}
 
 			if ($.browser.msie) {
 				scrollWidth = Math.max(document.documentElement.scrollWidth, document.body.scrollWidth);
