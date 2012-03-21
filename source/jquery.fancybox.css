@@ -44,7 +44,7 @@
 	overflow: hidden;
 }
 
-.fancybox-iframe .fancybox-inner {
+.fancybox-type-iframe .fancybox-inner {
 	-webkit-overflow-scrolling: touch
 }
 
