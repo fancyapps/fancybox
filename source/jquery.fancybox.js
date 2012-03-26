@@ -874,7 +874,7 @@
 
 						try {
 							if (this.contentWindow.document.location) {
-								F.current.height = $(this).contents().find('body').height() + 12;
+								F.current.height = $(this).contents().find('body').height();
 							}
 						} catch (e) {
 							F.current.autoSize = false;
@@ -1209,10 +1209,10 @@
 				startPos = $.extend({}, dim, F._getPosition( elastic )),
 				endPos = $.extend({opacity : 1}, startPos);
 
-			if (elastic) {
-				//Remove "position" property
-				delete endPos.position;
+			//Remove "position" property that breaks older IE
+			delete endPos.position;
 
+			if (elastic) {
 				startPos = this.getOrigPosition();
 
 				if (current.openOpacity) {

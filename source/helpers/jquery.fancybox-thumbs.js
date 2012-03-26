@@ -1,22 +1,22 @@
  /*!
  * Thumbnail helper for fancyBox
- * version: 1.0.3
+ * version: 1.0.4
  * @requires fancyBox v2.0 or later
  *
- * Usage: 
+ * Usage:
  *     $(".fancybox").fancybox({
  *         thumbs: {
  *             width	: 50,
  *             height	: 50
  *         }
  *     });
- * 
+ *
  * Options:
  *     width - thumbnail width
  *     height - thumbnail height
  *     source - function to obtain the URL of the thumbnail image
  *     position - 'top' or 'bottom'
- * 
+ *
  */
 (function ($) {
 	//Shortcut for fancyBox object
@@ -100,7 +100,7 @@
 			});
 
 			//Set initial width
-			this.width = this.list.children().eq(0).outerWidth();
+			this.width = this.list.children().eq(0).outerWidth(true);
 
 			this.list.width(this.width * (F.group.length + 1)).css('left', Math.floor($(window).width() * 0.5 - (F.current.index * this.width + this.width * 0.5)));
 		},
@@ -115,7 +115,7 @@
 		},
 
 		beforeLoad: function (opts) {
-			//Remove self if gallery do not have at least two items 
+			//Remove self if gallery do not have at least two items
 			if (F.group.length < 2) {
 				F.coming.helpers.thumbs = false;
 
