@@ -1,6 +1,6 @@
 /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.5 (7/03/2012)
+ * version: 2.0.5 (27/03/2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -399,15 +399,11 @@
 		},
 
 		getViewport: function () {
-			var de = document.documentElement,
-				width = window.innerWidth || self.innerWidth || (de && de.clientWidth) || document.body.clientWidth,
-				height = window.innerHeight || self.innerHeight || (de && de.clientHeight) || document.body.clientHeight;
-
 			return {
 				x: W.scrollLeft(),
 				y: W.scrollTop(),
-				w: width,
-				h: height
+				w: window.innerWidth ? window.innerWidth : W.width(),
+				h: window.innerHeight ? window.innerHeight : W.height()
 			};
 		},
 
@@ -855,7 +851,7 @@
 				current.scrolling = 'visible';
 			}
 
-			if (type == 'iframe' && current.autoSize) {
+			if (type === 'iframe' && current.autoSize) {
 				F.showLoading();
 
 				F.inner
