@@ -1,6 +1,6 @@
 /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.5 (27/03/2012)
+ * version: 2.0.5 (10/04/2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -9,18 +9,18 @@
  * Copyright 2012 Janis Skarnelis - janis@fancyapps.com
  *
  */
-(function (window, document, undefined) {
+
+(function (window, document, $, undefined) {
 	"use strict";
 
-	var $ = window.jQuery,
-		W = $(window),
+	var W = $(window),
 		D = $(document),
 		F = $.fancybox = function () {
 			F.open.apply( this, arguments );
 		},
 		didResize = false,
 		resizeTimer = null,
-		isMobile = document.createTouch !== undefined,
+		isTouch = document.createTouch !== undefined,
 		isString = function(str) {
 			return $.type(str) === "string";
 		},
@@ -44,13 +44,13 @@
 			maxHeight: 9999,
 
 			autoSize: true,
-			autoResize: !isMobile,
-			autoCenter : !isMobile,
+			autoResize: !isTouch,
+			autoCenter : !isTouch,
 			fitToView: true,
 			aspectRatio: false,
 			topRatio: 0.5,
 
-			fixed: !($.browser.msie && $.browser.version <= 6) && !isMobile,
+			fixed: false,
 			scrolling: 'auto', // 'auto', 'yes' or 'no'
 			wrapCSS: 'fancybox-default',
 
@@ -322,52 +322,52 @@
 			}
 		},
 
-		reposition: function (absolute, e) {
+		reposition: function (e, onlyAbsolute) {
 			if (F.isOpen) {
 				if (e && e.type === 'scroll') {
-					F.wrap.stop().animate(F._getPosition(absolute), 200);
+					F.wrap.stop().animate(F._getPosition(onlyAbsolute), 200);
 				} else {
-					F.wrap.css(F._getPosition(absolute));
+					F.wrap.css(F._getPosition(onlyAbsolute));
 				}
 			}
 		},
 
 		update: function (e) {
-			if (F.isOpen) {
-				// It's a very bad idea to attach handlers to the window scroll event, run this code after a delay
-				if (!didResize) {
-					resizeTimer = setTimeout(function () {
-						var current = F.current;
-
-						if (didResize) {
-							didResize = false;
-
-							if (current) {
-								if (!e || (e && (e.type === 'orientationchange' || (current.autoResize && e.type === 'resize')))) {
-									if (current.autoSize && current.type !== 'iframe') {
-										F.inner.height('auto');
-										current.height = F.inner.height();
-									}
-
-									F._setDimension();
-
-									if (current.canGrow && current.type !== 'iframe') {
-										F.inner.height('auto');
-									}
-								}
-
-								if (current.autoCenter) {
-									F.reposition(null, e);
-								}
-
-								F.trigger('onUpdate');
-							}
-						}
-					}, 100);
-				}
-
-				didResize = true;
+			if (!F.isOpen) {
+				return;
 			}
+
+			// It's a very bad idea to attach handlers to the window scroll event, run this code after a delay
+			if (!didResize) {
+				resizeTimer = setTimeout(function () {
+					var current = F.current;
+
+					if (didResize) {
+						didResize = false;
+
+						if (!current) {
+							return;
+						}
+
+						if (current.autoSize && current.type !== 'iframe') {
+							F.inner.height('auto');
+							current.height = F.inner.height();
+						}
+
+						F._setDimension();
+
+						if (current.canGrow && current.type !== 'iframe') {
+							F.inner.height('auto');
+						}
+
+						F.reposition(e);
+
+						F.trigger('onUpdate');
+					}
+				}, 100);
+			}
+
+			didResize = true;
 		},
 
 		toggle: function () {
@@ -399,11 +399,12 @@
 		},
 
 		getViewport: function () {
+			// See http://bugs.jquery.com/ticket/6724
 			return {
 				x: W.scrollLeft(),
 				y: W.scrollTop(),
-				w: window.innerWidth ? window.innerWidth : W.width(),
-				h: window.innerHeight ? window.innerHeight : W.height()
+				w: isTouch && window.innerWidth ? window.innerWidth : W.width(),
+				h: isTouch && window.innerHeight ? window.innerHeight : W.height()
 			};
 		},
 
@@ -425,10 +426,10 @@
 				return;
 			}
 
-			W.bind('resize.fb, orientationchange.fb', F.update);
+			W.bind( (current.autoResize ? 'resize.fb ' : '') + 'orientationchange.fb', F.update);
 
-			if (!current.fixed && current.autoCenter) {
-				W.bind("scroll.fb", F.update);
+			if (current.autoCenter && !current.fixed) {
+				W.bind('scroll.fb', F.reposition);
 			}
 
 			if (keys) {
@@ -615,7 +616,7 @@
 			/*
 			 * Add reference to the group, so it`s possible to access from callbacks, example:
 			 * afterLoad : function() {
-			 * 	this.title = 'Image ' + (this.index + 1) + ' of ' + this.group.length + (this.title ? ' - ' + this.title : '');
+			 *     this.title = 'Image ' + (this.index + 1) + ' of ' + this.group.length + (this.title ? ' - ' + this.title : '');
 			 * }
 			 */
 
@@ -759,7 +760,7 @@
 			F.current = F.coming;
 
 			//Build the neccessary markup
-			F.wrap = $(F.current.tpl.wrap).addClass('fancybox-' + (isMobile ? 'mobile' : 'desktop') + ' fancybox-type-' + F.current.type + ' fancybox-tmp ' + F.current.wrapCSS).appendTo('body');
+			F.wrap = $(F.current.tpl.wrap).addClass('fancybox-' + (isTouch ? 'mobile' : 'desktop') + ' fancybox-type-' + F.current.type + ' fancybox-tmp ' + F.current.wrapCSS).appendTo('body');
 			F.outer = $('.fancybox-outer', F.wrap).css('padding', F.current.padding + 'px');
 			F.inner = $('.fancybox-inner', F.wrap);
 
@@ -841,7 +842,7 @@
 						.attr('scrolling', current.scrolling)
 						.attr('src', current.href);
 
-					current.scrolling = isMobile ? 'scroll' : 'auto';
+					current.scrolling = isTouch ? 'scroll' : 'auto';
 
 					break;
 			}
@@ -876,12 +877,7 @@
 							F.current.autoSize = false;
 						}
 
-						if (F.isOpened) {
-							F.update();
-
-						} else {
-							F._beforeShow();
-						}
+						F._beforeShow();
 					}
 				}).appendTo(F.inner);
 
@@ -1030,7 +1026,7 @@
 			F.outerSpace = space - outer.height();
 		},
 
-		_getPosition: function (a) {
+		_getPosition: function (onlyAbsolute) {
 			var current = F.current,
 				viewport = F.getViewport(),
 				margin = current.margin,
@@ -1042,7 +1038,7 @@
 					left: margin[3] + viewport.x
 				};
 
-			if (current.autoCenter && current.fixed && (!a || a[0] === false) && height <= viewport.h && width <= viewport.w) {
+			if (current.autoCenter && current.fixed && !onlyAbsolute && height <= viewport.h && width <= viewport.w) {
 				rez = {
 					position: 'fixed',
 					top: margin[0],
@@ -1261,13 +1257,15 @@
 			var wrap = F.wrap,
 				current = F.current,
 				effect = current.nextEffect,
-				startPos = F._getPosition( effect === 'elastic' ),
+				elastic = effect === 'elastic',
+				startPos = F._getPosition( elastic ),
 				endPos = { opacity : 1 };
 
-			if (effect === 'elastic') {
+			startPos.opacity = 0;
+
+			if (elastic) {
 				startPos.top = (parseInt(startPos.top, 10) - 200) + 'px';
 				endPos.top = '+=200px';
-				startPos.opacity = 0;
 			}
 
 			wrap.css(startPos)
@@ -1285,7 +1283,7 @@
 		changeOut: function () {
 			var wrap = F.wrap,
 				current = F.current,
-				effect = current.nextEffect,
+				effect = current.prevEffect,
 				endPos = { opacity : 0 },
 				cleanUp = function () {
 					$(this).trigger('onReset').remove();
@@ -1315,10 +1313,8 @@
 		update: function () {
 			var width, scrollWidth, offsetWidth;
 
-			if (!isMobile) {
-				//Reset width/height so it will not mess
-				this.overlay.width(0).height(0);
-			}
+			//Reset width/height so it will not mess
+			this.overlay.width('100%').height('100%');
 
 			if ($.browser.msie) {
 				scrollWidth = Math.max(document.documentElement.scrollWidth, document.body.scrollWidth);
@@ -1338,31 +1334,26 @@
 				return;
 			}
 
-			opts = $.extend(true, {
-				speedIn : 'fast',
-				closeClick : true,
-				opacity : 1,
-				css : {
-					background: 'black'
-				}
-			}, opts);
+			opts = $.extend(true, {}, F.defaults.helpers.overlay, opts);
 
 			this.overlay = $('<div id="fancybox-overlay"></div>').css(opts.css).appendTo('body');
-
-			this.update();
 
 			if (opts.closeClick) {
 				this.overlay.bind('click.fb', F.close);
 			}
 
-			W.bind("resize.fb", $.proxy(this.update, this));
+			if (F.current.fixed) {
+				this.overlay.addClass('overlay-fixed');
+
+			} else {
+				this.update();
+
+				this.onUpdate = function () {
+					this.update();
+				};
+			}
 
 			this.overlay.fadeTo(opts.speedIn, opts.opacity);
-		},
-
-		onUpdate: function () {
-			//Update as content may change document dimensions
-			this.update();
 		},
 
 		afterClose: function (opts) {
@@ -1446,4 +1437,9 @@
 		return this;
 	};
 
-}(window, document));
+	// Test for fixedPosition needs a body at doc ready
+	$(document).ready(function() {
+		F.defaults.fixed = $.support.fixedPosition || (!($.browser.msie && $.browser.version <= 6) && !isTouch);
+	});
+
+}(window, document, jQuery));

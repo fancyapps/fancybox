@@ -166,6 +166,12 @@
 	background: #000;
 }
 
+#fancybox-overlay.overlay-fixed {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+}
+
 /* Title helper */
 
 .fancybox-title {
