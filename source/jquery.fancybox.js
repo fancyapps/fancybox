@@ -1,6 +1,6 @@
 /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.5 (10/04/2012)
+ * version: 2.0.5 (11/04/2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -496,11 +496,11 @@
 		},
 
 		isImage: function (str) {
-			return isString(str) && str.match(/\.(jpg|gif|png|bmp|jpeg)(.*)?$/i);
+			return isString(str) && str.match(/\.(jpe?g|gif|png|bmp)((\?|#).*)?$/i);
 		},
 
 		isSWF: function (str) {
-			return isString(str) && str.match(/\.(swf)(.*)?$/i);
+			return isString(str) && str.match(/\.(swf)((\?|#).*)?$/i);
 		},
 
 		_start: function (index) {
@@ -566,9 +566,9 @@
 			///Check if content type is set, if not, try to get
 			if (!type) {
 				if (isDom) {
-					rez = $(element).data('fancybox-type');
+					type = $(element).data('fancybox-type');
 
-					if (!rez && element.className) {
+					if (!type) {
 						rez = element.className.match(/fancybox\.(\w+)/);
 						type = rez ? rez[1] : null;
 					}
@@ -631,17 +631,24 @@
 			coming.group = F.group;
 			coming.isDom = isDom;
 
-			if (type === 'image') {
-				F._loadImage();
+			switch (type) {
+				case 'image':
+					F._loadImage();
+					break;
 
-			} else if (type === 'ajax') {
-				F._loadAjax();
+				case 'ajax':
+					F._loadAjax();
+					break;
 
-			} else if (type) {
-				F._afterLoad();
+				case 'inline':
+				case 'iframe':
+				case 'swf':
+				case 'html':
+					F._afterLoad();
+					break;
 
-			} else {
-				F._error( 'type' );
+				default:
+					F._error( 'type' );
 			}
 		},
 
@@ -877,7 +884,7 @@
 							F.current.autoSize = false;
 						}
 
-						F._beforeShow();
+						F[ F.isOpen ? '_afterZoomIn' : '_beforeShow']();
 					}
 				}).appendTo(F.inner);
 

@@ -52,15 +52,17 @@ May also be passed an optional options object which will extend the default valu
     </script>
 
 Script uses the `href` attribute of the matched elements to obtain the location of the content and to figure out content type you want to display.
-You can specify type directly by adding classname (fancybox.image, fancybox.iframe, etc).
+You can specify type directly by adding classname (fancybox.image, fancybox.iframe, etc) or `data-fancybox-group` attribute:
 
     //Ajax:
     <a href="/example.html" class="fancybox fancybox.ajax">Example</a>
+    //or
+    <a href="/example.html" class="fancybox" data-fancybox-type="ajax">Example</a>
 
     //Iframe:
     <a href="example.html" class="fancybox fancybox.iframe">Example</a>
 
-    //Inline:
+    //Inline (will display an element with `id="example"`)
     <a href="#example" class="fancybox">Example</a>
 
     //SWF:

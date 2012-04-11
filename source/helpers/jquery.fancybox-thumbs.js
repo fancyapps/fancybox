@@ -6,8 +6,8 @@
  * Usage:
  *     $(".fancybox").fancybox({
  *         thumbs: {
- *             width	: 50,
- *             height	: 50
+ *             width  : 50,
+ *             height : 50
  *         }
  *     });
  *
