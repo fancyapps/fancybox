@@ -176,6 +176,7 @@ There are several methods that allow you to interact with and manipulate fancyBo
 There is a simply way to access wrapping elements using JS:
 
     $.fancybox.wrap
+    $.fancybox.skin
     $.fancybox.outer
     $.fancybox.inner
 
@@ -187,12 +188,18 @@ and move them outside of area (use this snippet after including fancybox.css):
     }
 
     .fancybox-prev {
-        left: -50px;
+        left: -80px;
     }
 
     .fancybox-next {
-        right: 50px;
+        right: -80px;
     }
+
+In that case, you might want to increase space around box:
+
+    $(".fancybox").fancybox({
+        margin : [20, 60, 20, 60],
+    });
 
 
 Bug tracker
