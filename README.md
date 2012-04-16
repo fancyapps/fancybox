@@ -45,11 +45,15 @@ May also be passed an optional options object which will extend the default valu
     <script>
         $(document).ready(function() {
             $('.fancybox').fancybox({
-                padding : 5,
-                loop : false
+                padding : 0,
+                openEffect  : 'elastic'
             });
         });
     </script>
+
+Tip: Automatically group and apply fancyBox to all images:
+
+    $("a[href$='.jpg'],a[href$='.jpeg'],a[href$='.png'],a[href$='.gif']").attr('rel', 'gallery').fancybox();
 
 Script uses the `href` attribute of the matched elements to obtain the location of the content and to figure out content type you want to display.
 You can specify type directly by adding classname (fancybox.image, fancybox.iframe, etc) or `data-fancybox-group` attribute:
@@ -198,7 +202,7 @@ and move them outside of area (use this snippet after including fancybox.css):
 In that case, you might want to increase space around box:
 
     $(".fancybox").fancybox({
-        margin : [20, 60, 20, 60],
+        margin : [20, 60, 20, 60]
     });
 
 

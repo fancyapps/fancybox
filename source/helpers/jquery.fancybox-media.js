@@ -43,7 +43,7 @@
 				rez;
 
 			if ((rez = href.match(/(youtube\.com|youtu\.be)\/(v\/|u\/|embed\/|watch\?v=)?([^#\&\?]*).*/i))) {
-				href = '//www.youtube.com/embed/' + rez[3] + '?autoplay=1&fs=1&rel=0&modestbranding=1&enablejsapi=1';
+				href = '//www.youtube.com/embed/' + rez[3] + '?autoplay=1&autohide=1&fs=1&rel=0&enablejsapi=1';
 				type = 'iframe';
 
 			} else if ((rez = href.match(/vimeo.com\/(\d+)\/?(.*)/))) {
@@ -78,7 +78,6 @@
 			if (type) {
 				obj.href = href;
 				obj.type = type;
-				obj.autoSize = false;
 			}
 		}
 	}

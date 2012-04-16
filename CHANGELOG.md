@@ -1,6 +1,19 @@
 fancyBox - Changelog
 =========
 
+### Version 2.0.6 - April 16, 2012
+
+* Fixed #188 - keystrokes in contenteditable
+* Fixed #171 - non-images should not be preloaded
+* Fixed #158 - 'closeClick: true' breaks gallery navigation
+* New "media" helper - detects and displays various media types
+* New option "groupAttr" - name of group selector attribute, default is "data-fancybox-group"
+* New feature - selector expressions in URLs, see #170
+* Improved 'overlay' helper to use "position: fixed"
+* Improved autoSize, fixed wrong height in some cases
+* Improved centering and iframe scrolling for iOS
+* Updated markup, new element '.fancybox-skin' is now used for styling
+
 ### Version 2.0.5 - February 21, 2012
 
 * Fixed #155 - easing for prev/next animations

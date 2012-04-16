@@ -1,6 +1,6 @@
 /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.5 (14/04/2012)
+ * version: 2.0.6 (16/04/2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -18,10 +18,10 @@
 		F = $.fancybox = function () {
 			F.open.apply( this, arguments );
 		},
-		didResize = false,
-		resizeTimer = null,
-		isTouch = document.createTouch !== undefined,
-		isString = function(str) {
+		didResize	= false,
+		resizeTimer	= null,
+		isTouch		= document.createTouch !== undefined,
+		isString	= function(str) {
 			return $.type(str) === "string";
 		},
 		isPercentage = function(str) {
@@ -59,7 +59,7 @@
 
 			fixed: false,
 			scrolling: 'auto', // 'auto', 'yes' or 'no'
-			wrapCSS: 'fancybox-default',
+			wrapCSS: '',
 
 			arrows: true,
 			closeBtn: true,
@@ -486,8 +486,8 @@
 			}
 		},
 
-		trigger: function (event, obj) {
-			var ret, obj = obj || F[ $.inArray(event, ['onCancel', 'beforeLoad', 'afterLoad']) > -1 ? 'coming' : 'current' ];
+		trigger: function (event, o) {
+			var ret, obj = o || F[ $.inArray(event, ['onCancel', 'beforeLoad', 'afterLoad']) > -1 ? 'coming' : 'current' ];
 
 			if (!obj) {
 				return;
@@ -675,7 +675,9 @@
 			$.extend(F.coming, {
 				type      : 'html',
 				autoSize  : true,
+				minWidth  : 0,
 				minHeight : 0,
+				padding   : 15,
 				hasError  : type,
 				content   : F.coming.tpl.error
 			});
@@ -930,17 +932,17 @@
 		},
 
 		_setDimension: function () {
-			var wrap = F.wrap,
-				inner = F.inner,
-				current = F.current,
-				viewport = F.getViewport(),
-				margin = current.margin,
-				padding2 = current.padding * 2,
-				width = current.width,
-				height = current.height,
-				maxWidth = current.maxWidth + padding2,
+			var wrap      = F.wrap,
+				inner     = F.inner,
+				current   = F.current,
+				viewport  = F.getViewport(),
+				margin    = current.margin,
+				padding2  = current.padding * 2,
+				width     = current.width,
+				height    = current.height,
+				maxWidth  = current.maxWidth + padding2,
 				maxHeight = current.maxHeight + padding2,
-				minWidth = current.minWidth + padding2,
+				minWidth  = current.minWidth + padding2,
 				minHeight = current.minHeight + padding2,
 				ratio,
 				height_;
@@ -961,7 +963,7 @@
 			height += padding2;
 
 			if (current.fitToView) {
-				maxWidth = Math.min(viewport.w, maxWidth);
+				maxWidth  = Math.min(viewport.w, maxWidth);
 				maxHeight = Math.min(viewport.h, maxHeight);
 			}
 
@@ -1239,9 +1241,9 @@
 				.show()
 				.animate(endPos, {
 					duration : effect === 'none' ? 0 : current.openSpeed,
-					easing : current.openEasing,
-					step: elastic ? this.step : null,
-					complete: F._afterZoomIn
+					easing   : current.openEasing,
+					step     : elastic ? this.step : null,
+					complete : F._afterZoomIn
 				});
 		},
 
@@ -1265,10 +1267,10 @@
 			}
 
 			wrap.animate(endPos, {
-				duration: effect === 'none' ? 0 : current.closeSpeed,
-				easing: current.closeEasing,
-				step: elastic ? this.step : null,
-				complete: F._afterZoomOut
+				duration : effect === 'none' ? 0 : current.closeSpeed,
+				easing   : current.closeEasing,
+				step     : elastic ? this.step : null,
+				complete : F._afterZoomOut
 			});
 		},
 
@@ -1291,11 +1293,8 @@
 				.show()
 				.animate(endPos, {
 					duration : effect === 'none' ? 0 : current.nextSpeed,
-					easing : current.nextEasing,
-					complete: function() {
-						//Somehow this helps to restore overflow
-						setTimeout( F._afterZoomIn, 1);
-					}
+					easing   : current.nextEasing,
+					complete : F._afterZoomIn
 				});
 		},
 
@@ -1315,9 +1314,9 @@
 			}
 
 			wrap.animate(endPos, {
-				duration: effect === 'none' ? 0 : current.prevSpeed,
-				easing: current.prevEasing,
-				complete: cleanUp
+				duration : effect === 'none' ? 0 : current.prevSpeed,
+				easing   : current.prevEasing,
+				complete : cleanUp
 			});
 		}
 	};

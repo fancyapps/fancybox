@@ -1,9 +1,9 @@
 #fancybox-thumbs {
 	position: fixed;
-	left: 0px;
+	left: 0;
 	width: 100%;
 	overflow: hidden;
-	z-index: 1005;
+	z-index: 8050;
 }
 
 #fancybox-thumbs.bottom {
