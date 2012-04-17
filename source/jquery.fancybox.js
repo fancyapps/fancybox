@@ -1360,12 +1360,11 @@
 				this.overlay.bind('click.fb', F.close);
 			}
 
+			this.update();
 			if (F.current.fixed && !isTouch) {
 				this.overlay.addClass('overlay-fixed');
 
 			} else {
-				this.update();
-
 				this.onUpdate = function () {
 					this.update();
 				};
