@@ -56,7 +56,7 @@ Tip: Automatically group and apply fancyBox to all images:
     $("a[href$='.jpg'],a[href$='.jpeg'],a[href$='.png'],a[href$='.gif']").attr('rel', 'gallery').fancybox();
 
 Script uses the `href` attribute of the matched elements to obtain the location of the content and to figure out content type you want to display.
-You can specify type directly by adding classname (fancybox.image, fancybox.iframe, etc) or `data-fancybox-group` attribute:
+You can specify type directly by adding classname (fancybox.image, fancybox.iframe, etc) or `data-fancybox-type` attribute:
 
     //Ajax:
     <a href="/example.html" class="fancybox fancybox.ajax">Example</a>
