@@ -37,7 +37,7 @@
 
 	$.extend(F, {
 		// The current version of fancyBox
-		version: '2.0.5',
+		version: '2.0.6',
 
 		defaults: {
 			padding: 15,
