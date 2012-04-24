@@ -1,6 +1,6 @@
 /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.6 (16/04/2012)
+ * version: 2.0.6 (24/04/2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -18,8 +18,7 @@
 		F = $.fancybox = function () {
 			F.open.apply( this, arguments );
 		},
-		didResize	= false,
-		resizeTimer	= null,
+		didUpdate	= false,
 		isTouch		= document.createTouch !== undefined,
 		isString	= function(str) {
 			return $.type(str) === "string";
@@ -27,12 +26,15 @@
 		isPercentage = function(str) {
 			return isString(str) && str.indexOf('%') > 0;
 		},
-		getValue = function(value, dim) {
+		getScalar = function(value, dim) {
 			if (dim && isPercentage(value)) {
 				value = F.getViewport()[ dim ] / 100 * parseInt(value, 10);
 			}
 
-			return Math.round(value) + 'px';
+			return Math.ceil(value);
+		},
+		getValue = function(value, dim) {
+			return getScalar(value, dim) + 'px';
 		};
 
 	$.extend(F, {
@@ -51,6 +53,9 @@
 			maxHeight: 9999,
 
 			autoSize: true,
+			autoHeight: false,
+			autoWidth: false,
+
 			autoResize: !isTouch,
 			autoCenter : !isTouch,
 			fitToView: true,
@@ -156,6 +161,7 @@
 		opts: {}, // Group options
 		coming: null, // Element being loaded
 		current: null, // Currently loaded element
+		isActive: false, // Is activated
 		isOpen: false, // Is currently open
 		isOpened: false, // Have been fully opened at least once
 		wrap: null,
@@ -353,30 +359,19 @@
 			}
 
 			// Run this code after a delay for better performance
-			if (!didResize) {
-				resizeTimer = setTimeout(function () {
+			if (!didUpdate) {
+				setTimeout(function () {
 					var current = F.current, anyway = !e || (e && e.type === 'orientationchange');
 
-					if (didResize) {
-						didResize = false;
+					if (didUpdate) {
+						didUpdate = false;
 
 						if (!current) {
 							return;
 						}
 
-						if ((!e || e.type !== 'scroll') || anyway) {
-							if (current.autoSize && current.type !== 'iframe') {
-								F.inner.height('auto');
-								current.height = F.inner.height();
-							}
-
-							if (current.autoResize || anyway) {
-								F._setDimension();
-							}
-
-							if (current.canGrow && current.type !== 'iframe') {
-								F.inner.height('auto');
-							}
+						if ((current.autoResize && (!e || e.type !== 'scroll')) || anyway) {
+							F._setDimension();
 						}
 
 						if (current.autoCenter || anyway) {
@@ -388,7 +383,7 @@
 				}, 200);
 			}
 
-			didResize = true;
+			didUpdate = true;
 		},
 
 		toggle: function () {
@@ -569,6 +564,22 @@
 				});
 			}
 
+			// 'autoSize' property is a shortcut, too
+			if (coming.autoSize) {
+				coming.autoWidth = coming.autoHeight = true;
+			}
+
+			if (coming.width === 'auto') {
+				coming.autoWidth = true;
+			}
+
+			if (coming.height === 'auto') {
+				coming.autoHeight = true;
+			}
+
+			coming.isDom = isDom;
+			coming.group = F.group;
+
 			//Give a chance for callback or helpers to update coming item (type, title, etc)
 			F.coming = coming;
 
@@ -645,8 +656,6 @@
 			}
 
 			coming.href  = href;
-			coming.group = F.group;
-			coming.isDom = isDom;
 
 			switch (type) {
 				case 'image':
@@ -672,9 +681,14 @@
 		_error: function ( type ) {
 			F.hideLoading();
 
+			if (!F.coming) {
+				return;
+			}
+
 			$.extend(F.coming, {
 				type      : 'html',
-				autoSize  : true,
+				width     : 'auto',
+				height    : 'auto',
 				minWidth  : 0,
 				minHeight : 0,
 				padding   : 15,
@@ -749,9 +763,17 @@
 
 			for (i = 1; i <= cnt; i += 1) {
 				item = group[ (current.index + i ) % len ];
-				href = item.href || $( item ).attr('href') || item;
+				href = false;
 
-				if (item.type === 'image' || F.isImage(href)) {
+				if ($.isPlainObject(item) && item.type === 'image') {
+					href = item.href;
+
+				} else {
+					href = typeof item === "object" && (item.nodeType || item instanceof $) ? $(item).attr('href') : item;
+					href = F.isImage(href) ? href : false;
+				}
+
+				if (href) {
 					new Image().src = href;
 				}
 			}
@@ -760,7 +782,7 @@
 		_afterLoad: function () {
 			F.hideLoading();
 
-			if (!F.coming || false === F.trigger('afterLoad', F.current)) {
+			if (!F.coming || false === F.trigger('afterLoad', null, F.current)) {
 				F.coming = false;
 
 				return;
@@ -782,14 +804,24 @@
 
 			F.unbindEvents();
 
-			F.isOpen    = false;
-			F.current   = F.coming;
+			F.current = F.coming;
 
-			//Build the neccessary markup
-			F.wrap  = $(F.current.tpl.wrap).addClass('fancybox-' + (isTouch ? 'mobile' : 'desktop') + ' fancybox-type-' + F.current.type + ' fancybox-tmp ' + F.current.wrapCSS).appendTo('body');
-			F.skin  = $('.fancybox-skin', F.wrap).css('padding', getValue(F.current.padding));
-			F.outer = $('.fancybox-outer', F.wrap);
-			F.inner = $('.fancybox-inner', F.wrap);
+			// Build the neccessary markup
+			F.wrap = $(F.current.tpl.wrap).addClass('fancybox-' + (isTouch ? 'mobile' : 'desktop') + ' fancybox-type-' + F.current.type + ' fancybox-tmp ' + F.current.wrapCSS).appendTo('body');
+
+			$.extend(F, {
+				skin    : $('.fancybox-skin', F.wrap).css('padding', getValue(F.current.padding)),
+				outer   : $('.fancybox-outer', F.wrap),
+				inner   : $('.fancybox-inner', F.wrap),
+				isOpen  : false
+			});
+
+			$.extend(F.current, {
+				wrap  : F.wrap,
+				skin  : F.skin,
+				outer : F.outer,
+				inner : F.inner
+			});
 
 			F._setContent();
 		},
@@ -797,12 +829,7 @@
 		_setContent: function () {
 			var current = F.current,
 				content = current.content,
-				type    = current.type,
-				minWidth    = current.minWidth,
-				minHeight   = current.minHeight,
-				maxWidth    = current.maxWidth,
-				maxHeight   = current.maxHeight,
-				loadingBay;
+				type    = current.type;
 
 			switch (type) {
 				case 'inline':
@@ -823,85 +850,56 @@
 						});
 					}
 
-					if (current.autoSize) {
-						loadingBay = $('<div class="fancybox-wrap ' + F.current.wrapCSS + ' fancybox-tmp"></div>')
-							.appendTo('body')
-							.css({
-								minWidth    : getValue(minWidth, 'w'),
-								minHeight   : getValue(minHeight, 'h'),
-								maxWidth    : getValue(maxWidth, 'w'),
-								maxHeight   : getValue(maxHeight, 'h')
-							})
-							.append(content);
-
-						current.width = loadingBay.width();
-						current.height = loadingBay.height();
-
-						// Re-check to fix 1px bug in some browsers
-						loadingBay.width( F.current.width );
-
-						if (loadingBay.height() > current.height) {
-							loadingBay.width(current.width + 1);
-
-							current.width = loadingBay.width();
-							current.height = loadingBay.height();
-						}
-
-						content = loadingBay.contents().detach();
-
-						loadingBay.remove();
-					}
-
-					break;
+				break;
 
 				case 'image':
 					content = current.tpl.image.replace('{href}', current.href);
 
 					current.aspectRatio = true;
-					break;
+				break;
 
 				case 'swf':
 					content = current.tpl.swf.replace(/\{width\}/g, current.width).replace(/\{height\}/g, current.height).replace(/\{href\}/g, current.href);
-					break;
+				break;
 
 				case 'iframe':
 					content = $(current.tpl.iframe.replace('{rnd}', new Date().getTime()) )
 						.attr('scrolling', current.scrolling)
 						.attr('src', current.href);
 
-					current.scrolling = isTouch ? 'scroll' : 'auto';
-
-					break;
+					current.aspectRatio	= false;
+					current.autoWidth   = false;
+				break;
 			}
 
 			if (type === 'image' || type === 'swf') {
-				current.autoSize = false;
-				current.scrolling = 'visible';
+				current.autoHeight = current.autoWidth = false;
+				current.scrolling  = 'visible';
 			}
 
-			if (type === 'iframe' && current.autoSize) {
+			if (type === 'iframe' && current.autoHeight) {
 				F.showLoading();
 
-				F._setDimension();
-
-				F.inner.css('overflow', current.scrolling);
+				//This helps iOS
+				if (isTouch) {
+					F.inner.css('overflow', 'scroll');
+				}
 
 				content.bind({
 					onCancel : function() {
 						$(this).unbind();
 
-						F._afterZoomOut();
+						if (F.isOpened) {
+							$('.fancybox-wrap').stop().trigger('onReset').remove();
+
+						} else {
+							F._afterZoomOut();
+						}
 					},
 					load : function() {
 						F.hideLoading();
 
-						try {
-							if (this.contentWindow.document.location) {
-								F.current.height = $(this).contents().find('body').height();
-							}
-						} catch (e) {
-							F.current.autoSize = false;
-						}
+						F.current.autoHeight = true;
 
 						F[ F.isOpen ? '_afterZoomIn' : '_beforeShow']();
 					}
@@ -922,6 +920,7 @@
 
 			//Set initial dimensions and hide
 			F._setDimension();
+
 			F.wrap.hide().removeClass('fancybox-tmp');
 
 			F.bindEvents();
@@ -932,119 +931,197 @@
 		},
 
 		_setDimension: function () {
-			var wrap      = F.wrap,
+			var viewport  = F.getViewport(),
+				wrap      = F.wrap,
 				inner     = F.inner,
 				current   = F.current,
-				viewport  = F.getViewport(),
-				margin    = current.margin,
-				padding2  = current.padding * 2,
 				width     = current.width,
 				height    = current.height,
-				maxWidth  = current.maxWidth + padding2,
-				maxHeight = current.maxHeight + padding2,
-				minWidth  = current.minWidth + padding2,
-				minHeight = current.minHeight + padding2,
+				minWidth  = current.minWidth,
+				minHeight = current.minHeight,
+				maxWidth  = current.maxWidth,
+				maxHeight = current.maxHeight,
+				scrolling = current.scrolling,
+				scrollOut = current.scrollOutside,
+				margin    = current.margin,
+				wMargin   = margin[1] + margin[3],
+				hMargin   = margin[0] + margin[2],
+				wPadding,
+				hPadding,
+				wSpace,
+				hSpace,
+				origWidth,
+				origHeight,
+				origMaxWidth,
+				origMaxHeight,
 				ratio,
-				height_;
+				width_,
+				height_,
+				maxWidth_,
+				maxHeight_,
+				iframe,
+				body;
 
-			viewport.w -= (margin[1] + margin[3]);
-			viewport.h -= (margin[0] + margin[2]);
+			//Reset dimensions
+			$(inner.add(wrap)).width('auto').height('auto');
 
-			if (isPercentage(width)) {
-				width = (((viewport.w - padding2) * parseFloat(width)) / 100);
+			//This helps IE8 (but breaks iOS)
+			if (!isTouch && current.type !== 'iframe') {
+				inner.css('overflow', 'hidden');
 			}
 
-			if (isPercentage(height)) {
-				height = (((viewport.h - padding2) * parseFloat(height)) / 100);
-			}
+			//Space between wrap and content
+			wPadding = wrap.width() - inner.width();
+			hPadding = wrap.height() - inner.height();
 
-			ratio  = width / height;
-			width  += padding2;
-			height += padding2;
+			//Any space between content and viewport - margin, padding, border, title
+			wSpace = wMargin + wPadding;
+			hSpace = hMargin + hPadding;
+
+			//Calculations for the content
+			width  = getScalar(isPercentage(width)  ? ((viewport.w - wSpace) * parseFloat(width))  / 100 : width);
+			height = getScalar(isPercentage(height) ? ((viewport.h - wSpace) * parseFloat(height)) / 100 : height);
+
+			minWidth = getScalar(isPercentage(minWidth) ? getScalar(minWidth, 'w') - wSpace : minWidth);
+			maxWidth = getScalar(isPercentage(maxWidth) ? getScalar(maxWidth, 'w') - wSpace : maxWidth);
+
+			minHeight = getScalar(isPercentage(minHeight) ? getScalar(minHeight, 'h') - hSpace : minHeight);
+			maxHeight = getScalar(isPercentage(maxHeight) ? getScalar(maxHeight, 'h') - hSpace : maxHeight);
+
+			//These will be used to determine if wrap can fit in the viewport
+			maxWidth_  = viewport.w - wMargin;
+			maxHeight_ = viewport.h - hMargin;
+
+			origMaxWidth  = maxWidth;
+			origMaxHeight = maxHeight;
 
 			if (current.fitToView) {
-				maxWidth  = Math.min(viewport.w, maxWidth);
-				maxHeight = Math.min(viewport.h, maxHeight);
+				maxWidth  = Math.min(viewport.w - wSpace, maxWidth);
+				maxHeight = Math.min(viewport.h - hSpace, maxHeight);
 			}
+
+			if (current.type === 'iframe') {
+				iframe = inner.find('.fancybox-iframe');
+
+				if (current.autoHeight) {
+					try {
+						if (iframe[0].contentWindow.document.location) {
+							inner.width(width).height(maxHeight);
+
+							body   = iframe.contents().find('body');
+							height = body.height() + 1;
+						}
+					} catch (e) {
+						current.autoHeight = false;
+					}
+				}
+
+			} else {
+				width  = current.autoWidth  ? getScalar(inner.width())  : width;
+				height = current.autoHeight ? getScalar(inner.height()) : height;
+			}
+
+			origWidth  = width;
+			origHeight = height;
+
+			ratio = origWidth / origHeight;
 
 			if (current.aspectRatio) {
 				if (width > maxWidth) {
-					width = maxWidth;
-					height = ((width - padding2) / ratio) + padding2;
+					width  = maxWidth;
+					height = width / ratio;
 				}
 
 				if (height > maxHeight) {
 					height = maxHeight;
-					width = ((height - padding2) * ratio) + padding2;
+					width  = height * ratio;
 				}
 
 				if (width < minWidth) {
-					width = minWidth;
-					height = ((width - padding2) / ratio) + padding2;
+					width  = minWidth;
+					height = width / ratio;
 				}
 
 				if (height < minHeight) {
 					height = minHeight;
-					width = ((height - padding2) * ratio) + padding2;
+					width  = height * ratio;
 				}
 
 			} else {
-				width = Math.max(minWidth, Math.min(width, maxWidth));
+				width  = Math.max(minWidth, Math.min(width, maxWidth));
 				height = Math.max(minHeight, Math.min(height, maxHeight));
 			}
 
-			width = Math.round(width);
-			height = Math.round(height);
+			inner.width(width);
 
-			//Reset dimensions
-			$(wrap.add(inner)).width('auto').height('auto');
+			//Try to get rid of horizontal scrolling before they appear
+			if (scrollOut && scrolling !== 'no' && (body ? (getScalar(body.height()) > height) : getScalar(inner.height()) > height)) {
+				width += scrollOut;
+				origWidth += scrollOut;
 
-			inner.width(width - padding2).height(height - padding2);
-			wrap.width(width);
+				inner.width(width);
+			}
 
-			height_ = wrap.height(); // Real wrap height
+			inner.height(height);
 
-			//Fit wrapper inside
-			if (width > maxWidth || height_ > maxHeight) {
-				while ((width > maxWidth || height_ > maxHeight) && width > minWidth && height_ > minHeight) {
-					height = height - 10;
+			wrap.width(width + wPadding);
+
+			// Real wrap dimensions
+			width_  = wrap.width();
+			height_ = wrap.height();
+
+			//Try to fit inside viewport (title can wrap to multiple lines)
+			if (current.fitToView && (width_ > maxWidth_ || height_ > maxHeight_) && width > minWidth && height > minHeight) {
+				while ((width_ > maxWidth_ || height_ > maxHeight_) && width > minWidth && height > minHeight) {
+					height = Math.max(minHeight, height - 10);
 
 					if (current.aspectRatio) {
-						width = Math.round(((height - padding2) * ratio) + padding2);
+						width = Math.round(height * ratio);
 
 						if (width < minWidth) {
-							width = minWidth;
-							height = ((width - padding2) / ratio) + padding2;
+							width  = minWidth;
+							height = width  / ratio;
 						}
 
 					} else {
 						width = width - 10;
 					}
 
-					inner.width(width - padding2).height(height - padding2);
-					wrap.width(width);
+					inner.width(width).height(height);
 
+					wrap.width(width + wPadding);
+
+					width_  = wrap.width();
 					height_ = wrap.height();
 				}
 			}
 
 			current.dim = {
-				width	: getValue(width),
+				width	: getValue(width_),
 				height	: getValue(height_)
 			};
 
-			current.canGrow		= current.autoSize && height > minHeight && height < maxHeight;
-			current.canShrink	= false;
-			current.canExpand	= false;
+			if (isPercentage(current.width) && isPercentage(current.height)) {
+				current.canShrink = false;
+				current.canExpand = false;
 
-			if ((width - padding2) < current.width || (height - padding2) < current.height) {
-				current.canExpand = true;
-
-			} else if ((width > viewport.w || height_ > viewport.h) && width > minWidth && height > minHeight) {
-				current.canShrink = true;
+			} else {
+				current.canShrink = (width_ > maxWidth_ || height_ > maxHeight_) && width > minWidth && height > minHeight;
+				current.canExpand = current.aspectRatio ? (width < origMaxWidth && height < origMaxHeight && width < origWidth && height < origHeight) : ((width < origMaxWidth || height < origMaxHeight) && (width < origWidth || height < origHeight));
 			}
 
-			F.innerSpace = height_ - padding2 - inner.height();
+			F.wSpace = width_ - width;
+			F.hSpace = height_ - height;
+
+			if (iframe) {
+				iframe.attr('scrolling', isTouch ? 'auto' : (origWidth === width && origHeight === height ? 'no' : scrolling));
+			}
+
+			if (!iframe && current.autoHeight && height > minHeight && height < maxHeight) {
+				inner.height('auto');
+			}
+
+			inner.css('overflow', current.type === 'iframe' && isTouch ? 'scroll' : (scrolling === 'yes' ? 'scroll' : (scrolling === 'no' ? 'hidden' : scrolling)));
 		},
 
 		_getPosition: function (onlyAbsolute) {
@@ -1074,7 +1151,7 @@
 		},
 
 		_afterZoomIn: function () {
-			var current = F.current, scrolling = current ? current.scrolling : 'no';
+			var current = F.current;
 
 			if (!current) {
 				return;
@@ -1083,8 +1160,6 @@
 			F.isOpen = F.isOpened = true;
 
 			F.wrap.addClass('fancybox-opened');
-
-			F.inner.css('overflow', scrolling === 'yes' ? 'scroll' : (scrolling === 'no' ? 'hidden' : scrolling));
 
 			F.trigger('afterShow');
 
@@ -1124,6 +1199,8 @@
 
 		_afterZoomOut: function () {
 			var current = F.current;
+
+			F.inner.hide().empty();
 
 			F.wrap.trigger('onReset').remove();
 
@@ -1171,7 +1248,7 @@
 				pos = orig.offset();
 
 				if (orig.is('img')) {
-					width = orig.outerWidth();
+					width  = orig.outerWidth();
 					height = orig.outerHeight();
 				}
 
@@ -1193,22 +1270,16 @@
 		},
 
 		step: function (now, fx) {
-			var prop = fx.prop, value, ratio;
+			var prop = fx.prop, ratio, padding2 = F.current.padding * 2;
 
 			if (prop === 'width' || prop === 'height') {
-				value = Math.ceil(now - (F.current.padding * 2));
+				ratio = (now - fx.start) / (fx.end - fx.start);
 
-				if (prop === 'height') {
-					ratio = (now - fx.start) / (fx.end - fx.start);
-
-					if (fx.start > fx.end) {
-						ratio = 1 - ratio;
-					}
-
-					value -= F.innerSpace * ratio;
+				if (fx.start > fx.end) {
+					ratio = 1 - ratio;
 				}
 
-				F.inner[prop](value);
+				F.inner[prop]( Math.ceil(now - padding2 ) - ((F[ prop === 'height' ? 'hSpace' : 'wSpace' ] - padding2) * ratio) );
 			}
 		},
 
@@ -1231,7 +1302,7 @@
 					startPos.opacity = 0;
 				}
 
-				F.outer.add(F.inner).width('auto').height('auto');
+				F.inner.width('auto').height('auto').css('overflow', 'hidden');
 
 			} else if (effect === 'fade') {
 				startPos.opacity = 0;
@@ -1294,7 +1365,9 @@
 				.animate(endPos, {
 					duration : effect === 'none' ? 0 : current.nextSpeed,
 					easing   : current.nextEasing,
-					complete : F._afterZoomIn
+					complete : function() {
+						setTimeout(F._afterZoomIn, 1);
+					}
 				});
 		},
 
@@ -1455,8 +1528,23 @@
 		return this;
 	};
 
-	// Test for fixedPosition needs a body at doc ready
+	if (!$.scrollbarWidth) {
+		// http://benalman.com/projects/jquery-misc-plugins/#scrollbarwidth
+		$.scrollbarWidth = function() {
+			var parent, child, width;
+			parent = $('<div style="width:50px;height:50px;overflow:auto"><div/></div>').appendTo('body');
+			child  = parent.children();
+			width  = child.innerWidth() - child.height( 99 ).innerWidth();
+			parent.remove();
+
+			return width;
+		};
+	}
+
+	// Tests that need a body at doc ready
 	$(document).ready(function() {
+		F.defaults.scrollOutside = $.scrollbarWidth();
+
 		F.defaults.fixed = $.support.fixedPosition || (!($.browser.msie && $.browser.version <= 6) && !isTouch);
 	});
 
