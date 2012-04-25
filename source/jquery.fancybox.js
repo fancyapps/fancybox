@@ -501,9 +501,9 @@
 
 					if (delta !== 0 && (!target || target.clientHeight === 0 || (target.scrollHeight === target.clientHeight && target.scrollWidth === target.clientWidth))) {
 						if (delta > 0) {
-							F.next( 'up' );
+							F.prev( 'up' );
 						} else {
-							F.prev( 'down' );
+							F.next( 'down' );
 						}
 
 						e.preventDefault();
