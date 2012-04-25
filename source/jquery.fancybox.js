@@ -1,6 +1,6 @@
 /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.6 (24/04/2012)
+ * version: 2.0.6 (25/04/2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -42,145 +42,157 @@
 		version: '2.0.6',
 
 		defaults: {
-			padding: 15,
-			margin: 20,
+			padding : 15,
+			margin  : 20,
 
-			width: 800,
-			height: 600,
-			minWidth: 100,
-			minHeight: 100,
-			maxWidth: 9999,
-			maxHeight: 9999,
+			width     : 800,
+			height    : 600,
+			minWidth  : 100,
+			minHeight : 100,
+			maxWidth  : 9999,
+			maxHeight : 9999,
 
-			autoSize: true,
-			autoHeight: false,
-			autoWidth: false,
+			autoSize   : true,
+			autoHeight : false,
+			autoWidth  : false,
 
-			autoResize: !isTouch,
-			autoCenter : !isTouch,
-			fitToView: true,
-			aspectRatio: false,
-			topRatio: 0.5,
+			autoResize  : !isTouch,
+			autoCenter  : !isTouch,
+			fitToView   : true,
+			aspectRatio : false,
+			topRatio    : 0.5,
 
-			fixed: false,
-			scrolling: 'auto', // 'auto', 'yes' or 'no'
-			wrapCSS: '',
+			fixed     : false,
+			scrolling : 'auto', // 'auto', 'yes' or 'no'
+			wrapCSS   : '',
 
-			arrows: true,
-			closeBtn: true,
-			closeClick: false,
-			nextClick : false,
-			mouseWheel: true,
-			autoPlay: false,
-			playSpeed: 3000,
-			preload : 3,
+			arrows     : true,
+			closeBtn   : true,
+			closeClick : false,
+			nextClick  : false,
+			mouseWheel : true,
+			autoPlay   : false,
+			playSpeed  : 3000,
+			preload    : 3,
 
-			modal: false,
-			loop: true,
-			ajax: { dataType: 'html', headers: { 'X-fancyBox': true } },
-			keys: {
-				next: [13, 32, 34, 39, 40], // enter, space, page down, right arrow, down arrow
-				prev: [8, 33, 37, 38], // backspace, page up, left arrow, up arrow
-				close: [27] // escape key
+			modal : false,
+			loop  : true,
+			ajax  : { dataType: 'html', headers: { 'X-fancyBox': true } },
+			keys  : {
+				next : {
+					13 : 'right', // enter
+					34 : 'down',  // page down
+					39 : 'right', // right arrow
+					40 : 'down'   // down arrow
+				},
+				prev : {
+					8  : 'left', // backspace
+					33 : 'up',   // page up
+					37 : 'left', // left arrow
+					38 : 'up'    // up arrow
+				},
+				close : [27], // escape key
+				play  : [32] // space
 			},
 
 			// Override some properties
-			index: 0,
-			type: null,
-			href: null,
-			content: null,
-			title: null,
+			index   : 0,
+			type    : null,
+			href    : null,
+			content : null,
+			title   : null,
 
 			// HTML templates
 			tpl: {
-				wrap: '<div class="fancybox-wrap"><div class="fancybox-skin"><div class="fancybox-outer"><div class="fancybox-inner"></div></div></div></div>',
-				image: '<img class="fancybox-image" src="{href}" alt="" />',
-				iframe: '<iframe class="fancybox-iframe" name="fancybox-frame{rnd}" frameborder="0" hspace="0"' + ($.browser.msie ? ' allowtransparency="true"' : '') + '></iframe>',
-				swf: '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="100%"><param name="wmode" value="transparent" /><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="{href}" /><embed src="{href}" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="100%" height="100%" wmode="transparent"></embed></object>',
-				error: '<p class="fancybox-error">The requested content cannot be loaded.<br/>Please try again later.</p>',
-				closeBtn: '<div title="Close" class="fancybox-item fancybox-close"></div>',
-				next: '<a title="Next" class="fancybox-nav fancybox-next"><span></span></a>',
-				prev: '<a title="Previous" class="fancybox-nav fancybox-prev"><span></span></a>'
+				wrap     : '<div class="fancybox-wrap"><div class="fancybox-skin"><div class="fancybox-outer"><div class="fancybox-inner"></div></div></div></div>',
+				image    : '<img class="fancybox-image" src="{href}" alt="" />',
+				iframe   : '<iframe class="fancybox-iframe" name="fancybox-frame{rnd}" frameborder="0" hspace="0"' + ($.browser.msie ? ' allowtransparency="true"' : '') + '></iframe>',
+				swf      : '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="100%"><param name="wmode" value="transparent" /><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="{href}" /><embed src="{href}" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="100%" height="100%" wmode="transparent"></embed></object>',
+				error    : '<p class="fancybox-error">The requested content cannot be loaded.<br/>Please try again later.</p>',
+				closeBtn : '<div title="Close" class="fancybox-item fancybox-close"></div>',
+				next     : '<a title="Next" class="fancybox-nav fancybox-next"><span></span></a>',
+				prev     : '<a title="Previous" class="fancybox-nav fancybox-prev"><span></span></a>'
 			},
 
 			// Properties for each animation type
 			// Opening fancyBox
-			openEffect: 'fade', // 'elastic', 'fade' or 'none'
-			openSpeed: 300,
-			openEasing: 'swing',
-			openOpacity: true,
-			openMethod: 'zoomIn',
+			openEffect  : 'fade', // 'elastic', 'fade' or 'none'
+			openSpeed   : 300,
+			openEasing  : 'swing',
+			openOpacity : true,
+			openMethod  : 'zoomIn',
 
 			// Closing fancyBox
-			closeEffect: 'fade', // 'elastic', 'fade' or 'none'
-			closeSpeed: 300,
-			closeEasing: 'swing',
-			closeOpacity: true,
-			closeMethod: 'zoomOut',
+			closeEffect  : 'fade', // 'elastic', 'fade' or 'none'
+			closeSpeed   : 300,
+			closeEasing  : 'swing',
+			closeOpacity : true,
+			closeMethod  : 'zoomOut',
 
 			// Changing next gallery item
-			nextEffect: 'elastic', // 'elastic', 'fade' or 'none'
-			nextSpeed: 300,
-			nextEasing: 'swing',
-			nextMethod: 'changeIn',
+			nextEffect : 'elastic', // 'elastic', 'fade' or 'none'
+			nextSpeed  : 300,
+			nextEasing : 'swing',
+			nextMethod : 'changeIn',
 
 			// Changing previous gallery item
-			prevEffect: 'elastic', // 'elastic', 'fade' or 'none'
-			prevSpeed: 300,
-			prevEasing: 'swing',
-			prevMethod: 'changeOut',
+			prevEffect : 'elastic', // 'elastic', 'fade' or 'none'
+			prevSpeed  : 300,
+			prevEasing : 'swing',
+			prevMethod : 'changeOut',
 
 			// Enabled helpers
-			helpers: {
-				overlay: {
-					speedIn: 0,
-					speedOut: 300,
-					opacity: 0.8,
-					css: {
-						cursor: 'pointer'
+			helpers : {
+				overlay : {
+					speedIn  : 0,
+					speedOut : 300,
+					opacity  : 0.8,
+					css      : {
+						cursor : 'pointer'
 					},
 					closeClick: true
 				},
-				title: {
-					type: 'float' // 'float', 'inside', 'outside' or 'over'
+				title : {
+					type : 'float' // 'float', 'inside', 'outside' or 'over'
 				}
 			},
 
 			// Callbacks
-			onCancel: $.noop, // If canceling
-			beforeLoad: $.noop, // Before loading
-			afterLoad: $.noop, // After loading
-			beforeShow: $.noop, // Before changing in current item
-			afterShow: $.noop, // After opening
-			beforeClose: $.noop, // Before closing
-			afterClose: $.noop // After closing
+			onCancel    : $.noop, // If canceling
+			beforeLoad  : $.noop, // Before loading
+			afterLoad   : $.noop, // After loading
+			beforeShow  : $.noop, // Before changing in current item
+			afterShow   : $.noop, // After opening
+			beforeClose : $.noop, // Before closing
+			afterClose  : $.noop  // After closing
 		},
 
 		//Current state
-		group: {}, // Selected group
-		opts: {}, // Group options
-		coming: null, // Element being loaded
-		current: null, // Currently loaded element
-		isActive: false, // Is activated
-		isOpen: false, // Is currently open
-		isOpened: false, // Have been fully opened at least once
-		wrap: null,
-		skin: null,
-		outer: null,
-		inner: null,
+		group    : {}, // Selected group
+		opts     : {}, // Group options
+		coming   : null, // Element being loaded
+		current  : null, // Currently loaded element
+		isActive : false, // Is activated
+		isOpen   : false, // Is currently open
+		isOpened : false, // Have been fully opened at least once
 
-		player: {
-			timer: null,
-			isActive: false
+		wrap  : null,
+		skin  : null,
+		outer : null,
+		inner : null,
+
+		player : {
+			timer    : null,
+			isActive : false
 		},
 
 		// Loaders
-		ajaxLoad: null,
-		imgPreload: null,
+		ajaxLoad   : null,
+		imgPreload : null,
 
 		// Some collections
-		transitions: {},
-		helpers: {},
+		transitions : {},
+		helpers     : {},
 
 		/*
 		 *	Static methods
@@ -301,35 +313,43 @@
 			}
 		},
 
-		next: function () {
-			if (F.current) {
-				F.jumpto(F.current.index + 1);
+		next: function ( direction ) {
+			if (!isString(direction)) {
+				direction = 'right';
 			}
+
+			F.jumpto(1, direction);
 		},
 
-		prev: function () {
-			if (F.current) {
-				F.jumpto(F.current.index - 1);
+		prev: function ( direction ) {
+			if (!isString(direction)) {
+				direction = 'left';
 			}
+
+			F.jumpto(-1, direction);
 		},
 
-		jumpto: function (index) {
-			if (!F.current) {
+		jumpto: function (index, direction) {
+			var current = F.current;
+
+			if (!current) {
 				return;
 			}
 
-			index = parseInt(index, 10);
+			F.direction = direction || (index > current.index ? 'right' : 'left');
 
-			if (F.group.length > 1 && F.current.loop) {
-				if (index >= F.group.length) {
+			index = direction ? current.index += index : index;
+
+			if (current.group.length > 1 && current.loop) {
+				if (index >= current.group.length) {
 					index = 0;
 
 				} else if (index < 0) {
-					index = F.group.length - 1;
+					index = current.group.length - 1;
 				}
 			}
 
-			if (F.group[index] !== undefined) {
+			if (current.group[index] !== undefined) {
 				F.cancel();
 
 				F._start(index);
@@ -405,7 +425,7 @@
 
 			//If user will press the escape-button, the request will be canceled
 			D.bind('keypress.fb', function(e) {
-				if (e.keyCode === 27) {
+				if (e.which === 27) {
 					e.preventDefault();
 					F.cancel();
 				}
@@ -446,22 +466,29 @@
 
 			if (keys) {
 				D.bind('keydown.fb', function (e) {
-					var code, target = e.target || e.srcElement;
+					var code, target = e.target || e.srcElement, next, prev;
 
 					// Ignore key combinations and key events within form elements
 					if (!e.ctrlKey && !e.altKey && !e.shiftKey && !e.metaKey && !(target && (target.type || $(target).is('[contenteditable]')))) {
-						code = e.keyCode;
+						code = e.which;
 
-						if ($.inArray(code, keys.close) > -1) {
+						next = keys.next[ code ];
+						prev = keys.prev[ code ];
+
+						if (next) {
+							F.next( next );
+							e.preventDefault();
+
+						} else if (prev) {
+							F.prev( prev );
+							e.preventDefault();
+
+						} else if ($.inArray(code, keys.close) > -1) {
 							F.close();
 							e.preventDefault();
 
-						} else if ($.inArray(code, keys.next) > -1) {
-							F.next();
-							e.preventDefault();
-
-						} else if ($.inArray(code, keys.prev) > -1) {
-							F.prev();
+						} else if ($.inArray(code, keys.play) > -1) {
+							F.play();
 							e.preventDefault();
 						}
 					}
@@ -1346,18 +1373,29 @@
 		},
 
 		changeIn: function () {
-			var wrap     = F.wrap,
-				current  = F.current,
-				effect   = current.nextEffect,
-				elastic  = effect === 'elastic',
-				startPos = F._getPosition( elastic ),
-				endPos   = { opacity : 1 };
+			var wrap      = F.wrap,
+				current   = F.current,
+				effect    = current.nextEffect,
+				elastic   = effect === 'elastic',
+				startPos  = F._getPosition( elastic ),
+				endPos    = { opacity : 1 },
+				direction = F.direction,
+				distance  = 200,
+				field;
 
 			startPos.opacity = 0;
 
 			if (elastic) {
-				startPos.top = getValue(parseInt(startPos.top, 10) - 200);
-				endPos.top = '+=200px';
+				field = direction === 'down' || direction === 'up' ? 'top' : 'left';
+
+				if (direction === 'down' || direction === 'right') {
+					startPos[ field ] = getValue(parseInt(startPos[ field ], 10) - distance);
+					endPos[ field ]   = '+=' + distance + 'px';
+
+				} else {
+					startPos[ field ] = getValue(parseInt(startPos[ field ], 10) + distance);
+					endPos[ field ]   = '-=' + distance + 'px';
+				}
 			}
 
 			wrap.css(startPos)
@@ -1372,18 +1410,20 @@
 		},
 
 		changeOut: function () {
-			var wrap     = F.wrap,
-				current  = F.current,
-				effect   = current.prevEffect,
-				endPos   = { opacity : 0 },
-				cleanUp  = function () {
+			var wrap      = F.wrap,
+				current   = F.current,
+				effect    = current.prevEffect,
+				endPos    = { opacity : 0 },
+				direction = F.direction,
+				distance  = 200,
+				cleanUp   = function () {
 					$(this).trigger('onReset').remove();
 				};
 
 			wrap.removeClass('fancybox-opened');
 
 			if (effect === 'elastic') {
-				endPos.top = '+=200px';
+				endPos[ direction === 'down' || direction === 'up' ? 'top' : 'left' ] = ( direction === 'up' || direction === 'left' ? '-' : '+' ) + '=' + distance + 'px';
 			}
 
 			wrap.animate(endPos, {
