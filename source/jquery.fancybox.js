@@ -500,9 +500,13 @@
 					var target = e.target || null;
 
 					if (delta !== 0 && (!target || target.clientHeight === 0 || (target.scrollHeight === target.clientHeight && target.scrollWidth === target.clientWidth))) {
-						e.preventDefault();
+						if (delta > 0) {
+							F.next( 'up' );
+						} else {
+							F.prev( 'down' );
+						}
 
-						F[delta > 0 ? 'prev' : 'next']();
+						e.preventDefault();
 					}
 				});
 			}
