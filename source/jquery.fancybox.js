@@ -1,6 +1,6 @@
 /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.6 (25/04/2012)
+ * version: 2.0.6 (26/04/2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -318,7 +318,9 @@
 				direction = 'right';
 			}
 
-			F.jumpto(1, direction);
+			if (F.current) {
+				F.jumpto(F.current.index + 1, direction);
+			}
 		},
 
 		prev: function ( direction ) {
@@ -326,27 +328,28 @@
 				direction = 'left';
 			}
 
-			F.jumpto(-1, direction);
+			if (F.current) {
+				F.jumpto(F.current.index - 1, direction);
+			}
 		},
 
-		jumpto: function (index, direction) {
+		jumpto: function ( index, direction ) {
 			var current = F.current;
 
 			if (!current) {
 				return;
 			}
 
+			index = parseInt(index, 10);
+
 			F.direction = direction || (index > current.index ? 'right' : 'left');
 
-			index = direction ? current.index += index : index;
-
-			if (current.group.length > 1 && current.loop) {
-				if (index >= current.group.length) {
-					index = 0;
-
-				} else if (index < 0) {
-					index = current.group.length - 1;
+			if (current.loop) {
+				if (index < 0) {
+					index = current.group.length + (index % current.group.length);
 				}
+
+				index = index % current.group.length;
 			}
 
 			if (current.group[index] !== undefined) {
@@ -1408,7 +1411,7 @@
 					duration : effect === 'none' ? 0 : current.nextSpeed,
 					easing   : current.nextEasing,
 					complete : function() {
-						setTimeout(F._afterZoomIn, 1);
+						setTimeout(F._afterZoomIn, 10);
 					}
 				});
 		},
