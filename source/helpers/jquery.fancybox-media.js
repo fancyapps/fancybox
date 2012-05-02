@@ -45,7 +45,7 @@
 				rez;
 
 			if ((rez = href.match(/(youtube\.com|youtu\.be)\/(v\/|u\/|embed\/|watch\?v=)?([^#\&\?]*).*/i))) {
-				href = '//www.youtube.com/embed/' + rez[3] + '?autoplay=1&autohide=1&fs=1&rel=0&enablejsapi=1';
+				href = '//www.youtube.com/embed/' + rez[3] + '?autoplay=1&autohide=1&fs=1&rel=0&enablejsapi=1&hd=1';
 				type = 'iframe';
 
 			} else if ((rez = href.match(/vimeo.com\/((channels|groups)\/(.*)\/)?(\d+)\/?(.*)/))) {
@@ -65,7 +65,7 @@
 				type = 'iframe';
 
 			} else if ((rez = href.match(/twitpic\.com\/(?!(?:place|photos|events)\/)([a-zA-Z0-9\?\=\-]+)/i))) {
-				href = '//twitpic.com/show/full/' + rez[1];
+				href = '//twitpic.com/show/full/' + rez[1] + '/';
 				type = 'image';
 
 			} else if ((rez = href.match(/(instagr\.am|instagram\.com)\/p\/([a-zA-Z0-9_\-]+)\/?/i))) {
