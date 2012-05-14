@@ -659,7 +659,7 @@
 		},
 
 		isImage: function (str) {
-			return isString(str) && str.match(/\.(jpe?g|gif|png|bmp)((\?|#).*)?$/i);
+			return isString(str) && str.match(/\.(jpe?g|jpe|gif|png|bmp)((\?|#).*)?$/i);
 		},
 
 		isSWF: function (str) {
