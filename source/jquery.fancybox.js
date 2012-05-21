@@ -1321,7 +1321,7 @@
 
 			F.isOpen = F.isOpened = true;
 
-			F.wrap.addClass('fancybox-opened');
+			F.wrap.addClass('fancybox-opened').css('overflow', 'visible');
 
 			F.trigger('afterShow');
 
