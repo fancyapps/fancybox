@@ -152,8 +152,8 @@
 				this.wrap.remove();
 			}
 
-			this.wrap = null;
-			this.list = null;
+			this.wrap  = null;
+			this.list  = null;
 			this.width = 0;
 		}
 	}

@@ -1,6 +1,6 @@
  /*!
  * Media helper for fancyBox
- * version: 1.0.0
+ * version: 1.0.1
  * @requires fancyBox v2.0 or later
  *
  * Usage:
@@ -73,13 +73,15 @@
 				type = 'image';
 
 			} else if ((rez = href.match(/maps\.google\.com\/(\?ll=|maps\/?\?q=)(.*)/i))) {
-				href = '//maps.google.com/' + rez[1] + '' + rez[2] + '&output=' + (rez[2].indexOf('layer=c') ? 'svembed' : 'embed');
+				href = '//maps.google.com/' + rez[1] + '' + rez[2] + '&output=' + (rez[2].indexOf('layer=c') > 0 ? 'svembed' : 'embed');
 				type = 'iframe';
 			}
 
 			if (type) {
 				obj.href = href;
 				obj.type = type;
+
+				obj.autoHeight = false;
 			}
 		}
 	}
