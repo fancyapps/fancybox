@@ -1,6 +1,6 @@
 /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.6 (Mon, 21 May 2012)
+ * version: 2.0.6 (Tue, 22 May 2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -990,10 +990,10 @@
 		_afterLoad: function () {
 			var coming    = F.coming,
 				previous  = F.current,
-				content   = coming.content,
-				type      = coming.type,
-				scrolling = coming.scrolling,
-				current;
+				current,
+				content,
+				type,
+				scrolling;
 
 			F.hideLoading();
 
@@ -1022,7 +1022,10 @@
 				$('.fancybox-wrap').not( coming.wrap ).stop().trigger('onReset').remove();
 			}
 
-			current = coming;
+			current   = coming;
+			content   = coming.content;
+			type      = coming.type;
+			scrolling = coming.scrolling;
 
 			$.extend(F, {
 				wrap    : current.wrap,
@@ -1633,8 +1636,6 @@
 					$(this).remove();
 				});
 			}
-
-			D.unbind('.overlay');
 
 			this.overlay = null;
 		}
