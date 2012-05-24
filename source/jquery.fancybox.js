@@ -1616,7 +1616,7 @@
 				overlay.bind('click.fb', F.close);
 			}
 
-			if (F.current.fixed && !isTouch) {
+			if (F.opts.fixed && !isTouch) {
 				overlay.addClass('overlay-fixed');
 
 			} else {
