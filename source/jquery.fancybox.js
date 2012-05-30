@@ -1326,8 +1326,6 @@
 
 			F.wrap.addClass('fancybox-opened').css('overflow', 'visible');
 
-			F.trigger('afterShow');
-
 			F.reposition();
 
 			// Assign a click event
@@ -1354,6 +1352,8 @@
 					$(current.tpl.next).appendTo(F.outer).bind('click.fb', F.next);
 				}
 			}
+
+			F.trigger('afterShow');
 
 			// Start slideshow
 			if (F.opts.autoPlay && !F.player.isActive) {
