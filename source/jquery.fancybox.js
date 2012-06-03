@@ -727,7 +727,7 @@
 		},
 
 		isImage: function (str) {
-			return isString(str) && str.match(/\.(jp(e|g|eg)|gif|png|bmp)((\?|#).*)?$/i);
+			return isString(str) && str.match(/\.(jp(e|g|eg)|gif|png|bmp|webp)((\?|#).*)?$/i);
 		},
 
 		isSWF: function (str) {
