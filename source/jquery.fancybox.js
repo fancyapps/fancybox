@@ -1,6 +1,6 @@
 /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.6 (Tue, 22 May 2012)
+ * version: 2.0.6 (Tue, 12 Jun 2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -837,7 +837,7 @@
 			}
 
 			// Build the neccessary markup
-			coming.wrap = $(coming.tpl.wrap).addClass('fancybox-' + (isTouch ? 'mobile' : 'desktop') + ' fancybox-type-' + type + ' fancybox-tmp ' + coming.wrapCSS).appendTo('body');
+			coming.wrap = $(coming.tpl.wrap).addClass('fancybox-' + (isTouch ? 'mobile' : 'desktop') + ' fancybox-type-' + type + ' fancybox-tmp ' + coming.wrapCSS).appendTo( coming.parent );
 
 			$.extend(coming, {
 				skin  : $('.fancybox-skin',  coming.wrap).css('padding', getValue(coming.padding)),
@@ -937,7 +937,7 @@
 
 		_loadIframe: function() {
 			var coming = F.coming,
-				iframe = $(coming.tpl.iframe.replace('{rnd}', new Date().getTime()))
+				iframe = $(coming.tpl.iframe.replace(/\{rnd\}/g, new Date().getTime()))
 					.attr('scrolling', isTouch ? 'auto' : coming.iframe.scrolling)
 					.attr('src', coming.href);
 
@@ -1045,8 +1045,8 @@
 					} else if (isQuery(content)) {
 						content = content.show().detach();
 
-						$(current.wrap).bind('onReset', function () {
-							$(this).find('.fancybox-inner').children().appendTo('body').hide();
+						current.wrap.bind('onReset', function () {
+							$(this).find('.fancybox-inner').children().appendTo( current.parent ).hide();
 						});
 					}
 				break;
@@ -1705,7 +1705,7 @@
 		if (!selector || options.live === false) {
 			that.unbind('click.fb-start').bind('click.fb-start', run);
 		} else {
-			D.undelegate(selector, 'click.fb-start').delegate(selector, 'click.fb-start', run);
+			D.undelegate(selector, 'click.fb-start').delegate(selector + ":not('.fancybox-item, .fancybox-nav')", 'click.fb-start', run);
 		}
 
 		return this;
@@ -1726,9 +1726,11 @@
 
 	// Tests that need a body at doc ready
 	D.ready(function() {
-		F.defaults.scrollOutside = $.scrollbarWidth();
-
-		F.defaults.fixed = $.support.fixedPosition || !(($.browser.msie && $.browser.version <= 6) || isTouch);
+		$.extend(F.defaults, {
+			scrollOutside : $.scrollbarWidth(),
+			fixed  : $.support.fixedPosition || !(($.browser.msie && $.browser.version <= 6) || isTouch),
+			parent : $('body')
+		});
 	});
 
 }(window, document, jQuery));
