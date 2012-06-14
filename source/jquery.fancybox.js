@@ -111,6 +111,11 @@
 				toggle : [70]  // letter "f" - toggle fullscreen
 			},
 
+			direction : {
+				next: 'down',
+				prev: 'up
+			},
+
 			// Override some properties
 			index   : 0,
 			type    : null,
@@ -455,7 +460,7 @@
 		// Navigate to next gallery item
 		next: function ( direction ) {
 			if (!isString(direction)) {
-				direction = 'down';
+				direction = F.opts.direction.next;
 			}
 
 			if (F.current) {
@@ -466,7 +471,7 @@
 		// Navigate to previous gallery item
 		prev: function ( direction ) {
 			if (!isString(direction)) {
-				direction = 'up';
+				direction = F.opts.direction.prev;
 			}
 
 			if (F.current) {
