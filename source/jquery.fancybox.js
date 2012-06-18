@@ -1,6 +1,6 @@
 /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.6 (Tue, 12 Jun 2012)
+ * version: 2.0.6 (Mon, 18 Jun 2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -92,6 +92,11 @@
 				scrolling : 'auto',
 				preload   : true
 			},
+			swf : {
+				wmode: 'transparent',
+				allowfullscreen   : 'true',
+				allowscriptaccess : 'always'
+			},
 
 			keys  : {
 				next : {
@@ -123,7 +128,6 @@
 				wrap     : '<div class="fancybox-wrap"><div class="fancybox-skin"><div class="fancybox-outer"><div class="fancybox-inner"></div></div></div></div>',
 				image    : '<img class="fancybox-image" src="{href}" alt="" />',
 				iframe   : '<iframe id="fancybox-frame{rnd}" name="fancybox-frame{rnd}" class="fancybox-iframe" frameborder="0" vspace="0" hspace="0"' + ($.browser.msie ? ' allowtransparency="true"' : '') + '></iframe>',
-				swf      : '<object id="fancybox-swf{rnd}" name="fancybox-swf{rnd}" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="100%"><param name="wmode" value="transparent" /><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="{href}" /><embed src="{href}" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="100%" height="100%" wmode="transparent"></embed></object>',
 				error    : '<p class="fancybox-error">The requested content cannot be loaded.<br/>Please try again later.</p>',
 				closeBtn : '<div title="Close" class="fancybox-item fancybox-close"></div>',
 				next     : '<a title="Next" class="fancybox-nav fancybox-next"><span></span></a>',
@@ -993,7 +997,9 @@
 				current,
 				content,
 				type,
-				scrolling;
+				scrolling,
+				href,
+				embed;
 
 			F.hideLoading();
 
@@ -1035,6 +1041,8 @@
 				current : current
 			});
 
+			href = current.href;
+
 			switch (type) {
 				case 'inline':
 				case 'ajax':
@@ -1052,11 +1060,19 @@
 				break;
 
 				case 'image':
-					content = current.tpl.image.replace('{href}', current.href);
+					content = current.tpl.image.replace('{href}', href);
 				break;
 
 				case 'swf':
-					content = current.tpl.swf.replace(/\{rnd\}/g, new Date().getTime()).replace(/\{href\}/g, current.href);
+					content = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="100%"><param name="movie" value="' + href + '"></param>';
+					embed   = '';
+
+					$.each(current.swf, function(name, val) {
+						content += '<param name="' + name + '" value="' + val + '"></param>';
+						embed   += ' ' + name + '="' + val + '"';
+					});
+
+					content += '<embed src="' + href + '" type="application/x-shockwave-flash" width="100%" height="100%"' + embed + '></embed></object>';
 				break;
 			}
 

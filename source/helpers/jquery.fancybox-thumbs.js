@@ -5,9 +5,11 @@
  *
  * Usage:
  *     $(".fancybox").fancybox({
- *         thumbs: {
- *             width  : 50,
- *             height : 50
+ *         helpers : {
+ *             thumbs: {
+ *                 width  : 50,
+ *                 height : 50
+ *             }
  *         }
  *     });
  *
@@ -69,7 +71,7 @@
 				}
 
 				$("<img />").load(function () {
-					var width = this.width,
+					var width  = this.width,
 						height = this.height,
 						widthRatio, heightRatio, parent;
 
@@ -78,26 +80,27 @@
 					}
 
 					//Calculate thumbnail width/height and center it
-					widthRatio = width / thumbWidth;
+					widthRatio  = width / thumbWidth;
 					heightRatio = height / thumbHeight;
+
 					parent = that.list.children().eq(i).find('a');
 
 					if (widthRatio >= 1 && heightRatio >= 1) {
 						if (widthRatio > heightRatio) {
-							width = Math.floor(width / heightRatio);
+							width  = Math.floor(width / heightRatio);
 							height = thumbHeight;
 
 						} else {
-							width = thumbWidth;
+							width  = thumbWidth;
 							height = Math.floor(height / widthRatio);
 						}
 					}
 
 					$(this).css({
-						width: width,
-						height: height,
-						top: Math.floor(thumbHeight / 2 - height / 2),
-						left: Math.floor(thumbWidth / 2 - width / 2)
+						width  : width,
+						height : height,
+						top    : Math.floor(thumbHeight / 2 - height / 2),
+						left   : Math.floor(thumbWidth / 2 - width / 2)
 					});
 
 					parent.width(thumbWidth).height(thumbHeight);

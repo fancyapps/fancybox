@@ -5,8 +5,10 @@
  *
  * Usage:
  *     $(".fancybox").fancybox({
- *         buttons: {
- *             position : 'top'
+ *         helpers : {
+ *             buttons: {
+ *                 position : 'top'
+ *             }
  *         }
  *     });
  *
