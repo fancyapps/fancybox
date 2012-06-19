@@ -1687,7 +1687,8 @@
 	$.fn.fancybox = function (options) {
 		var index,
 			that     = $(this),
-			selector = this.selector || '',
+			fb_class = 'fb_'+ Math.floor( Math.random() * 100000 ), // this class will be added to all thumbs
+			selector = '.'+ fb_class, // use custom class instead of original selector, which may not be usable!
 			run      = function(e) {
 				var what = this, idx = index, relType, relVal;
 
@@ -1718,9 +1719,10 @@
 		options = options || {};
 		index   = options.index || 0;
 
-		if (!selector || options.live === false) {
+		if (options.live === false) {
 			that.unbind('click.fb-start').bind('click.fb-start', run);
 		} else {
+			that.addClass( fb_class );
 			D.undelegate(selector, 'click.fb-start').delegate(selector + ":not('.fancybox-item, .fancybox-nav')", 'click.fb-start', run);
 		}
 
