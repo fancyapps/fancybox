@@ -139,12 +139,12 @@
 }
 
 .fancybox-prev span {
-	left: 20px;
+	left: 10px;
 	background-position: 0 -36px;
 }
 
 .fancybox-next span {
-	right: 20px;
+	right: 10px;
 	background-position: 0 -72px;
 }
 

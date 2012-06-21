@@ -191,8 +191,9 @@
 		//Current state
 		group    : {}, // Selected group
 		opts     : {}, // Group options
-		coming   : null, // Element being loaded
-		current  : null, // Currently loaded element
+		previous : null,  // Previous element
+		coming   : null,  // Element being loaded
+		current  : null,  // Currently loaded element
 		isActive : false, // Is activated
 		isOpen   : false, // Is currently open
 		isOpened : false, // Have been fully opened at least once
@@ -396,6 +397,7 @@
 
 			} else {
 				F.isOpen = F.isOpened = false;
+				F.isClosing = true;
 
 				$('.fancybox-item, .fancybox-nav').remove();
 
@@ -568,7 +570,7 @@
 
 				F.trigger('onUpdate');
 
-			}, (anyway ? 20 : 200));
+			}, (anyway ? 20 : 300));
 		},
 
 		// Shrink content to fit inside viewport or restore if resized
@@ -1013,20 +1015,17 @@
 
 			if (previous) {
 				F.trigger('beforeChange', previous);
+
+				previous.wrap.stop(true).removeClass('fancybox-opened')
+					.find('.fancybox-item, .fancybox-nav')
+					.remove();
+
+				if (previous.wrap.css('position') === 'fixed') {
+					previous.wrap.css(F._getPosition( true ));
+				}
 			}
 
 			F.unbindEvents();
-
-			if (F.isOpened) {
-				$('.fancybox-item, .fancybox-nav').remove();
-
-				previous.wrap.stop(true).removeClass('fancybox-opened');
-
-				F.transitions[ previous.prevMethod ]();
-
-			} else {
-				$('.fancybox-wrap').not( coming.wrap ).stop().trigger('onReset').remove();
-			}
 
 			current   = coming;
 			content   = coming.content;
@@ -1034,11 +1033,12 @@
 			scrolling = coming.scrolling;
 
 			$.extend(F, {
-				wrap    : current.wrap,
-				skin    : current.skin,
-				outer   : current.outer,
-				inner   : current.inner,
-				current : current
+				wrap  : current.wrap,
+				skin  : current.skin,
+				outer : current.outer,
+				inner : current.inner,
+				current  : current,
+				previous : previous
 			});
 
 			href = current.href;
@@ -1086,16 +1086,23 @@
 			// Set initial dimensions and start position
 			F._setDimension();
 
-			current.pos = $.extend({}, current.dim, F._getPosition( true ));
+			current.wrap.removeClass('fancybox-tmp');
 
 			current.inner.css('overflow', scrolling === 'yes' ? 'scroll' : (scrolling === 'no' ? 'hidden' : scrolling));
 
-			current.wrap.removeClass('fancybox-tmp');
+			current.pos = $.extend({}, current.dim, F._getPosition( true ));
 
 			F.isOpen = false;
 			F.coming = null;
 
 			F.bindEvents();
+
+			if (!F.isOpened) {
+				$('.fancybox-wrap').not( current.wrap ).stop().trigger('onReset').remove();
+
+			} else if (previous.prevMethod) {
+				F.transitions[ previous.prevMethod ]();
+			}
 
 			F.transitions[ F.isOpened ? current.nextMethod : current.openMethod ]();
 
@@ -1385,17 +1392,18 @@
 			F.wrap.trigger('onReset').remove();
 
 			$.extend(F, {
-				group    : {},
-				opts     : {},
-				current  : null,
-				isActive : false,
-				isOpened : false,
-				isOpen   : false,
-				router   : false,
-				wrap  : null,
-				skin  : null,
-				outer : null,
-				inner : null
+				group  : {},
+				opts   : {},
+				router : false,
+				current   : null,
+				isActive  : false,
+				isOpened  : false,
+				isOpen    : false,
+				isClosing : false,
+				wrap   : null,
+				skin   : null,
+				outer  : null,
+				inner  : null
 			});
 
 			F.trigger('afterClose', current);
@@ -1461,9 +1469,9 @@
 				skinSpace  = current.skinSpace;
 
 			if (prop === 'width' || prop === 'height') {
-				ratio = (now - fx.start) / (fx.end - fx.start);
+				ratio = fx.end === fx.start ? 1 : (now - fx.start) / (fx.end - fx.start);
 
-				if (fx.start > fx.end) {
+				if (F.isClosing) {
 					ratio = 1 - ratio;
 				}
 
@@ -1476,8 +1484,7 @@
 		},
 
 		zoomIn: function () {
-			var wrap     = F.wrap,
-				current  = F.current,
+			var current  = F.current,
 				startPos = current.pos,
 				effect   = current.openEffect,
 				elastic  = effect === 'elastic',
@@ -1497,7 +1504,7 @@
 				startPos.opacity = 0.1;
 			}
 
-			wrap.css(startPos).animate(endPos, {
+			F.wrap.css(startPos).animate(endPos, {
 				duration : effect === 'none' ? 0 : current.openSpeed,
 				easing   : current.openEasing,
 				step     : elastic ? this.step : null,
@@ -1506,8 +1513,7 @@
 		},
 
 		zoomOut: function () {
-			var wrap     = F.wrap,
-				current  = F.current,
+			var current  = F.current,
 				effect   = current.closeEffect,
 				elastic  = effect === 'elastic',
 				endPos   = {opacity : 0.1};
@@ -1520,7 +1526,7 @@
 				}
 			}
 
-			wrap.animate(endPos, {
+			F.wrap.animate(endPos, {
 				duration : effect === 'none' ? 0 : current.closeSpeed,
 				easing   : current.closeEasing,
 				step     : elastic ? this.step : null,
@@ -1529,8 +1535,7 @@
 		},
 
 		changeIn: function () {
-			var wrap      = F.wrap,
-				current   = F.current,
+			var current   = F.current,
 				effect    = current.nextEffect,
 				startPos  = current.pos,
 				endPos    = { opacity : 1 },
@@ -1553,7 +1558,7 @@
 				}
 			}
 
-			wrap.css(startPos).animate(endPos, {
+			F.wrap.css(startPos).animate(endPos, {
 				duration : effect === 'none' ? 0 : current.nextSpeed,
 				easing   : current.nextEasing,
 				complete : function() {
@@ -1563,9 +1568,8 @@
 		},
 
 		changeOut: function () {
-			var wrap      = F.wrap,
-				current   = F.current,
-				effect    = current.prevEffect,
+			var previous  = F.previous,
+				effect    = previous.prevEffect,
 				endPos    = { opacity : 0.1 },
 				direction = F.direction,
 				distance  = 200;
@@ -1574,9 +1578,9 @@
 				endPos[ direction === 'down' || direction === 'up' ? 'top' : 'left' ] = ( direction === 'up' || direction === 'left' ? '-' : '+' ) + '=' + distance + 'px';
 			}
 
-			wrap.animate(endPos, {
-				duration : effect === 'none' ? 0 : current.prevSpeed,
-				easing   : current.prevEasing,
+			previous.wrap.animate(endPos, {
+				duration : effect === 'none' ? 0 : previous.prevSpeed,
+				easing   : previous.prevEasing,
 				complete : function () {
 					$(this).trigger('onReset').remove();
 				}
