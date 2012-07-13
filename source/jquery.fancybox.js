@@ -1548,7 +1548,7 @@
 			if (effect === 'elastic') {
 				field = direction === 'down' || direction === 'up' ? 'top' : 'left';
 
-				if (direction === 'down' || direction === 'right') {
+				if (direction === 'up' || direction === 'left') {
 					startPos[ field ] = getValue(parseInt(startPos[ field ], 10) - distance);
 					endPos[ field ]   = '+=' + distance + 'px';
 
@@ -1575,7 +1575,7 @@
 				distance  = 200;
 
 			if (effect === 'elastic') {
-				endPos[ direction === 'down' || direction === 'up' ? 'top' : 'left' ] = ( direction === 'up' || direction === 'left' ? '-' : '+' ) + '=' + distance + 'px';
+				endPos[ direction === 'down' || direction === 'up' ? 'top' : 'left' ] = ( direction === 'down' || direction === 'right' ? '-' : '+' ) + '=' + distance + 'px';
 			}
 
 			previous.wrap.animate(endPos, {
