@@ -1252,7 +1252,7 @@
 
 				if (current.aspectRatio) {
 					while ((width_ > maxWidth_ || height_ > maxHeight_) && width > minWidth && height > minHeight) {
-						if (steps++ > 19) {
+						if (steps++ > 49) {
 							break;
 						}
 
