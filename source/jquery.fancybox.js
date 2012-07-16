@@ -1546,6 +1546,11 @@
 			startPos.opacity = 0.1;
 
 			if (effect === 'elastic') {
+				
+				// Prevents horizontal scrollbar (only IE
+				F.origOverflow = F.origOverflow || $('body').css('overflowX');
+				$('body').css({overflowX: 'hidden'});
+
 				field = direction === 'down' || direction === 'up' ? 'top' : 'left';
 
 				if (direction === 'up' || direction === 'left') {
@@ -1563,6 +1568,7 @@
 				easing   : current.nextEasing,
 				complete : function() {
 					setTimeout(F._afterZoomIn, 10);
+					effect === 'elastic' && $('body').css({overflowX: F.origOverflow});
 				}
 			});
 		},
