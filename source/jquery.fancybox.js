@@ -1263,6 +1263,11 @@
 							width  = minWidth;
 							height = width / ratio;
 						}
+						
+						if (width > maxWidth) {
+							width = maxWidth;
+							height = width / ratio;
+						}						
 
 						inner.width( getScalar( width ) ).height( getScalar( height ) );
 
