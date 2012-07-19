@@ -117,8 +117,8 @@
 			},
 
 			direction : {
-				next: 'down',
-				prev: 'up'
+				next: 'right',
+				prev: 'left'
 			},
 
 			// Override some properties
@@ -482,10 +482,10 @@
 
 			if (current) {
 				if (!isString(direction)) {
-					direction = current.direction.next;
+					direction = current.direction.prev;
 				}
 
-				F.jumpto(current.index + 1, direction, 'prev');
+				F.jumpto(current.index - 1, direction, 'prev');
 			}
 		},
 
