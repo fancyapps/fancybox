@@ -754,7 +754,8 @@
 				obj    = F.group[ index ] || null,
 				href,
 				type,
-				margin;
+				margin,
+				padding;
 
 			if (!obj) {
 				return false;
@@ -762,11 +763,16 @@
 
 			coming = $.extend(true, {}, F.opts, obj);
 
-			// Convert margin property to array - top, right, bottom, left
-			margin = coming.margin;
+			// Convert margin and padding properties to array - top, right, bottom, left
+			margin  = coming.margin;
+			padding = coming.padding;
 
 			if ($.type(margin) === 'number') {
 				coming.margin = [margin, margin, margin, margin];
+			}
+
+			if ($.type(padding) === 'number') {
+				coming.padding = [padding, padding, padding, padding];
 			}
 
 			// 'modal' propery is just a shortcut
@@ -855,9 +861,13 @@
 			coming.wrap = $(coming.tpl.wrap).addClass('fancybox-' + (isTouch ? 'mobile' : 'desktop') + ' fancybox-type-' + type + ' fancybox-tmp ' + coming.wrapCSS).appendTo( coming.parent );
 
 			$.extend(coming, {
-				skin  : $('.fancybox-skin',  coming.wrap).css('padding', getValue(coming.padding)),
+				skin  : $('.fancybox-skin',  coming.wrap),
 				outer : $('.fancybox-outer', coming.wrap),
 				inner : $('.fancybox-inner', coming.wrap)
+			});
+
+			$.each(["Top", "Right", "Bottom", "Left"], function(i, v) {
+				coming.skin.css('padding' + v, getValue(coming.padding[ i ]));
 			});
 
 			// Check before try to load; 'inline' and 'html' types need content, others - href
@@ -1705,8 +1715,7 @@
 					target = F.inner;
 				break;
 
-				case 'float':
-				default:
+				default: // 'float'
 					target = F.skin;
 
 					title
