@@ -1,6 +1,6 @@
 /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.6 (Mon, 18 Jun 2012)
+ * version: 2.0.6 (Thu, 19 Jul 2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -118,7 +118,7 @@
 
 			direction : {
 				next: 'down',
-				prev: 'up
+				prev: 'up'
 			},
 
 			// Override some properties
@@ -298,7 +298,7 @@
 						} else if (F.isSWF(href)) {
 							type = 'swf';
 
-						} else if (href.match(/^#/)) {
+						} else if (href.charAt(0) === '#') {
 							type = 'inline';
 
 						} else if (isString(element)) {
@@ -465,23 +465,27 @@
 
 		// Navigate to next gallery item
 		next: function ( direction ) {
-			if (!isString(direction)) {
-				direction = F.opts.direction.next;
-			}
+			var current = F.current;
 
-			if (F.current) {
-				F.jumpto(F.current.index + 1, direction, 'next');
+			if (current) {
+				if (!isString(direction)) {
+					direction = current.direction.next;
+				}
+
+				F.jumpto(current.index + 1, direction, 'next');
 			}
 		},
 
 		// Navigate to previous gallery item
 		prev: function ( direction ) {
-			if (!isString(direction)) {
-				direction = F.opts.direction.prev;
-			}
+			var current = F.current;
 
-			if (F.current) {
-				F.jumpto(F.current.index - 1, direction, 'prev');
+			if (current) {
+				if (!isString(direction)) {
+					direction = current.direction.next;
+				}
+
+				F.jumpto(current.index + 1, direction, 'prev');
 			}
 		},
 
@@ -631,7 +635,7 @@
 
 		// Unbind the keyboard / clicking actions
 		unbindEvents: function () {
-			if (F.wrap) {
+			if (F.wrap && isQuery(F.wrap)) {
 				F.wrap.unbind('.fb');
 			}
 
@@ -1268,11 +1272,11 @@
 							width  = minWidth;
 							height = width / ratio;
 						}
-						
+
 						if (width > maxWidth) {
-							width = maxWidth;
+							width  = maxWidth;
 							height = width / ratio;
-						}						
+						}
 
 						inner.width( getScalar( width ) ).height( getScalar( height ) );
 
@@ -1558,7 +1562,7 @@
 			if (effect === 'elastic') {
 				field = direction === 'down' || direction === 'up' ? 'top' : 'left';
 
-				if (direction === 'down' || direction === 'right') {
+				if (direction === 'up' || direction === 'left') {
 					startPos[ field ] = getValue(parseInt(startPos[ field ], 10) - distance);
 					endPos[ field ]   = '+=' + distance + 'px';
 
@@ -1585,7 +1589,7 @@
 				distance  = 200;
 
 			if (effect === 'elastic') {
-				endPos[ direction === 'down' || direction === 'up' ? 'top' : 'left' ] = ( direction === 'up' || direction === 'left' ? '-' : '+' ) + '=' + distance + 'px';
+				endPos[ direction === 'down' || direction === 'up' ? 'top' : 'left' ] = ( direction === 'down' || direction === 'right' ? '-' : '+' ) + '=' + distance + 'px';
 			}
 
 			previous.wrap.animate(endPos, {
@@ -1646,7 +1650,7 @@
 				overlay.bind('click.fb', F.close);
 			}
 
-			if (F.opts.fixed && !isTouch) {
+			if (F.defaults.fixed && !isTouch) {
 				overlay.addClass('overlay-fixed');
 
 			} else {
@@ -1679,20 +1683,47 @@
 		beforeShow: function (opts) {
 			var text = F.current.title,
 				type = opts.type,
-				title;
+				title,
+				target;
 
-			if (text) {
-				title = $('<div class="fancybox-title fancybox-title-' + type + '-wrap">' + text + '</div>').appendTo('body');
+			if (!isString(text) || $.trim(text) === '') {
+				return;
+			}
 
-				if (type === 'float') {
-					// This helps for some browsers
-					title.width( title.width() ).wrapInner('<span class="child"></span>');
+			title = $('<div class="fancybox-title fancybox-title-' + type + '-wrap">' + text + '</div>');
 
-					// Increase bottom margin so this title will also fit into viewport
-					F.current.margin[2] += Math.abs(parseInt(title.css('margin-bottom'), 10));
-				}
+			switch (type) {
+				case 'inside':
+					target = F.skin;
+				break;
 
-				title.appendTo(type === 'over' ? F.inner : (type === 'outside' ? F.wrap : F.skin));
+				case 'outside':
+					target = F.wrap;
+				break;
+
+				case 'over':
+					target = F.inner;
+				break;
+
+				case 'float':
+				default:
+					target = F.skin;
+
+					title
+						.appendTo('body')
+						.width(title.width()) //This helps for some browsers
+						.wrapInner('<span class="child"></span>');
+
+						//Increase bottom margin so this title will also fit into viewport
+						F.current.margin[2] += Math.abs(parseInt(title.css('margin-bottom'), 10));
+				break;
+			}
+
+			if (opts.position === 'top'){
+				title.prependTo(target);
+
+			} else {
+				title.appendTo(target);
 			}
 		}
 	};
