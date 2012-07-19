@@ -1,6 +1,6 @@
  /*!
  * Media helper for fancyBox
- * version: 1.0.2
+ * version: 1.0.3
  * @requires fancyBox v2.0 or later
  *
  * Usage:
@@ -140,10 +140,10 @@
 				url  : '//$1/p/$2/media/'
 			},
 			google_maps : {
-				matcher : /maps\.google\.com\/(\?ll=|maps\?)(.*)/i,
+				matcher : /maps\.google\.([a-z]{2,3}(\.[a-z]{2})?)\/(\?ll=|maps\?)(.*)/i,
 				type : 'iframe',
 				url  : function( rez ) {
-					return '//maps.google.com/' + rez[1] + '' + rez[2] + '&output=' + (rez[2].indexOf('layer=c') > 0 ? 'svembed' : 'embed');
+					return '//maps.google.' + rez[1] + '/' + rez[3] + '' + rez[4] + '&output=' + (rez[4].indexOf('layer=c') > 0 ? 'svembed' : 'embed');
 				}
 			}
 		},
