@@ -232,8 +232,10 @@
 
 			opts = $.isPlainObject(opts) ? opts : {};
 
-			// Close if already active
-			F.close(true);
+			// Close if already active and not explicitly set to stayOpen
+            if(!opts.stayOpen){
+              F.close(true);
+            }
 
 			// Normalize group
 			if (!$.isArray(group)) {
