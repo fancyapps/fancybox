@@ -259,7 +259,7 @@
 
 					if (isQuery(element)) {
 						obj = {
-							href    : element.attr('href'),
+							href    : element.data('src') || element.attr('href'),
 							title   : element.attr('title'),
 							isDom   : true,
 							element : element
