@@ -1,0 +1,30 @@
+.fancybox-zoom {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	width: 36px;
+	height: 36px;
+	cursor: pointer;
+	z-index: 8040;
+	background: url('fancybox_zoom.png');
+}
+
+.fancybox-zoomin {
+    bottom: 18px;
+    right: 21px;
+    background-position: 0 0;
+}
+
+.fancybox-zoomout {
+    bottom: 18px;
+    right: 60px;
+    background-position: -36px 0;
+}
+
+.fancybox-zoomout.disabled {
+    background-position: -36px -36px;
+}
+
+.fancybox-zoomin.disabled {
+    background-position: 0 -36px;
+}

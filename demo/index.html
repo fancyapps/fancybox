@@ -25,6 +25,11 @@
 	<!-- Add Media helper (this is optional) -->
 	<script type="text/javascript" src="../source/helpers/jquery.fancybox-media.js?v=1.0.6"></script>
 
+	<!-- Add Zoom helper (this is optional) -->
+	<script type="text/javascript" src="../lib/jquery-ui-core-widget-mouse-draggable.min.js"></script>
+	<script type="text/javascript" src="../source/helpers/jquery.fancybox-zoom.js?v=1.0.0"></script>
+	<link rel="stylesheet" type="text/css" href="../source/helpers/jquery.fancybox-zoom.css?v=1.0.0" />
+
 	<script type="text/javascript">
 		$(document).ready(function() {
 			/*
@@ -139,6 +144,20 @@
 					thumbs : {
 						width  : 50,
 						height : 50
+					}
+				}
+			});
+
+			/*
+			 *  Zoom helper.
+			 */
+
+			$('.fancybox-zoomer').fancybox({
+				arrows : false,
+				
+				helpers : {
+					zoom : {
+						maxZoom: 3
 					}
 				}
 			});
@@ -281,6 +300,17 @@
 		<a class="fancybox-thumbs" data-fancybox-group="thumb" href="2_b.jpg"><img src="2_s.jpg" alt="" /></a>
 
 		<a class="fancybox-thumbs" data-fancybox-group="thumb" href="1_b.jpg"><img src="1_s.jpg" alt="" /></a>
+	</p>
+
+	<h3>Zoom helper</h3>
+	<p>
+		<a class="fancybox-zoomer" data-fancybox-group="zoom" href="4_b.jpg"><img src="4_s.jpg" alt="" /></a>
+		
+		<a class="fancybox-zoomer" data-fancybox-group="zoom" href="3_b.jpg"><img src="3_s.jpg" alt="" /></a>
+		
+		<a class="fancybox-zoomer" data-fancybox-group="zoom" href="2_b.jpg"><img src="2_s.jpg" alt="" /></a>
+		
+		<a class="fancybox-zoomer" data-fancybox-group="zoom" href="1_b.jpg"><img src="1_s.jpg" alt="" /></a>
 	</p>
 
 	<h3>Media helper</h3>
