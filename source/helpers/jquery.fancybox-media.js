@@ -59,7 +59,7 @@
 			}
 
 			$.each(rez, function(key, value) {
-				url = url.replace( '$' + key, value );
+				url = url.replace( '$' + key, value || '' );
 			});
 
 			if (params.length) {
@@ -87,7 +87,7 @@
 				url  : '//www.youtube.com/embed/$3'
 			},
 			vimeo : {
-				matcher : /(vimeo.com|vimeopro.com)\/((.*)\/(.*)\/)?(\d+)\/?(.*)/,
+				matcher : /(vimeo.com|vimeopro.com)\/((.*)\/(.*)\/)?(\d+)(#t=\d+)?\/?(.*)/,
 				params  : {
 					autoplay      : 1,
 					hd            : 1,
@@ -98,7 +98,7 @@
 					fullscreen    : 1
 				},
 				type : 'iframe',
-				url  : '//player.vimeo.com/video/$5'
+				url  : '//player.vimeo.com/video/$5$6'
 			},
 			metacafe : {
 				matcher : /metacafe.com\/(?:watch|fplayer)\/([\w\-]{1,10})/,
