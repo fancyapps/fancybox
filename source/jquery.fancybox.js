@@ -1,6 +1,6 @@
 /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.6 (Mon, 30 Jul 2012)
+ * version: 2.0.6 (Tue, 31 Jul 2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -385,7 +385,7 @@
 				F.imgPreload.onload = F.imgPreload.onerror = null;
 			}
 
-			// If first item has been canceled, then clear everything
+			// If the first item has been canceled, then clear everything
 			if (coming.wrap) {
 				coming.wrap.stop(true).trigger('onReset').remove();
 			}
@@ -1224,6 +1224,15 @@
 			} else if (current.autoWidth || current.autoHeight) {
 				inner.addClass( 'fancybox-tmp' );
 
+				// Set width or height in case we need to calculate only one dimension
+				if (!current.autoWidth) {
+					inner.width( origWidth );
+				}
+
+				if (!current.autoHeight) {
+					inner.height( origHeight );
+				}
+
 				if (current.autoWidth) {
 					origWidth = inner.width();
 				}
@@ -1716,13 +1725,15 @@
 
 			} else {
 				this.update();
-
-				this.onUpdate = function () {
-					this.update();
-				};
 			}
 
 			overlay.show();
+		},
+
+		onUpdate : function(opts, obj) {
+			if (!obj.fixed || isTouch) {
+				this.update();
+			}
 		},
 
 		afterClose: function (opts) {
