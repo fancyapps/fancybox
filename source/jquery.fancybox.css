@@ -174,7 +174,8 @@
 	z-index: 8010;
 	background: transparent url('blank.gif');
 	background: rgba(0,0,0,0.5);
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#7F000000, endColorstr=#7F000000);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#7F000000,endColorstr=#7F000000);
+	zoom: 1;
 }
 
 .fancybox-overlay-fixed {

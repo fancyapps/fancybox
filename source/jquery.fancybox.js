@@ -1737,16 +1737,23 @@
 		},
 
 		afterClose: function (opts) {
-			var that = this;
+			var that  = this,
+				speed = opts.speedOut || 0;
+
+			// Older IE show black background if animating transparent element having filters
+			if ($.browser.msie && getScalar($.browser.version) < 9) {
+				speed = 0;
+			}
+
 			// Remove overlay if exists and fancyBox is not opening
 			// (e.g., it is not being open using afterClose callback)
 			if (that.overlay && !F.isActive) {
-				that.overlay.fadeOut(opts.speedOut || 0, function () {
+				that.overlay.fadeOut(speed || 0, function () {
 					that.el.removeClass('fancybox-lock');
 
 					$('body').css('margin-right', that.margin);
 
-					$(this).remove();
+					that.overlay.remove();
 
 					that.overlay = null;
 				});
