@@ -1131,7 +1131,20 @@
 
 			current.wrap.removeClass('fancybox-tmp');
 
-			current.inner.css('overflow', scrolling === 'yes' ? 'scroll' : (scrolling === 'no' ? 'hidden' : scrolling));
+			var s = {x : 'hidden', y : 'hidden'};
+			if(!~scrolling.indexOf(',')) {
+				s.x = s.y = scrolling;
+			} else {
+				scrolling = scrolling.split(',');
+				if(scrolling.length === 2) {
+					s.x = scrolling[0];
+					s.y = scrolling[1];
+				}				
+			}
+			
+			current.inner
+				.css('overflow-x', s.x === 'yes' ? 'scroll' : (s.x === 'no' ? 'hidden' : s.x))
+				.css('overflow-y', s.y === 'yes' ? 'scroll' : (s.y === 'no' ? 'hidden' : s.y));
 
 			current.pos = $.extend({}, current.dim, F._getPosition( true ));
 
