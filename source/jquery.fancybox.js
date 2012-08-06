@@ -1437,8 +1437,11 @@
 
 			F.trigger('afterShow');
 
-			// Start slideshow
-			if (F.opts.autoPlay && !F.player.isActive) {
+			// Stop the slideshow if this is the last item
+			if (!current.loop && current.index === current.group.length - 1) {
+				F.play( false );
+
+			} else if (F.opts.autoPlay && !F.player.isActive) {
 				F.opts.autoPlay = false;
 
 				F.play();
@@ -1749,9 +1752,9 @@
 			// (e.g., it is not being open using afterClose callback)
 			if (that.overlay && !F.isActive) {
 				that.overlay.fadeOut(speed || 0, function () {
-					that.el.removeClass('fancybox-lock');
-
 					$('body').css('margin-right', that.margin);
+
+					that.el.removeClass('fancybox-lock');
 
 					that.overlay.remove();
 

@@ -1,6 +1,13 @@
 fancyBox - Changelog
 =========
 
+### Version 2.1.0 - July 31, 2012
+
+* Fixed #188 -
+* New
+* Improved
+* Padding option now accepts array e.g., padding: [15, 50, 10, 5])
+
 ### Version 2.0.6 - April 16, 2012
 
 * Fixed #188 - keystrokes in contenteditable
