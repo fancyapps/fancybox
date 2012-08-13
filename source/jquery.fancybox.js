@@ -1,6 +1,6 @@
 /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.6 (Tue, 31 Jul 2012)
+ * version: 2.0.6 (Mon, 13 Aug 2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -102,16 +102,16 @@
 
 			keys  : {
 				next : {
-					13 : 'right', // enter
-					34 : 'down',  // page down
-					39 : 'right', // right arrow
-					40 : 'down'   // down arrow
+					13 : 'left', // enter
+					34 : 'up',   // page down
+					39 : 'left', // right arrow
+					40 : 'up'    // down arrow
 				},
 				prev : {
-					8  : 'left', // backspace
-					33 : 'up',   // page up
-					37 : 'left', // left arrow
-					38 : 'up'    // up arrow
+					8  : 'right',  // backspace
+					33 : 'down',   // page up
+					37 : 'right',  // left arrow
+					38 : 'down'    // up arrow
 				},
 				close  : [27], // escape key
 				play   : [32], // space - start/stop slideshow
@@ -119,8 +119,8 @@
 			},
 
 			direction : {
-				next: 'right',
-				prev: 'left'
+				next : 'left',
+				prev : 'right'
 			},
 
 			scrollOutside  : true,
@@ -176,9 +176,7 @@
 					closeClick : true,
 					speedOut   : 200,
 					showEarly  : false,
-					css : {
-						'background-color' : 'rgba(0,0,0,0.5)'
-					}
+					css        : {}
 				},
 				title : {
 					type : 'float' // 'float', 'inside', 'outside' or 'over'
@@ -362,7 +360,7 @@
 
 			F.group = group;
 
-			return F._start(F.opts.index || 0);
+			return F._start(F.opts.index);
 		},
 
 		// Cancel image loading or abort ajax request
@@ -418,7 +416,7 @@
 
 				$('.fancybox-item, .fancybox-nav').remove();
 
-				F.wrap.stop(true).removeClass('fancybox-opened');
+				F.wrap.stop(true, true).removeClass('fancybox-opened');
 
 				if (F.wrap.css('position') === 'fixed') {
 					F.wrap.css(F._getPosition( true ));
@@ -511,7 +509,7 @@
 
 			index = getScalar(index);
 
-			F.direction = direction || (index > current.index ? 'right' : 'left');
+			F.direction = direction || current.direction[ (index >= current.index ? 'next' : 'prev') ];
 			F.router    = router || 'jumpto';
 
 			if (current.loop) {
@@ -711,10 +709,10 @@
 					if (delta !== 0 && !canScroll) {
 						if (F.group.length > 1 && !current.canShrink) {
 							if (deltaY > 0 || deltaX > 0) {
-								F.prev( deltaY > 0 ? 'up' : 'left' );
+								F.prev( deltaY > 0 ? 'down' : 'left' );
 
 							} else if (deltaY < 0 || deltaX < 0) {
-								F.next( deltaY < 0 ? 'down' : 'right' );
+								F.next( deltaY < 0 ? 'up' : 'right' );
 							}
 
 							e.preventDefault();
@@ -764,11 +762,14 @@
 
 		_start: function (index) {
 			var coming = {},
-				obj    = F.group[ index ] || null,
+				obj,
 				href,
 				type,
 				margin,
 				padding;
+
+			index = getScalar( index );
+			obj   = F.group[ index ] || null;
 
 			if (!obj) {
 				return false;
@@ -1608,12 +1609,10 @@
 				distance  = 200,
 				field;
 
-			startPos.opacity = 0.1;
-
 			if (effect === 'elastic') {
 				field = direction === 'down' || direction === 'up' ? 'top' : 'left';
 
-				if (direction === 'up' || direction === 'left') {
+				if (direction === 'down' || direction === 'right') {
 					startPos[ field ] = getValue(getScalar(startPos[ field ]) - distance);
 					endPos[ field ]   = '+=' + distance + 'px';
 
@@ -1621,6 +1620,9 @@
 					startPos[ field ] = getValue(getScalar(startPos[ field ]) + distance);
 					endPos[ field ]   = '-=' + distance + 'px';
 				}
+
+			} else if (effect === 'fade') {
+				startPos.opacity = 0.1;
 			}
 
 			F.wrap.css(startPos).animate(endPos, {
@@ -1640,7 +1642,7 @@
 				distance  = 200;
 
 			if (effect === 'elastic') {
-				endPos[ direction === 'down' || direction === 'up' ? 'top' : 'left' ] = ( direction === 'down' || direction === 'right' ? '-' : '+' ) + '=' + distance + 'px';
+				endPos[ direction === 'down' || direction === 'up' ? 'top' : 'left' ] = ( direction === 'up' || direction === 'left' ? '-' : '+' ) + '=' + distance + 'px';
 			}
 
 			previous.wrap.animate(endPos, {
@@ -1860,21 +1862,32 @@
 		return this;
 	};
 
-	if (!$.scrollbarWidth) {
-		// http://benalman.com/projects/jquery-misc-plugins/#scrollbarwidth
-		$.scrollbarWidth = function() {
-			var parent, child, width;
-			parent = $('<div style="width:50px;height:50px;overflow:auto"><div/></div>').appendTo('body');
-			child  = parent.children();
-			width  = child.innerWidth() - child.height( 99 ).innerWidth();
-			parent.remove();
-
-			return width;
-		};
-	}
-
 	// Tests that need a body at doc ready
 	D.ready(function() {
+		if ( $.scrollbarWidth === undefined ) {
+			// http://benalman.com/projects/jquery-misc-plugins/#scrollbarwidth
+			$.scrollbarWidth = function() {
+				var parent = $('<div style="width:50px;height:50px;overflow:auto"><div/></div>').appendTo('body'),
+					child  = parent.children(),
+					width  = child.innerWidth() - child.height( 99 ).innerWidth();
+
+				parent.remove();
+
+				return width;
+			};
+		}
+
+		if ( $.support.fixedPosition === undefined ) {
+			$.support.fixedPosition = (function() {
+				var elem  = $('<div style="position:fixed;top:20px;"></div>').appendTo('body'),
+					fixed = ( elem[0].offsetTop === 20 || elem[0].offsetTop === 15 );
+
+				elem.remove();
+
+				return fixed;
+			}());
+		}
+
 		$.extend(F.defaults, {
 			scrollbarWidth : $.scrollbarWidth(),
 			fixed  : $.support.fixedPosition,

@@ -1,6 +1,6 @@
 /*!
  * Media helper for fancyBox
- * version: 1.0.3
+ * version: 1.0.3 (Mon, 13 Aug 2012)
  * @requires fancyBox v2.0 or later
  *
  * Usage:
@@ -15,13 +15,26 @@
  *         helpers : {
  *             media: {
  *                 youtube : {
- *                     autoplay : 0
+ *                     params : {
+ *                         autoplay : 0
+ *                     }
  *                 }
  *             }
  *         }
  *     });
  *
+ * Or:
+ *     $(".fancybox").fancybox({,
+ *	       helpers : {
+ *             media: true
+ *         },
+ *         youtube : {
+ *             autoplay: 0
+ *         }
+ *     });
+ *
  *  Supports:
+ *
  *      Youtube
  *          http://www.youtube.com/watch?v=opj24KnzrWo
  *          http://youtu.be/opj24KnzrWo
@@ -72,7 +85,7 @@
 
 	//Add helper object
 	F.helpers.media = {
-		defaults : {
+		types : {
 			youtube : {
 				matcher : /(youtube\.com|youtu\.be)\/(watch\?v=|v\/|u\/|embed)?([\w-]{11}|\?listType=(.*)&list=(.*)).*/i,
 				params  : {
@@ -151,26 +164,23 @@
 
 		beforeLoad : function(opts, obj) {
 			var url   = obj.href || '',
-				types = $.extend(true, {}, this.defaults, opts || {}),
 				type  = false,
 				what,
 				item,
 				rez,
 				params;
 
-			for (what in types) {
-				if (types.hasOwnProperty(what)){
-					item = types[ what ];
-					rez  = url.match( item.matcher );
+			for (what in this.types) {
+				item = this.types[ what ];
+				rez  = url.match( item.matcher );
 
-					if (rez) {
-						type   = item.type;
-						params = item.params || null;
+				if (rez) {
+					type   = item.type;
+					params = $.extend(true, {}, item.params, obj[ what ] || ($.isPlainObject(opts[ what ]) ? opts[ what ].params : null));
 
-						url = $.type( item.url ) === "function" ? item.url.call( this, rez, params, obj ) : format( item.url, rez, params );
+					url = $.type( item.url ) === "function" ? item.url.call( this, rez, params, obj ) : format( item.url, rez, params );
 
-						break;
-					}
+					break;
 				}
 			}
 

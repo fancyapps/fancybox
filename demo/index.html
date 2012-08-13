@@ -5,7 +5,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
 	<!-- Add jQuery library -->
-	<script type="text/javascript" src="../lib/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript" src="../lib/jquery-1.8.0.min.js"></script>
 
 	<!-- Add mousewheel plugin (this is optional) -->
 	<script type="text/javascript" src="../lib/jquery.mousewheel-3.0.6.pack.js"></script>
@@ -37,15 +37,14 @@
 			 *  Different effects
 			 */
 
-			// Change title type, overlay opening speed and opacity
+			// Change title type, overlay closing speed
 			$(".fancybox-effects-a").fancybox({
 				helpers: {
 					title : {
 						type : 'outside'
 					},
 					overlay : {
-						speedIn : 500,
-						opacity : 0.95
+						speedOut : 0
 					}
 				}
 			});
@@ -67,13 +66,15 @@
 				wrapCSS    : 'fancybox-custom',
 				closeClick : true,
 
+				openEffect : 'none',
+
 				helpers : {
 					title : {
 						type : 'inside'
 					},
 					overlay : {
 						css : {
-							'background-color' : '#eee'
+							'background' : 'rgba(238,238,238,0.85)'
 						}
 					}
 				}
@@ -278,6 +279,10 @@
 	</p>
 
 	<h3>Media helper</h3>
+	<p>
+		Will not run from your local computer, requires a server to run.
+	</p>
+	
 	<ul>
 		<li><a class="fancybox-media" href="http://www.youtube.com/watch?v=opj24KnzrWo">Youtube</a></li>
 		<li><a class="fancybox-media" href="http://vimeo.com/25634903">Vimeo</a></li>
