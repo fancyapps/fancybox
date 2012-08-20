@@ -1,6 +1,6 @@
 /*!
  * fancyBox - jQuery Plugin
- * version: 2.0.6 (Mon, 13 Aug 2012)
+ * version: 2.1.0 (Mon, 20 Aug 2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -18,7 +18,7 @@
 		F = $.fancybox = function () {
 			F.open.apply( this, arguments );
 		},
-		didUpdate = false,
+		didUpdate = null,
 		isTouch	  = document.createTouch !== undefined,
 
 		isQuery	= function(obj) {
@@ -34,13 +34,13 @@
 			return (el && !(el.style.overflow && el.style.overflow === 'hidden') && ((el.clientWidth && el.scrollWidth > el.clientWidth) || (el.clientHeight && el.scrollHeight > el.clientHeight)));
 		},
 		getScalar = function(value, dim) {
-			value = parseInt(value, 10);
+			var value_ = parseInt(value, 10);
 
 			if (dim && isPercentage(value)) {
-				value = F.getViewport()[ dim ] / 100 * value;
+				value_ = F.getViewport()[ dim ] / 100 * value_;
 			}
 
-			return Math.ceil(value);
+			return Math.ceil(value_);
 		},
 		getValue = function(value, dim) {
 			return getScalar(value, dim) + 'px';
@@ -48,7 +48,7 @@
 
 	$.extend(F, {
 		// The current version of fancyBox
-		version: '2.0.6',
+		version: '2.1.0',
 
 		defaults: {
 			padding : 15,
@@ -138,9 +138,9 @@
 				image    : '<img class="fancybox-image" src="{href}" alt="" />',
 				iframe   : '<iframe id="fancybox-frame{rnd}" name="fancybox-frame{rnd}" class="fancybox-iframe" frameborder="0" vspace="0" hspace="0"' + ($.browser.msie ? ' allowtransparency="true"' : '') + '></iframe>',
 				error    : '<p class="fancybox-error">The requested content cannot be loaded.<br/>Please try again later.</p>',
-				closeBtn : '<div title="Close" class="fancybox-item fancybox-close"></div>',
-				next     : '<a title="Next" class="fancybox-nav fancybox-next"><span></span></a>',
-				prev     : '<a title="Previous" class="fancybox-nav fancybox-prev"><span></span></a>'
+				closeBtn : '<a title="Close" class="fancybox-item fancybox-close" href="javascript:;"></a>',
+				next     : '<a title="Next" class="fancybox-nav fancybox-next" href="javascript:;"><span></span></a>',
+				prev     : '<a title="Previous" class="fancybox-nav fancybox-prev" href="javascript:;"><span></span></a>'
 			},
 
 			// Properties for each animation type
@@ -175,7 +175,7 @@
 				overlay : {
 					closeClick : true,
 					speedOut   : 200,
-					showEarly  : false,
+					showEarly  : true,
 					css        : {}
 				},
 				title : {
@@ -546,8 +546,8 @@
 		},
 
 		update: function (e) {
-			var anyway = !e || (e && e.type === 'orientationchange'),
-				scroll = e && e.type === 'scroll';
+			var type = (e && e.type),
+				anyway = !type || type === 'orientationchange';
 
 			if (anyway) {
 				clearTimeout(didUpdate);
@@ -559,8 +559,8 @@
 				return;
 			}
 
-			// Touch devices need some help to restore document dimensions
-			if (anyway && isTouch) {
+			// Help browser to restore document dimensions
+			if (anyway || isTouch) {
 				F.wrap.removeAttr('style').addClass('fancybox-tmp');
 
 				F.trigger('onUpdate');
@@ -569,27 +569,25 @@
 			didUpdate = setTimeout(function() {
 				var current = F.current;
 
-				didUpdate = null;
-
 				if (!current) {
 					return;
 				}
 
 				F.wrap.removeClass('fancybox-tmp');
 
-				if ((current.autoResize && !scroll) || anyway) {
+				if (type !== 'scroll') {
 					F._setDimension();
-
-					F.trigger('onUpdate');
 				}
 
-				if ((current.autoCenter && !(scroll && current.canShrink)) || anyway) {
+				if (!(type === 'scroll' && current.canShrink)) {
 					F.reposition(e);
 				}
 
 				F.trigger('onUpdate');
 
-			}, (anyway ? 20 : 300));
+				didUpdate = null;
+
+			}, (isTouch ? 500 : (anyway ? 20 : 300)));
 		},
 
 		// Shrink content to fit inside viewport or restore if resized
@@ -634,13 +632,23 @@
 		},
 
 		getViewport: function () {
-			// See http://bugs.jquery.com/ticket/6724
-			return {
-				x: W.scrollLeft(),
-				y: W.scrollTop(),
-				w: (isTouch && window.innerWidth ? window.innerWidth : W.width()) - F.defaults.scrollbarWidth,
-				h: isTouch && window.innerHeight ? window.innerHeight : W.height()
-			};
+			var lock = F.current ? F.current.locked : false,
+				rez  = {
+					x: W.scrollLeft(),
+					y: W.scrollTop()
+				};
+
+			if (lock) {
+				rez.w = lock[0].clientWidth;
+				rez.h = lock[0].clientHeight;
+
+			} else {
+				// See http://bugs.jquery.com/ticket/6724
+				rez.w = isTouch && window.innerWidth  ? window.innerWidth  : W.width();
+				rez.h = isTouch && window.innerHeight ? window.innerHeight : W.height();
+			}
+
+			return rez;
 		},
 
 		// Unbind the keyboard / clicking actions
@@ -661,7 +669,9 @@
 				return;
 			}
 
-			W.bind('resize.fb orientationchange.fb' + (current.autoCenter && !current.locked ? ' scroll.fb' : ''), F.update);
+			// Changing document height on iOS devices triggers a 'resize' event,
+			// that can change document height... repeating infinitely
+			W.bind('orientationchange.fb' + (isTouch ? '' : ' resize.fb' ) + (current.autoCenter && !current.locked ? ' scroll.fb' : ''), F.update);
 
 			keys = current.keys;
 
@@ -991,7 +1001,12 @@
 				F.showLoading();
 
 				iframe.one('load', function() {
-					$(this).bind('load.fb', F.update).data('ready', 1);
+					$(this).data('ready', 1);
+
+					// iOS will lose scrolling if we resize
+					if (!isTouch) {
+						$(this).bind('load.fb', F.update);
+					}
 
 					// Without this trick:
 					//   - iframe won't scroll on iOS devices
@@ -1127,12 +1142,13 @@
 			// Give a chance for helpers or callbacks to update elements
 			F.trigger('beforeShow');
 
+			// Set scrolling before calculating dimensions
+			current.inner.css('overflow', scrolling === 'yes' ? 'scroll' : (scrolling === 'no' ? 'hidden' : scrolling));
+
 			// Set initial dimensions and start position
 			F._setDimension();
 
 			current.wrap.removeClass('fancybox-tmp');
-
-			current.inner.css('overflow', scrolling === 'yes' ? 'scroll' : (scrolling === 'no' ? 'hidden' : scrolling));
 
 			current.pos = $.extend({}, current.dim, F._getPosition( true ));
 
@@ -1385,7 +1401,7 @@
 			if (current.autoCenter && current.fixed && !onlyAbsolute && height <= viewport.h && width <= viewport.w) {
 				rez.position = 'fixed';
 
-			} else if (current.locked !== true) {
+			} else if (!current.locked) {
 				rez.top  += viewport.y;
 				rez.left += viewport.x;
 			}
@@ -1433,8 +1449,6 @@
 					$(current.tpl.next).appendTo(F.outer).bind('click.fb', F.next);
 				}
 			}
-
-			current.wrap.focus();
 
 			F.trigger('afterShow');
 
@@ -1510,7 +1524,7 @@
 				pos.left = viewport.x + (viewport.w - width)  * current.leftRatio;
 			}
 
-			if (current.locked === true) {
+			if (current.locked) {
 				pos.top  -= viewport.y;
 				pos.left -= viewport.x;
 			}
@@ -1609,6 +1623,8 @@
 				distance  = 200,
 				field;
 
+			startPos.opacity = 0.1;
+
 			if (effect === 'elastic') {
 				field = direction === 'down' || direction === 'up' ? 'top' : 'left';
 
@@ -1620,18 +1636,19 @@
 					startPos[ field ] = getValue(getScalar(startPos[ field ]) + distance);
 					endPos[ field ]   = '-=' + distance + 'px';
 				}
-
-			} else if (effect === 'fade') {
-				startPos.opacity = 0.1;
 			}
 
-			F.wrap.css(startPos).animate(endPos, {
-				duration : effect === 'none' ? 0 : current.nextSpeed,
-				easing   : current.nextEasing,
-				complete : function() {
-					setTimeout(F._afterZoomIn, 10);
-				}
-			});
+			// Workaround for http://bugs.jquery.com/ticket/12273
+			if (effect === 'none') {
+				F._afterZoomIn();
+
+			} else {
+				F.wrap.css(startPos).animate(endPos, {
+					duration : current.nextSpeed,
+					easing   : current.nextEasing,
+					complete : F._afterZoomIn
+				});
+			}
 		},
 
 		changeOut: function () {
@@ -1663,18 +1680,20 @@
 		overlay: null,
 
 		update: function () {
-			var width, scrollWidth, offsetWidth;
+			var width = '100%', offsetWidth;
 
 			// Reset width/height so it will not mess
-			this.overlay.width('100%').height('100%');
+			this.overlay.width(width).height('100%');
 
-			if ($.browser.msie || isTouch) {
-				scrollWidth = Math.max(document.documentElement.scrollWidth, document.body.scrollWidth);
+			// jQuery does not return reliable result for IE
+			if ($.browser.msie) {
 				offsetWidth = Math.max(document.documentElement.offsetWidth, document.body.offsetWidth);
 
-				width = scrollWidth < offsetWidth ? W.width() : scrollWidth;
+				if (D.width() > offsetWidth) {
+					width = D.width();
+				}
 
-			} else {
+			} else if (D.width() > W.width()) {
 				width = D.width();
 			}
 
@@ -1688,7 +1707,7 @@
 			if (!this.overlay) {
 				$.extend(this, {
 					overlay : $('<div class="fancybox-overlay"></div>').appendTo( obj.parent ),
-					margin  : $('body').css('margin-right'),
+					margin  : D.height() > W.height() || $('body').css('overflow-y') === 'scroll' ? $('body').css('margin-right') : false,
 					el : document.all && !document.querySelector ? $('html') : $('body')
 				});
 			}
@@ -1699,7 +1718,7 @@
 				if (obj.autoCenter) {
 					this.overlay.append( obj.wrap );
 
-					obj.locked = true;
+					obj.locked = this.overlay;
 				}
 			}
 
@@ -1723,7 +1742,7 @@
 				if (obj.locked) {
 					this.el.addClass('fancybox-lock');
 
-					if (D.height() > W.height()) {
+					if (this.margin !== false) {
 						$('body').css('margin-right', getScalar( this.margin ) + obj.scrollbarWidth);
 					}
 				}
@@ -1744,11 +1763,6 @@
 		afterClose: function (opts) {
 			var that  = this,
 				speed = opts.speedOut || 0;
-
-			// Older IE show black background if animating transparent element having filters
-			if ($.browser.msie && getScalar($.browser.version) < 9) {
-				speed = 0;
-			}
 
 			// Remove overlay if exists and fancyBox is not opening
 			// (e.g., it is not being open using afterClose callback)

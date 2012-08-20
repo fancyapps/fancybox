@@ -108,7 +108,7 @@ You can disable them, set custom options or enable other helpers. Examples:
             },
             overlay : {
                 css : {
-                    'background-color' : '#fff'
+                    'background' : 'rgba(255,255,255,0.5)'
                 }
             }
         }
@@ -184,11 +184,15 @@ There is a simply way to access wrapping elements using JS:
     $.fancybox.outer
     $.fancybox.inner
 
-You can override CSS to customize the look. For example, make navigation arrows always visible
-and move them outside of area (use this snippet after including fancybox.css):
+You can override CSS to customize the look. For example, make navigation arrows always visible,
+change width and move them outside of area (use this snippet after including fancybox.css):
 
     .fancybox-nav span {
         visibility: visible;
+    }
+
+    .fancybox-nav {
+        width: 80px;
     }
 
     .fancybox-prev {

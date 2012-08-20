@@ -1,12 +1,24 @@
 fancyBox - Changelog
 =========
 
-### Version 2.1.0 - July 31, 2012
+### Version 2.1.0 - August 20, 2012
 
-* Fixed #188 -
-* New
-* Improved
-* Padding option now accepts array e.g., padding: [15, 50, 10, 5])
+* Fixed #103 - DOM element re-injection after closing
+* Fixed #188 - navigation keys inside editable content
+* New animation directions (see https://github.com/fancyapps/fancyBox/issues/233#issuecomment-5512453)
+* New option "iframe" - it is now possible to separate scrolling for iframe and wrapping element; choose to preload
+* New option "swf" - brings back functionality from fancyBox v1
+* Improved media helper - better support for vimeo and youtube; links are now configurable
+* Rewritten overlay helper:
+*     - new option "showEarly" - toggles if should be open before of after content is loaded
+*     - Facebook-style (https://github.com/fancyapps/fancyBox/issues/24) and therefore uses image for background
+* Option "padding" accepts array (e.g., padding: [15, 50, 10, 5])
+* One of dimensions (width or height) can now be set to "auto" (option "autoSize" needs to be "false")
+* Updated callbacks:
+*     - "beforeClose" is now called only once
+*     - "afterLoad" receives current and previous object as arguments
+* Method "$.fancybox.update();" recalculates content width/height
+* Updated to work with jQuery v1.8
 
 ### Version 2.0.6 - April 16, 2012
 
@@ -55,8 +67,8 @@ fancyBox - Changelog
 
 ### Version 2.0.2 - November 28, 2011
 
-* Fixed slidshow
-* Fixed scrollbar issue when displayed a very tall image
+* Fixed slideshow
+* Fixed scrollbars issue when displayed a very tall image
 * New option "nextClick" - navigate to next gallery item when user clicks the content
 * New option "modal" - to disable navigation and closing
 * Add 'metadata' plugin support
