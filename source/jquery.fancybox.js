@@ -34,7 +34,7 @@
 			return (el && !(el.style.overflow && el.style.overflow === 'hidden') && ((el.clientWidth && el.scrollWidth > el.clientWidth) || (el.clientHeight && el.scrollHeight > el.clientHeight)));
 		},
 		getScalar = function(value, dim) {
-			var value_ = parseInt(value, 10);
+			var value_ = ~~value; // Convert to int, default to 0
 
 			if (dim && isPercentage(value)) {
 				value_ = F.getViewport()[ dim ] / 100 * value_;
