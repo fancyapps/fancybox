@@ -1815,7 +1815,6 @@
 
 					title
 						.appendTo('body')
-						.width(title.width()) //This helps for some browsers
 						.wrapInner('<span class="child"></span>');
 
 						//Increase bottom margin so this title will also fit into viewport
