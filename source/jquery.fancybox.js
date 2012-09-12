@@ -280,7 +280,13 @@
 				}
 
 				href  = opts.href  || obj.href || (isString(element) ? element : null);
-				title = opts.title !== undefined ? opts.title : obj.title || '';
+				if (opts.title === undefined) {
+				  title = '';
+				} else if (typeof opts.title === 'function') {
+					title = opts.title.call(element);
+				} else {
+					title = opts.title;
+				}
 
 				content = opts.content || obj.content;
 				type    = content ? 'html' : (opts.type  || obj.type);
