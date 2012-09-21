@@ -653,19 +653,33 @@
 
 		// Print content of current slide
 		print: function() {
-			var printWindow = window.open('', 'print', 'height=400,width=400');
+			var printWindow,
+				title,
+				content;
 
+			if(F.current.type === 'inline'){
+				title = F.current.content[0].title;
+				content = F.current.content[0].innerHTML;
+			} else if(F.current.type === 'iframe'){
+				title = F.current.content[0].title;
+				content = F.current.content[0].contentWindow.print();
+				return; // window is printed, do nothing more
+			} else {
+				title = F.current.title;
+				content = F.current.inner[0].innerHTML;
+			}
+
+			printWindow = window.open('', 'print', 'height=400,width=400');
 			printWindow.document.write(
 				'<html>' + 
 					'<head>' + 
-						'<title>' + F.current.inner[0].innerText + '</title>' + 
+						'<title>' + title + '</title>' + 
 					'</head>' + 
 					'<body>' +
-						F.current.inner[0].innerHTML + '<br />' + F.current.inner[0].innerText + 
+						content + 
 					'</body>' + 
 				'</html>'
 			);
-
 			printWindow.print();
 			printWindow.close();
 		},
