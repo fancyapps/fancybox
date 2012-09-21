@@ -244,3 +244,27 @@
 	background: #000;
 	background: rgba(0, 0, 0, .8);
 }
+
+/* Print button */
+
+.fancybox-print {
+	position: absolute;
+	right: 15px;
+	bottom: 15px;
+	padding: 5px 10px;
+	color: #333;
+	font: normal 13px/20px "Helvetica Neue",Helvetica,Arial,sans-serif;
+	text-decoration: none;
+	background: #fff;
+	background: rgba(255,255,255,.75);
+	z-index: 8050;
+	-moz-opacity: 0.75;
+	opacity: 0.75;
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha"(Opacity=75);
+}
+
+.fancybox-print:hover {
+	-moz-opacity: 1;
+	opacity: 1;
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha"(Opacity=100);
+}

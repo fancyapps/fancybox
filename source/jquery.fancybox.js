@@ -651,6 +651,25 @@
 			return rez;
 		},
 
+		// Print content of current slide
+		print: function() {
+			var printWindow = window.open('', 'print', 'height=400,width=400');
+
+			printWindow.document.write(
+				'<html>' + 
+					'<head>' + 
+						'<title>' + F.current.inner[0].innerText + '</title>' + 
+					'</head>' + 
+					'<body>' +
+						F.current.inner[0].innerHTML + '<br />' + F.current.inner[0].innerText + 
+					'</body>' + 
+				'</html>'
+			);
+
+			printWindow.print();
+			printWindow.close();
+		},
+
 		// Unbind the keyboard / clicking actions
 		unbindEvents: function () {
 			if (F.wrap && isQuery(F.wrap)) {
