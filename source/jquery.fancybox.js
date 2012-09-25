@@ -651,6 +651,62 @@
 			return rez;
 		},
 
+		// Print content of current slide
+		print: function() {
+			var content,
+				$body = $('body'),
+				$head = $('head'),
+				$css,
+				$printContent,
+				cssId = 'fancybox-print-css',
+				printContentId = 'fancybox-print-content',
+				css = '@media print {' +
+						'body * {' +
+							'visibility:hidden;' +
+							'display:none;' +
+						'}' +
+						'#' + printContentId + ', #' + printContentId + ' * {' +
+							'visibility:visible;' +
+							'display:inherit' +
+						'}' +
+						'#' + printContentId + ' {' +
+							'position:absolute;' +
+							'left:0;' +
+							'top:0;' +
+						'}' +
+					'}';
+
+
+
+			if(F.current.type === 'inline'){
+				content = F.current.content[0].innerHTML;
+			} else if(F.current.type === 'iframe'){
+				content = F.current.content[0].contentWindow.print();
+				return; // window is printed, do nothing more
+			} else {
+				content = F.current.inner[0].innerHTML;
+			}
+
+			$css = $('<style>' + css + '</style>') // IE8 doesnt support .html() on <style> elements
+				.attr('type', 'text/css')
+				.attr('id', cssId);
+			$head.append($css);
+	
+			$printContent = $('<div />')
+				.attr('id', printContentId)
+				.html(content);
+			$body.append($printContent);
+
+			// print content
+			window.print();
+
+			// clean up
+			$css.remove();
+			$printContent.remove();
+
+			return false;
+		},
+
 		// Unbind the keyboard / clicking actions
 		unbindEvents: function () {
 			if (F.wrap && isQuery(F.wrap)) {
