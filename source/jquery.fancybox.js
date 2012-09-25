@@ -653,35 +653,58 @@
 
 		// Print content of current slide
 		print: function() {
-			var printWindow,
-				title,
-				content;
+			var content,
+				$body = $('body'),
+				$head = $('head'),
+				$css,
+				$printContent,
+				cssId = 'fancybox-print-css',
+				printContentId = 'fancybox-print-content',
+				css = '@media print {' +
+						'body * {' +
+							'visibility:hidden;' +
+							'display:none;' +
+						'}' +
+						'#' + printContentId + ', #' + printContentId + ' * {' +
+							'visibility:visible;' +
+							'display:inherit' +
+						'}' +
+						'#' + printContentId + ' {' +
+							'position:absolute;' +
+							'left:0;' +
+							'top:0;' +
+						'}' +
+					'}';
+
+
 
 			if(F.current.type === 'inline'){
-				title = F.current.content[0].title;
 				content = F.current.content[0].innerHTML;
 			} else if(F.current.type === 'iframe'){
-				title = F.current.content[0].title;
 				content = F.current.content[0].contentWindow.print();
 				return; // window is printed, do nothing more
 			} else {
-				title = F.current.title;
 				content = F.current.inner[0].innerHTML;
 			}
 
-			printWindow = window.open('', 'print', 'height=400,width=400');
-			printWindow.document.write(
-				'<html>' + 
-					'<head>' + 
-						'<title>' + title + '</title>' + 
-					'</head>' + 
-					'<body>' +
-						content + 
-					'</body>' + 
-				'</html>'
-			);
-			printWindow.print();
-			printWindow.close();
+			$css = $('<style>' + css + '</style>') // IE8 doesnt support .html() on <style> elements
+				.attr('type', 'text/css')
+				.attr('id', cssId);
+			$head.append($css);
+	
+			$printContent = $('<div />')
+				.attr('id', printContentId)
+				.html(content);
+			$body.append($printContent);
+
+			// print content
+			window.print();
+
+			// clean up
+			$css.remove();
+			$printContent.remove();
+
+			return false;
 		},
 
 		// Unbind the keyboard / clicking actions
