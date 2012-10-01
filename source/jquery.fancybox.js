@@ -1,6 +1,6 @@
 /*!
  * fancyBox - jQuery Plugin
- * version: 2.1.0 (Mon, 20 Aug 2012)
+ * version: 2.1.1 (Mon, 01 Oct 2012)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -33,14 +33,14 @@
 		isScrollable = function(el) {
 			return (el && !(el.style.overflow && el.style.overflow === 'hidden') && ((el.clientWidth && el.scrollWidth > el.clientWidth) || (el.clientHeight && el.scrollHeight > el.clientHeight)));
 		},
-		getScalar = function(value, dim) {
-			var value_ = ~~value; // Convert to int, default to 0
+		getScalar = function(orig, dim) {
+			var value = parseInt(orig, 10) || 0;
 
-			if (dim && isPercentage(value)) {
-				value_ = F.getViewport()[ dim ] / 100 * value_;
+			if (dim && isPercentage(orig)) {
+				value = F.getViewport()[ dim ] / 100 * value;
 			}
 
-			return Math.ceil(value_);
+			return Math.ceil(value);
 		},
 		getValue = function(value, dim) {
 			return getScalar(value, dim) + 'px';
@@ -48,7 +48,7 @@
 
 	$.extend(F, {
 		// The current version of fancyBox
-		version: '2.1.0',
+		version: '2.1.1',
 
 		defaults: {
 			padding : 15,
@@ -170,17 +170,10 @@
 			prevEasing : 'swing',
 			prevMethod : 'changeOut',
 
-			// Enabled helpers
+			// Enable default helpers
 			helpers : {
-				overlay : {
-					closeClick : true,
-					speedOut   : 200,
-					showEarly  : true,
-					css        : {}
-				},
-				title : {
-					type : 'float' // 'float', 'inside', 'outside' or 'over'
-				}
+				overlay : true,
+				title   : true
 			},
 
 			// Callbacks
@@ -264,8 +257,8 @@
 
 					if (isQuery(element)) {
 						obj = {
-							href    : element.attr('href'),
-							title   : element.attr('title'),
+							href    : element.data('fancybox-href') || element.attr('href'),
+							title   : element.data('fancybox-title') || element.attr('title'),
 							isDom   : true,
 							element : element
 						};
@@ -632,15 +625,15 @@
 		},
 
 		getViewport: function () {
-			var lock = F.current ? F.current.locked : false,
-				rez  = {
+			var locked = (F.current && F.current.locked) || false,
+				rez    = {
 					x: W.scrollLeft(),
 					y: W.scrollTop()
 				};
 
-			if (lock) {
-				rez.w = lock[0].clientWidth;
-				rez.h = lock[0].clientHeight;
+			if (locked) {
+				rez.w = locked[0].clientWidth;
+				rez.h = locked[0].clientHeight;
 
 			} else {
 				// See http://bugs.jquery.com/ticket/6724
@@ -727,7 +720,7 @@
 
 			// Changing document height on iOS devices triggers a 'resize' event,
 			// that can change document height... repeating infinitely
-			W.bind('orientationchange.fb' + (isTouch ? '' : ' resize.fb' ) + (current.autoCenter && !current.locked ? ' scroll.fb' : ''), F.update);
+			W.bind('orientationchange.fb' + (current.autoResize ? ' resize.fb' : '' ) + (current.autoCenter && !current.locked ? ' scroll.fb' : ''), F.update);
 
 			keys = current.keys;
 
@@ -810,6 +803,8 @@
 			if (obj.helpers) {
 				$.each(obj.helpers, function (helper, opts) {
 					if (opts && F.helpers[helper] && $.isFunction(F.helpers[helper][event])) {
+						opts = $.extend(true, {}, F.helpers[helper].defaults, opts);
+
 						F.helpers[helper][event](opts, obj);
 					}
 				});
@@ -936,7 +931,7 @@
 			}
 
 			// Build the neccessary markup
-			coming.wrap = $(coming.tpl.wrap).addClass('fancybox-' + (isTouch ? 'mobile' : 'desktop') + ' fancybox-type-' + type + ' fancybox-tmp ' + coming.wrapCSS).appendTo( coming.parent );
+			coming.wrap = $(coming.tpl.wrap).addClass('fancybox-' + (isTouch ? 'mobile' : 'desktop') + ' fancybox-type-' + type + ' fancybox-tmp ' + coming.wrapCSS).appendTo( coming.parent || 'body' );
 
 			$.extend(coming, {
 				skin  : $('.fancybox-skin',  coming.wrap),
@@ -1179,7 +1174,7 @@
 				break;
 
 				case 'swf':
-					content = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="100%"><param name="movie" value="' + href + '"></param>';
+					content = '<object id="fancybox-swf" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="100%"><param name="movie" value="' + href + '"></param>';
 					embed   = '';
 
 					$.each(current.swf, function(name, val) {
@@ -1733,9 +1728,17 @@
 	 */
 
 	F.helpers.overlay = {
-		overlay: null,
+		defaults : {
+			closeClick : true,  // close if clicking on the overlay
+			speedOut   : 200,   // animation speed of fading out
+			showEarly  : true,  // should be opened immediately or wait until the content is ready
+			css        : {},    // custom overlay style
+			locked     : true   // should be content locked into overlay
+		},
 
-		update: function () {
+		overlay : null,
+
+		update : function () {
 			var width = '100%', offsetWidth;
 
 			// Reset width/height so it will not mess
@@ -1757,12 +1760,12 @@
 		},
 
 		// This is where we can manipulate DOM, because later it would cause iframes to reload
-		onReady: function (opts, obj) {
+		onReady : function (opts, obj) {
 			$('.fancybox-overlay').stop(true, true);
 
 			if (!this.overlay) {
 				$.extend(this, {
-					overlay : $('<div class="fancybox-overlay"></div>').appendTo( obj.parent ),
+					overlay : $('<div class="fancybox-overlay"></div>').appendTo( obj.parent || 'body' ),
 					margin  : D.height() > W.height() || $('body').css('overflow-y') === 'scroll' ? $('body').css('margin-right') : false,
 					el : document.all && !document.querySelector ? $('html') : $('body')
 				});
@@ -1771,10 +1774,8 @@
 			if (obj.fixed && !isTouch) {
 				this.overlay.addClass('fancybox-overlay-fixed');
 
-				if (obj.autoCenter) {
-					this.overlay.append( obj.wrap );
-
-					obj.locked = this.overlay;
+				if (obj.autoCenter && opts.locked) {
+					obj.locked = this.overlay.append( obj.wrap );
 				}
 			}
 
@@ -1841,11 +1842,21 @@
 	 */
 
 	F.helpers.title = {
+		defaults : {
+			type     : 'float', // 'float', 'inside', 'outside' or 'over',
+			position : 'bottom' // 'top' or 'bottom'
+		},
+
 		beforeShow: function (opts) {
-			var text = F.current.title,
-				type = opts.type,
+			var current = F.current,
+				text    = current.title,
+				type    = opts.type,
 				title,
 				target;
+
+			if ($.isFunction(text)) {
+				text = text.call(current.element, current);
+			}
 
 			if (!isString(text) || $.trim(text) === '') {
 				return;
@@ -1869,22 +1880,20 @@
 				default: // 'float'
 					target = F.skin;
 
-					title
-						.appendTo('body')
-						.width(title.width()) //This helps for some browsers
-						.wrapInner('<span class="child"></span>');
+					title.appendTo('body');
 
-						//Increase bottom margin so this title will also fit into viewport
-						F.current.margin[2] += Math.abs( getScalar(title.css('margin-bottom')) );
+					if ($.browser.msie) {
+						title.width( title.width() );
+					}
+
+					title.wrapInner('<span class="child"></span>');
+
+					//Increase bottom margin so this title will also fit into viewport
+					F.current.margin[2] += Math.abs( getScalar(title.css('margin-bottom')) );
 				break;
 			}
 
-			if (opts.position === 'top') {
-				title.prependTo(target);
-
-			} else {
-				title.appendTo(target);
-			}
+			title[ (opts.position === 'top' ? 'prependTo'  : 'appendTo') ](target);
 		}
 	};
 

@@ -1,6 +1,16 @@
 fancyBox - Changelog
 =========
 
+### Version 2.1.1 - October 01, 2012
+
+* Fixed #357 - Converting values like 'auto' in getScalar()
+* Fixed #358 - Updated overlay background image
+* New "fancybox-href" and "fancybox-title" HTML5 data-attributes (#317)
+* Improved helpers:
+*     - now they can have a property 'defaults' that contains default settings
+*     - updated vimeo and youtube parsers for media helper
+* Content locking now can be turned off
+
 ### Version 2.1.0 - August 20, 2012
 
 * Fixed #103 - DOM element re-injection after closing
