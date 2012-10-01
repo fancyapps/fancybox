@@ -1,6 +1,6 @@
 /*!
  * Media helper for fancyBox
- * version: 1.0.3 (Mon, 13 Aug 2012)
+ * version: 1.0.4 (Mon, 01 Oct 2012)
  * @requires fancyBox v2.0 or later
  *
  * Usage:
@@ -37,6 +37,7 @@
  *
  *      Youtube
  *          http://www.youtube.com/watch?v=opj24KnzrWo
+ *          http://www.youtube.com/embed/opj24KnzrWo
  *          http://youtu.be/opj24KnzrWo
  *      Vimeo
  *          http://vimeo.com/40648169
@@ -85,9 +86,9 @@
 
 	//Add helper object
 	F.helpers.media = {
-		types : {
+		defaults : {
 			youtube : {
-				matcher : /(youtube\.com|youtu\.be)\/(watch\?v=|v\/|u\/|embed)?([\w-]{11}|\?listType=(.*)&list=(.*)).*/i,
+				matcher : /(youtube\.com|youtu\.be)\/(watch\?v=|v\/|u\/|embed\/?)?([\w-]{11}|\?listType=(.*)&list=(.*)).*/i,
 				params  : {
 					autoplay    : 1,
 					autohide    : 1,
@@ -108,7 +109,6 @@
 					show_title    : 1,
 					show_byline   : 1,
 					show_portrait : 0,
-					color         : '',
 					fullscreen    : 1
 				},
 				type : 'iframe',
@@ -170,8 +170,8 @@
 				rez,
 				params;
 
-			for (what in this.types) {
-				item = this.types[ what ];
+			for (what in opts) {
+				item = opts[ what ];
 				rez  = url.match( item.matcher );
 
 				if (rez) {

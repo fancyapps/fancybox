@@ -76,7 +76,8 @@ You can specify type directly by adding classname (fancybox.image, fancybox.ifra
     <a href="example.jpg" class="fancybox">Example</a>
 
 Note, ajax requests are subject to the [same origin policy](http://en.wikipedia.org/wiki/Same_origin_policy).
-If fancyBox will not be able to get content type, error message will be displayed (this is different from previsous versions where 'ajax' was used as default type).
+If fancyBox will not be able to get content type, it will try to guess based on 'href' and will quit silently if would not succeed.
+(this is different from previsous versions where 'ajax' was used as default type or an error message was displayed).
 
 Advanced
 --------
