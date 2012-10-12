@@ -1421,7 +1421,7 @@
 			F.reposition();
 
 			// Assign a click event
-			if (current.closeClick || current.nextClick) {
+			if ( current.closeClick || (current.nextClick && F.group.length > 1) ) {
 				F.inner.css('cursor', 'pointer').bind('click.fb', function(e) {
 					if (!$(e.target).is('a') && !$(e.target).parent().is('a')) {
 						F[ current.closeClick ? 'close' : 'next' ]();
