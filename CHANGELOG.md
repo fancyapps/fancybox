@@ -1,6 +1,16 @@
 fancyBox - Changelog
 =========
 
+### Version 2.1.2 - October 15, 2012
+
+* Fixed #414 - Don't allow nextClick if there is only one item
+* Fixed #397 - Button helper 'Menu' not visible in IE7
+* Overlay can be opened/closed manually:
+*     $.fancybox.helpers.overlay.open();
+*     $.fancybox.helpers.overlay.open({closeClick : false});
+*     $.fancybox.helpers.overlay.close();
+* Optimized for Internet Explorer 10 (Windows 8)
+
 ### Version 2.1.1 - October 01, 2012
 
 * Fixed #357 - Converting values like 'auto' in getScalar()
