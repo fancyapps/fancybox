@@ -60,6 +60,7 @@
 			minHeight : 100,
 			maxWidth  : 9999,
 			maxHeight : 9999,
+			pixelRatio: 1, // Set to 2 for retina display support
 
 			autoSize   : true,
 			autoHeight : false,
@@ -939,8 +940,8 @@
 			img.onload = function () {
 				this.onload = this.onerror = null;
 
-				F.coming.width  = this.width;
-				F.coming.height = this.height;
+				F.coming.width  = this.width / F.opts.pixelRatio;
+				F.coming.height = this.height / F.opts.pixelRatio;
 
 				F._afterLoad();
 			};
