@@ -1,6 +1,6 @@
 /*!
  * Media helper for fancyBox
- * version: 1.0.4 (Mon, 01 Oct 2012)
+ * version: 1.0.5 (Tue, 23 Oct 2012)
  * @requires fancyBox v2.0 or later
  *
  * Usage:
@@ -88,7 +88,7 @@
 	F.helpers.media = {
 		defaults : {
 			youtube : {
-				matcher : /(youtube\.com|youtu\.be)\/(watch\?v=|v\/|u\/|embed\/?)?([\w-]{11}|\?listType=(.*)&list=(.*)).*/i,
+				matcher : /(youtube\.com|youtu\.be)\/(watch\?v=|v\/|u\/|embed\/?)?(videoseries\?list=(.*)|[\w-]{11}|\?listType=(.*)&list=(.*)).*/i,
 				params  : {
 					autoplay    : 1,
 					autohide    : 1,

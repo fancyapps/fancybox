@@ -1,4 +1,4 @@
-/*! fancyBox v2.1.2 fancyapps.com | fancyapps.com/fancybox/#license */
+/*! fancyBox v2.1.3 fancyapps.com | fancyapps.com/fancybox/#license */
 .fancybox-wrap,
 .fancybox-skin,
 .fancybox-outer,
@@ -154,9 +154,12 @@
 
 .fancybox-tmp {
 	position: absolute;
-	top: -9999px;
-	left: -9999px;
+	top: -99999px;
+	left: -99999px;
 	visibility: hidden;
+	max-width: 99999px;
+	max-height: 99999px;
+	overflow: visible !important;
 }
 
 /* Overlay helper */

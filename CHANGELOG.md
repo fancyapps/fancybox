@@ -1,6 +1,14 @@
 fancyBox - Changelog
 =========
 
+### Version 2.1.3 - October 23, 2012
+
+* Fixed #426 - Broken IE7
+* Fixed #423 - Background flickering on iOS
+* Fixed #418 - Automatically Grow/Shrink and Center
+* Updated the script to work with jQuery 1.6
+* Media helper supports YouTube video series
+
 ### Version 2.1.2 - October 15, 2012
 
 * Fixed #414 - Don't allow nextClick if there is only one item
