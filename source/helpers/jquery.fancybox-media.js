@@ -60,7 +60,11 @@
  *          http://maps.google.com/maps?q=Eiffel+Tower,+Avenue+Gustave+Eiffel,+Paris,+France&t=h&z=17
  *          http://maps.google.com/?ll=48.857995,2.294297&spn=0.007666,0.021136&t=m&z=16
  *          http://maps.google.com/?ll=48.859463,2.292626&spn=0.000965,0.002642&t=m&z=19&layer=c&cbll=48.859524,2.292532&panoid=YJ0lq28OOy3VT2IqIuVY0g&cbp=12,151.58,,0,-15.56
+ *	Video
+ *	    http://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4
+ *
  */
+
 (function ($) {
 	"use strict";
 
@@ -159,16 +163,57 @@
 				url  : function( rez ) {
 					return '//maps.google.' + rez[1] + '/' + rez[3] + '' + rez[4] + '&output=' + (rez[4].indexOf('layer=c') > 0 ? 'svembed' : 'embed');
 				}
+			},
+			video : {
+			    matcher : /.*?(?:[a-z][a-z\.\d_]+)\.(mov|mp4|flv|avi|wmv|mpg|mpeg|ram|rm)(?![\w\.])$/i,
+			    type : 'inline',
+			    url : function(res){
+			        console.log(res);
+			        return res[0];
+			    },
+				params  : {
+					autoplay : true,
+					height : 400,
+					width   : 650,
+					controls : true,
+					autoHeight:true,
+					flowPlayer: true
+					
+				},
+			    content : function(url, res, params){
+
+			        var tag = $("<video/></video>").attr(params);
+
+			        $("<source>").attr({src:url, type:"video/"+res[1]}).appendTo(tag);
+			    
+			        if(params.flowPlayer && jQuery().flowplayer){
+
+			            var fp =  $.extend({
+			                skin:"minimalist color-alt"
+			            }, params.flowPlayer);
+			            
+                        var wrap = $("<div>").addClass("flowplayer").addClass(fp.skin);
+                        
+                        tag.css({height:"100%",width:"100%", padding:0, margin:0}).appendTo(wrap);
+			            tag = wrap.flowplayer(fp);
+                        tag = $("<div></div>").css({height:params.height,width:params.width, padding:0, margin:0}).append(tag);
+			        }
+			        
+			        return tag;
+			    
+			    }
 			}
 		},
 
 		beforeLoad : function(opts, obj) {
 			var url   = obj.href || '',
 				type  = false,
+				content = obj.content || '',
 				what,
 				item,
 				rez,
-				params;
+				params,
+				autoHeight = true;
 
 			for (what in opts) {
 				item = opts[ what ];
@@ -176,19 +221,28 @@
 
 				if (rez) {
 					type   = item.type;
+                    
 					params = $.extend(true, {}, item.params, obj[ what ] || ($.isPlainObject(opts[ what ]) ? opts[ what ].params : null));
 
 					url = $.type( item.url ) === "function" ? item.url.call( this, rez, params, obj ) : format( item.url, rez, params );
 
+    				content = $.type( item.content ) === "function" ? item.content.call( this, url, rez, params, obj ) : item.content;				    
+
+
+
 					break;
 				}
+			
+				
+				
 			}
 
 			if (type) {
 				obj.href = url;
 				obj.type = type;
+                obj.content = content;
 
-				obj.autoHeight = false;
+				obj.autoHeight = autoHeight;
 			}
 		}
 	};
