@@ -184,7 +184,10 @@
 			afterShow    : $.noop, // After opening
 			beforeChange : $.noop, // Before changing gallery item
 			beforeClose  : $.noop, // Before closing
-			afterClose   : $.noop  // After closing
+			afterClose   : $.noop, // After closing
+
+            // CSS3 Transitions and Transforms (requires jquery.transit.js)
+            useCSS3 : false
 		},
 
 		//Current state
@@ -532,7 +535,12 @@
 				if (e && e.type === 'scroll') {
 					delete pos.position;
 
-					wrap.stop(true, true).animate(pos, 200);
+                    if (current.useCSS3) {
+                        wrap.stop(true, true).transition(pos, 200);
+                    }
+                    else {
+                        wrap.stop(true, true).animate(pos, 200);
+                    }
 
 				} else {
 					wrap.css(pos);
@@ -1594,12 +1602,22 @@
 				startPos.opacity = 0.1;
 			}
 
-			F.wrap.css(startPos).animate(endPos, {
-				duration : effect === 'none' ? 0 : current.openSpeed,
-				easing   : current.openEasing,
-				step     : elastic ? this.step : null,
-				complete : F._afterZoomIn
-			});
+            if (current.useCSS3) {
+                F.wrap.css(startPos).transition(endPos,
+                    /*duration :*/ effect === 'none' ? 0 : current.openSpeed,
+                    /*easing   :*/ 'in-out' /*current.openEasing*/,
+                    //step     : elastic ? this.step : null,
+                    /*complete :*/ F._afterZoomIn
+                );
+            }
+            else {
+                F.wrap.css(startPos).animate(endPos, {
+                    duration : effect === 'none' ? 0 : current.openSpeed,
+                    easing   : current.openEasing,
+                    step     : elastic ? this.step : null,
+                    complete : F._afterZoomIn
+                });
+            }
 		},
 
 		zoomOut: function () {
@@ -1616,12 +1634,22 @@
 				}
 			}
 
-			F.wrap.animate(endPos, {
-				duration : effect === 'none' ? 0 : current.closeSpeed,
-				easing   : current.closeEasing,
-				step     : elastic ? this.step : null,
-				complete : F._afterZoomOut
-			});
+            if (current.useCSS3) {
+                F.wrap.transition(endPos,
+                    /*duration :*/ effect === 'none' ? 0 : current.closeSpeed,
+                    /*easing   :*/ 'in-out' /*current.closeEasing*/,
+                    //step     : elastic ? this.step : null,
+                    /*complete :*/ F._afterZoomOut
+                );
+            }
+            else {
+                F.wrap.animate(endPos, {
+                    duration : effect === 'none' ? 0 : current.closeSpeed,
+                    easing   : current.closeEasing,
+                    step     : elastic ? this.step : null,
+                    complete : F._afterZoomOut
+                });
+            }
 		},
 
 		changeIn: function () {
@@ -1653,14 +1681,26 @@
 				F._afterZoomIn();
 
 			} else {
-				F.wrap.css(startPos).animate(endPos, {
-					duration : current.nextSpeed,
-					easing   : current.nextEasing,
-					complete : function() {
-						// This helps FireFox to properly render the box
-						setTimeout(F._afterZoomIn, 20);
-					}
-				});
+				if (current.useCSS3) {
+                    F.wrap.css(startPos).transition(endPos,
+                        /*duration :*/ effect === 'none' ? 0 : current.nextSpeed,
+                        /*easing   :*/ 'in-out' /*current.nextEasing*/,
+                        /*complete :*/ function() {
+                            // This helps FireFox to properly render the box
+                            setTimeout(F._afterZoomIn, 20);
+                        }
+                    );
+                }
+                else {
+                    F.wrap.css(startPos).animate(endPos, {
+                        duration : current.nextSpeed,
+                        easing   : current.nextEasing,
+                        complete : function() {
+                            // This helps FireFox to properly render the box
+                            setTimeout(F._afterZoomIn, 20);
+                        }
+                    });
+                }
 			}
 		},
 
@@ -1675,13 +1715,24 @@
 				endPos[ direction === 'down' || direction === 'up' ? 'top' : 'left' ] = ( direction === 'up' || direction === 'left' ? '-' : '+' ) + '=' + distance + 'px';
 			}
 
-			previous.wrap.animate(endPos, {
-				duration : effect === 'none' ? 0 : previous.prevSpeed,
-				easing   : previous.prevEasing,
-				complete : function () {
-					$(this).trigger('onReset').remove();
-				}
-			});
+            if (previous.useCSS3) {
+                previous.wrap.transition(endPos,
+                    /*duration :*/ effect === 'none' ? 0 : previous.prevSpeed,
+                    /*easing   :*/ 'in-out' /*previous.prevEasing*/,
+                    /*complete :*/ function () {
+                        $(this).trigger('onReset').remove();
+                    }
+                );
+            }
+            else {
+                previous.wrap.animate(endPos, {
+                    duration : effect === 'none' ? 0 : previous.prevSpeed,
+                    easing   : previous.prevEasing,
+                    complete : function () {
+                        $(this).trigger('onReset').remove();
+                    }
+                });
+            }
 		}
 	};
 
