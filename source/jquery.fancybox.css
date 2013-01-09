@@ -1,4 +1,10 @@
 /*! fancyBox v2.1.3 fancyapps.com | fancyapps.com/fancybox/#license */
+
+/* fix ajax scrollable divs on ipad */
+*:not(html) {
+	-webkit-backface-visibility: hidden;
+}
+
 .fancybox-wrap,
 .fancybox-skin,
 .fancybox-outer,
@@ -49,7 +55,8 @@
 }
 
 .fancybox-inner {
-	overflow: hidden;
+	overflow: scroll;
+	-webkit-overflow-scrolling: touch;
 }
 
 .fancybox-type-iframe .fancybox-inner {
