@@ -1754,7 +1754,7 @@
 		},
 
 		close : function() {
-			$('.fancybox-overlay').remove();
+			$('.fancybox-overlay').remove().hide();
 
 			W.unbind('resize.overlay');
 
