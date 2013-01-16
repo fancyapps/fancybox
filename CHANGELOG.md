@@ -1,6 +1,10 @@
 fancyBox - Changelog
 =========
 
+### Version 2.1.4 - January 10, 2013
+* Update to be compatible with jQuery v1.9
+* Small changes that should fix usability issues for certain users
+
 ### Version 2.1.3 - October 23, 2012
 
 * Fixed #426 - Broken IE7
