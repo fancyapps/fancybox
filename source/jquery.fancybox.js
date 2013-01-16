@@ -1,6 +1,6 @@
 /*!
  * fancyBox - jQuery Plugin
- * version: 2.1.3 (Tue, 23 Oct 2012)
+ * version: 2.1.4 (Thu, 10 Jan 2013)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -49,7 +49,7 @@
 
 	$.extend(F, {
 		// The current version of fancyBox
-		version: '2.1.3',
+		version: '2.1.4',
 
 		defaults: {
 			padding : 15,
