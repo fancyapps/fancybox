@@ -1,6 +1,6 @@
 /*!
  * fancyBox - jQuery Plugin
- * version: 2.1.4 (Thu, 10 Jan 2013)
+ * version: 2.1.4 (Thu, 17 Jan 2013)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
@@ -18,7 +18,7 @@
 		F = $.fancybox = function () {
 			F.open.apply( this, arguments );
 		},
-		IE =  navigator.userAgent.match(/msie/),
+		IE =  navigator.userAgent.match(/msie/i),
 		didUpdate = null,
 		isTouch	  = document.createTouch !== undefined,
 
