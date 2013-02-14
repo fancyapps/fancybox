@@ -105,7 +105,7 @@
 
 			keys  : {
 				next : {
-					13 : 'left', // enter
+				//	13 : 'left', // enter - disabled so that enter key on focussed close button works for accessibility
 					34 : 'up',   // page down
 					39 : 'left', // right arrow
 					40 : 'up'    // down arrow
