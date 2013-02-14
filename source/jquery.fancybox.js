@@ -15,6 +15,8 @@
 
 	var W = $(window),
 		D = $(document),
+		base_focusable_elements,
+		
 		F = $.fancybox = function () {
 			F.open.apply( this, arguments );
 		},
@@ -763,6 +765,40 @@
 
 			D.trigger(event);
 		},
+		
+				
+		fancybox_disable_base_elements: function() {
+
+
+            // Special Credit and Thanks to whatcould's edit for fancyBox 1
+            // https://github.com/whatcould/fancybox/commit/231087ba1399d84589e29488cb98a2acb9e84624
+
+           		 base_focusable_elements.each(function(){
+	
+	                	// push the previous tab-index into a data attrib
+		               	var el = $(this);
+		
+				var prev_tabindex = el.attr('tabindex');
+		               	el.data('prev-tabindex',prev_tabindex);
+				el.attr('tabindex','-1');
+	
+	
+	           	 });
+	        },
+        
+	        fancybox_enable_base_elements: function() {
+	
+	            // reset the tabindex back to what we put in the data-attrib.
+	
+	            base_focusable_elements.each(function(){
+					
+				var el = $(this);
+				el.data('prev-tabindex');
+				el.attr('tabindex',el.data('prev-tabindex'));
+           
+	           });
+		
+	        },
 
 		isImage: function (str) {
 			return isString(str) && str.match(/(^data:image\/.*,)|(\.(jp(e|g|eg)|gif|png|bmp|webp)((\?|#).*)?$)/i);
@@ -1961,6 +1997,8 @@
 				return width;
 			};
 		}
+		
+		if (!base_focusable_elements) base_focusable_elements = $('a,input,button,select,textarea,iframe');
 
 		if ( $.support.fixedPosition === undefined ) {
 			$.support.fixedPosition = (function() {
