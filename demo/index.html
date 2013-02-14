@@ -32,6 +32,16 @@
 			 */
 
 			$('.fancybox').fancybox();
+			
+			
+			/*
+			* Example of how to return focus to tabbed element after close
+			*/
+			$('.fancybox').fancybox({
+	                	afterClose: function() {
+		                    $(this.element).focus();
+		                }
+	            	});
 
 			/*
 			 *  Different effects
