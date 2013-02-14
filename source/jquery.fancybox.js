@@ -185,7 +185,8 @@
 			afterShow    : $.noop, // After opening
 			beforeChange : $.noop, // Before changing gallery item
 			beforeClose  : $.noop, // Before closing
-			afterClose   : $.noop  // After closing
+			afterClose   : $.noop,  // After closing
+            overlayRemoved :$.noop // After the overlay is removed from the DOM
 		},
 
 		//Current state
@@ -1751,7 +1752,9 @@
 			this.overlay.css( opts.css ).show();
 		},
 
-		close : function() {
+		close : function(opts, obj) {
+
+            console.log("opts", obj);
 			$('.fancybox-overlay').remove();
 
 			W.unbind('resize.overlay');
@@ -1767,6 +1770,8 @@
 			if (this.el) {
 				this.el.removeClass('fancybox-lock');
 			}
+
+            F.trigger('overlayRemoved', obj);
 		},
 
 		// Private, callbacks
@@ -1831,11 +1836,11 @@
 			}
 		},
 
-		afterClose: function (opts) {
+		afterClose: function (opts, obj) {
 			// Remove overlay if exists and fancyBox is not opening
 			// (e.g., it is not being open using afterClose callback)
 			if (this.overlay && !F.isActive) {
-				this.overlay.fadeOut(opts.speedOut, $.proxy( this.close, this ));
+				this.overlay.fadeOut(opts.speedOut, $.proxy( this.close, this, opts, obj ));
 			}
 		}
 	};

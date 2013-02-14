@@ -31,7 +31,11 @@
 			 *  Simple image gallery. Uses default settings
 			 */
 
-			$('.fancybox').fancybox();
+			$('.fancybox').fancybox({
+                overlayRemoved: function() {
+                    console.log("Overlay is removed from the DOM");
+                }
+            });
 
 			/*
 			 *  Different effects
