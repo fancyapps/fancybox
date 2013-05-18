@@ -1117,7 +1117,7 @@
 				break;
 
 				case 'image':
-					content = current.tpl.image.replace('{href}', href.replace(/"/g, '&quot;'));
+					content = current.tpl.image.replace('{href}', href.replace(/&/g, '&amp;').replace(/"/g, '&quot;'));
 				break;
 
 				case 'swf':
