@@ -1125,11 +1125,11 @@
 					embed   = '';
 
 					$.each(current.swf, function(name, val) {
-						content += '<param name="' + name + '" value="' + val + '"></param>';
-						embed   += ' ' + name + '="' + val + '"';
+						content += '<param name="' + name.replace(/&/g, '&amp;').replace(/"/g, '&quot;') + '" value="' + val.replace(/&/g, '&amp;').replace(/"/g, '&quot;') + '"></param>';
+						embed   += ' ' + name.replace(/\W/g, '') + '="' + val.replace(/&/g, '&amp;').replace(/"/g, '&quot;') + '"';
 					});
 
-					content += '<embed src="' + href + '" type="application/x-shockwave-flash" width="100%" height="100%"' + embed + '></embed></object>';
+					content += '<embed src="' + href.replace(/&/g, '&amp;').replace(/"/g, '&quot;') + '" type="application/x-shockwave-flash" width="100%" height="100%"' + embed + '></embed></object>';
 				break;
 			}
 
