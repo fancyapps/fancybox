@@ -1,0 +1,12 @@
+.fancybox-comments-block {
+    position: absolute; 
+    z-index: 99999;
+    top: 0;
+    right: 0;
+    background: #f2f2f2;
+    height: 100%;
+    display: block;
+    overflow: auto;
+    overflow-x: hidden;
+    padding:0 5px;
+}
