@@ -219,8 +219,10 @@
                     closeSpeed  : 150,
                     helpers : {
                         comments : {
+
                             // Wrapper element
                             type: 'overlay', // 'inside', 'outside', 'outer', 'over', 'overlay'
+                            position: 'top', // 'bottom'
 
                             // If the comments string is specified the other options are ignored
                             // commentsString: '<fb:comments href="http://example.com" width="330" num_posts="5"></fb:comments>',
@@ -231,7 +233,10 @@
                             },
                             commentsWidth: 330,
                             numberPosts: 5,
-                            colorScheme: 'light'
+                            colorScheme: 'light',
+
+                            // If the comments url is not found will skip the helper
+                            disableOnEmptyUrl: false
                         }
                     }
                 });

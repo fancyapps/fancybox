@@ -25,7 +25,8 @@
             commentsUrl : location.href,
             commentsWidth : '330',
             numberPosts : '10',
-            colorScheme : 'light'
+            colorScheme : 'light',
+            disableOnEmptyUrl : false
         },
         beforeShow: function (opts) {
 
@@ -51,6 +52,9 @@
             }
 
             if (!isString(commentsUrl) || $.trim(commentsUrl) === '') {
+                if(opts.disableOnEmptyUrl)
+                    return;
+
                 commentsUrl = this.defaults.commentsUrl;
             }
 
