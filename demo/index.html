@@ -25,6 +25,9 @@
 	<!-- Add Media helper (this is optional) -->
 	<script type="text/javascript" src="../source/helpers/jquery.fancybox-media.js?v=1.0.5"></script>
 
+	<link rel="stylesheet" type="text/css" href="../source/helpers/jquery.fancybox-disqus.css" />
+	<script type="text/javascript" src="../source/helpers/jquery.fancybox-disqus.js"></script>
+
 	<script type="text/javascript">
 		$(document).ready(function() {
 			/*
@@ -139,7 +142,7 @@
 					thumbs : {
 						width  : 50,
 						height : 50
-					}
+					},
 				}
 			});
 
@@ -160,6 +163,32 @@
 						buttons : {}
 					}
 				});
+
+
+			/*
+			 *  Disqus helper. Disable navigation arrows
+			 */
+
+			$('.fancybox-disqus').fancybox({
+				openEffect  : 'none',
+				closeEffect : 'none',
+
+				prevEffect : 'none',
+				nextEffect : 'none',
+				arrows : false,
+				helpers : {
+					thumbs : {
+						width  : 50,
+						height : 50
+					},					
+					disqus	: {
+                        disqus_url: "YOUR_DISQUS_URL",
+                        disqus_shortname: "YOU_SITE_NAME"
+                        //disqus_developer: 1
+					}
+				}
+			});
+
 
 			/*
 			 *  Open manually
@@ -276,6 +305,17 @@
 		<a class="fancybox-thumbs" data-fancybox-group="thumb" href="2_b.jpg"><img src="2_s.jpg" alt="" /></a>
 
 		<a class="fancybox-thumbs" data-fancybox-group="thumb" href="1_b.jpg"><img src="1_s.jpg" alt="" /></a>
+	</p>
+
+	<h3>Disqus helper</h3>
+	<p>
+		<a class="fancybox-disqus" data-fancybox-group="disqus" href="4_b.jpg"><img src="4_s.jpg" alt="" /></a>
+
+		<a class="fancybox-disqus" data-fancybox-group="disqus" href="3_b.jpg"><img src="3_s.jpg" alt="" /></a>
+
+		<a class="fancybox-disqus" data-fancybox-group="disqus" href="2_b.jpg"><img src="2_s.jpg" alt="" /></a>
+
+		<a class="fancybox-disqus" data-fancybox-group="disqus" href="1_b.jpg"><img src="1_s.jpg" alt="" /></a>
 	</p>
 
 	<h3>Media helper</h3>
