@@ -1765,7 +1765,7 @@
 			}
 
 			if (this.el) {
-				this.el.removeClass('fancybox-lock');
+				this.el.parent().removeClass('fancybox-lock');
 			}
 		},
 
@@ -1815,7 +1815,7 @@
 
 		beforeShow : function(opts, obj) {
 			if (obj.locked) {
-				this.el.addClass('fancybox-lock');
+				this.el.parent().addClass('fancybox-lock');
 
 				if (this.margin !== false) {
 					$('body').css('margin-right', getScalar( this.margin ) + obj.scrollbarWidth);
