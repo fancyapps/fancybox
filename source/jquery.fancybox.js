@@ -1708,7 +1708,7 @@
 				this.close();
 			}
 
-			this.overlay = $('<div class="fancybox-overlay"></div>').appendTo( 'body' );
+			this.overlay = $('<div class="fancybox-overlay"></div>').appendTo( F.coming.parent );
 			this.fixed   = false;
 
 			if (opts.fixed && F.defaults.fixed) {
