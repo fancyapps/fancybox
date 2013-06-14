@@ -24,7 +24,7 @@
 	border-radius: 3px;
 	-webkit-box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
 	   -moz-box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
-	        box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
+			box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
 	background: rgb(50,50,50);
 	background: -moz-linear-gradient(top, rgb(68,68,68) 0%, rgb(52,52,52) 50%, rgb(41,41,41) 50%, rgb(51,51,51) 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgb(68,68,68)), color-stop(50%,rgb(52,52,52)), color-stop(50%,rgb(41,41,41)), color-stop(100%,rgb(51,51,51)));
