@@ -1,5 +1,5 @@
 fancyBox - Changelog
-=========
+====================
 
 ### Version 2.1.5 - June 14, 2013
 * Fixed #493 - Broken slideshow
@@ -7,9 +7,11 @@ fancyBox - Changelog
 * Retina graphics (#564) and retina display support (#420)
 * Improved "lock" feature
 
+
 ### Version 2.1.4 - January 10, 2013
 * Update to be compatible with jQuery v1.9
 * Small changes that should fix usability issues for certain users
+
 
 ### Version 2.1.3 - October 23, 2012
 
@@ -18,6 +20,7 @@ fancyBox - Changelog
 * Fixed #418 - Automatically Grow/Shrink and Center
 * Updated the script to work with jQuery 1.6
 * Media helper supports YouTube video series
+
 
 ### Version 2.1.2 - October 15, 2012
 
@@ -29,6 +32,7 @@ fancyBox - Changelog
 *     $.fancybox.helpers.overlay.close();
 * Optimized for Internet Explorer 10 (Windows 8)
 
+
 ### Version 2.1.1 - October 01, 2012
 
 * Fixed #357 - Converting values like 'auto' in getScalar()
@@ -38,6 +42,7 @@ fancyBox - Changelog
 *     - now they can have a property 'defaults' that contains default settings
 *     - updated vimeo and youtube parsers for media helper
 * Content locking now can be turned off
+
 
 ### Version 2.1.0 - August 20, 2012
 
@@ -58,6 +63,7 @@ fancyBox - Changelog
 * Method "$.fancybox.update();" recalculates content width/height
 * Updated to work with jQuery v1.8
 
+
 ### Version 2.0.6 - April 16, 2012
 
 * Fixed #188 - keystrokes in contenteditable
@@ -70,6 +76,7 @@ fancyBox - Changelog
 * Improved autoSize, fixed wrong height in some cases
 * Improved centering and iframe scrolling for iOS
 * Updated markup, new element '.fancybox-skin' is now used for styling
+
 
 ### Version 2.0.5 - February 21, 2012
 
@@ -91,6 +98,7 @@ fancyBox - Changelog
 * Changed ajax option defaults to "{ dataType: 'html', headers: { 'X-fancyBox': true } }", see #150 and #128
 * Updated loading icon for IE7, IE8
 * Calculates height of the iframe if 'autoSize' is set to 'true' and the iframe is on the same domain as the main page
+
 
 ### Version 2.0.4 - December 12, 2011
 
