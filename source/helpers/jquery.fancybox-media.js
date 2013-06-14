@@ -1,6 +1,6 @@
 /*!
  * Media helper for fancyBox
- * version: 1.0.5 (Tue, 23 Oct 2012)
+ * version: 1.0.6 (Fri, 14 Jun 2013)
  * @requires fancyBox v2.0 or later
  *
  * Usage:
@@ -25,7 +25,7 @@
  *
  * Or:
  *     $(".fancybox").fancybox({,
- *	       helpers : {
+ *         helpers : {
  *             media: true
  *         },
  *         youtube : {
@@ -152,7 +152,7 @@
 			instagram : {
 				matcher : /(instagr\.am|instagram\.com)\/p\/([a-zA-Z0-9_\-]+)\/?/i,
 				type : 'image',
-				url  : '//$1/p/$2/media/'
+				url  : '//$1/p/$2/media/?size=l'
 			},
 			google_maps : {
 				matcher : /maps\.google\.([a-z]{2,3}(\.[a-z]{2})?)\/(\?ll=|maps\?)(.*)/i,
@@ -172,16 +172,18 @@
 				params;
 
 			for (what in opts) {
-				item = opts[ what ];
-				rez  = url.match( item.matcher );
+				if (opts.hasOwnProperty(what)) {
+					item = opts[ what ];
+					rez  = url.match( item.matcher );
 
-				if (rez) {
-					type   = item.type;
-					params = $.extend(true, {}, item.params, obj[ what ] || ($.isPlainObject(opts[ what ]) ? opts[ what ].params : null));
+					if (rez) {
+						type   = item.type;
+						params = $.extend(true, {}, item.params, obj[ what ] || ($.isPlainObject(opts[ what ]) ? opts[ what ].params : null));
 
-					url = $.type( item.url ) === "function" ? item.url.call( this, rez, params, obj ) : format( item.url, rez, params );
+						url = $.type( item.url ) === "function" ? item.url.call( this, rez, params, obj ) : format( item.url, rez, params );
 
-					break;
+						break;
+					}
 				}
 			}
 

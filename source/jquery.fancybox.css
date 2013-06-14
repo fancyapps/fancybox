@@ -1,4 +1,4 @@
-/*! fancyBox v2.1.4 fancyapps.com | fancyapps.com/fancybox/#license */
+/*! fancyBox v2.1.5 fancyapps.com | fancyapps.com/fancybox/#license */
 .fancybox-wrap,
 .fancybox-skin,
 .fancybox-outer,
@@ -165,7 +165,16 @@
 /* Overlay helper */
 
 .fancybox-lock {
-	overflow: hidden;
+    overflow: hidden !important;
+    width: auto;
+}
+
+.fancybox-lock body {
+    overflow: hidden !important;
+}
+
+.fancybox-lock-test {
+    overflow-y: hidden !important;
 }
 
 .fancybox-overlay {
