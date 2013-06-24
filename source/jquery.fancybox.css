@@ -8,8 +8,7 @@
 .fancybox-wrap object,
 .fancybox-nav,
 .fancybox-nav span,
-.fancybox-tmp
-{
+.fancybox-tmp {
 	padding: 0;
 	margin: 0;
 	border: 0;
@@ -44,7 +43,8 @@
 	        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
 
-.fancybox-outer, .fancybox-inner {
+.fancybox-outer,
+.fancybox-inner {
 	position: relative;
 }
 
@@ -64,7 +64,8 @@
 	white-space: nowrap;
 }
 
-.fancybox-image, .fancybox-iframe {
+.fancybox-image,
+.fancybox-iframe {
 	display: block;
 	width: 100%;
 	height: 100%;
@@ -75,7 +76,10 @@
 	max-height: 100%;
 }
 
-#fancybox-loading, .fancybox-close, .fancybox-prev span, .fancybox-next span {
+#fancybox-loading,
+.fancybox-close,
+.fancybox-prev span,
+.fancybox-next span {
 	background-image: url(fancybox_sprite.png);
 }
 
@@ -115,7 +119,7 @@
 	cursor: pointer;
 	text-decoration: none;
 	background: transparent url(blank.gif); /* helps IE */
-	-webkit-tap-highlight-color: rgba(0,0,0,0);
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 	z-index: 8040;
 }
 
@@ -224,7 +228,7 @@
 	display: inline-block;
 	margin-right: -100%;
 	padding: 2px 20px;
-	background: transparent; /* Fallback for web browsers that doesn't support RGBa */
+	background: transparent; /* Fallback for web browsers that don't support RGBa */
 	background: rgba(0, 0, 0, 0.8);
 	-webkit-border-radius: 15px;
 	   -moz-border-radius: 15px;

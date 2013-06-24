@@ -88,7 +88,7 @@
 #fancybox-buttons a.btnClose {
 	border-left: 1px solid #111;
 	width: 35px;
-	background-position: -56px 0px;
+	background-position: -56px 0;
 }
 
 #fancybox-buttons a.btnDisabled {
