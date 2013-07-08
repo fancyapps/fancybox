@@ -1,0 +1,31 @@
+{
+    "name": "fancybox",
+    "title": "fancyBox",
+    "description": "fancyBox offers an elegant way to present images, html content and multimedia for webpages",
+    "keywords": [
+        "lightbox",
+        "effect",
+        "responsive",
+        "modal",
+        "window",
+        "ui"
+    ],
+    "version": "2.1.5",
+    "author": {
+        "name": "Janis Skarnelis",
+        "url": "http://fancyapps.com/contact/"
+    },
+    "licenses": [
+        {
+            "type": "fancyBox",
+            "url": "http://fancyapps.com/fancybox/#license"
+        }
+    ],
+    "homepage": "http://fancyapps.com/fancybox/",
+    "docs": "http://fancyapps.com/fancybox/#docs",
+    "download": "http://fancyapps.com/fancybox/#license",
+    "bugs": "https://github.com/fancyapps/fancyBox/issues",
+    "dependencies": {
+        "jquery": ">=1.7"
+    }
+}
