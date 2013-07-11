@@ -546,7 +546,7 @@
 		},
 
 		update: function (e) {
-			var type = (e && e.type),
+			var type = (e && e.originalEvent && e.originalEvent.type),
 				anyway = !type || type === 'orientationchange';
 
 			if (anyway) {
