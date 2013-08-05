@@ -86,6 +86,7 @@
 			preload    : 3,
 			modal      : false,
 			loop       : true,
+			defaultSuffix : "image",
 
 			ajax  : {
 				dataType : 'html',
@@ -850,7 +851,7 @@
 				return;
 			}
 
-			type = coming.type;
+			type = coming.type || coming.defaultSuffix;
 			href = coming.href;
 
 			if (!type) {
@@ -1080,7 +1081,7 @@
 
 			current   = coming;
 			content   = coming.content;
-			type      = coming.type;
+			type      = coming.type || coming.defaultSuffix;
 			scrolling = coming.scrolling;
 
 			$.extend(F, {
