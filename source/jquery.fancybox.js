@@ -1750,6 +1750,7 @@
 			}
 
 			this.overlay.css( opts.css ).show();
+			$('embed, object, select').css({ 'visibility': 'hidden' });
 		},
 
 		close : function() {
@@ -1768,6 +1769,7 @@
 			if (this.el) {
 				this.el.removeClass('fancybox-lock');
 			}
+			$('embed, object, select').css({ 'visibility': 'visible' });
 		},
 
 		// Private, callbacks
