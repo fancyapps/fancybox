@@ -363,11 +363,15 @@
 		cancel: function () {
 			var coming = F.coming;
 
-			if (!coming || false === F.trigger('onCancel')) {
+			if (false === F.trigger('onCancel')) {
 				return;
 			}
 
 			F.hideLoading();
+
+			if (!coming) {
+				return;
+			}
 
 			if (F.ajaxLoad) {
 				F.ajaxLoad.abort();
@@ -743,24 +747,22 @@
 		trigger: function (event, o) {
 			var ret, obj = o || F.coming || F.current;
 
-			if (!obj) {
-				return;
-			}
+			if (obj) {
+				if ($.isFunction( obj[event] )) {
+					ret = obj[event].apply(obj, Array.prototype.slice.call(arguments, 1));
+				}
 
-			if ($.isFunction( obj[event] )) {
-				ret = obj[event].apply(obj, Array.prototype.slice.call(arguments, 1));
-			}
+				if (ret === false) {
+					return false;
+				}
 
-			if (ret === false) {
-				return false;
-			}
-
-			if (obj.helpers) {
-				$.each(obj.helpers, function (helper, opts) {
-					if (opts && F.helpers[helper] && $.isFunction(F.helpers[helper][event])) {
-						F.helpers[helper][event]($.extend(true, {}, F.helpers[helper].defaults, opts), obj);
-					}
-				});
+				if (obj.helpers) {
+					$.each(obj.helpers, function (helper, opts) {
+						if (opts && F.helpers[helper] && $.isFunction(F.helpers[helper][event])) {
+							F.helpers[helper][event]($.extend(true, {}, F.helpers[helper].defaults, opts), obj);
+						}
+					});
+				}
 			}
 
 			D.trigger(event);
