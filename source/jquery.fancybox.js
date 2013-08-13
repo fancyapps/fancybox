@@ -1,7 +1,7 @@
 /*!
  * fancyBox - jQuery Plugin
  * version: 2.1.5 (Fri, 14 Jun 2013)
- * @requires jQuery v1.6 or later
+ * requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
  * License: www.fancyapps.com/fancybox/#license
@@ -630,6 +630,8 @@
 					left : (viewport.w * 0.5) + viewport.x
 				});
 			}
+
+			F.trigger('onLoading');
 		},
 
 		getViewport: function () {
