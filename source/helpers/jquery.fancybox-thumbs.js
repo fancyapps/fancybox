@@ -111,7 +111,7 @@
 				.attr('src',   href)
 				.attr('title', el.title);
 			});
-console.log(opts);
+			
 			//Set initial width
 			this.width = this.list.children().eq(0).outerWidth(true);
 			var left = opts.stationary ? Math.floor($(window).width() * 0.5 - (this.width * (obj.group.length))*0.5) : Math.floor($(window).width() * 0.5 - (obj.index * this.width + this.width * 0.5));
