@@ -36,7 +36,8 @@
 				}
 
 				return href;
-			}
+			},
+			stationary:false
 		},
 
 		wrap  : null,
@@ -110,11 +111,11 @@
 				.attr('src',   href)
 				.attr('title', el.title);
 			});
-
+console.log(opts);
 			//Set initial width
 			this.width = this.list.children().eq(0).outerWidth(true);
-
-			this.list.width(this.width * (obj.group.length + 1)).css('left', Math.floor($(window).width() * 0.5 - (obj.index * this.width + this.width * 0.5)));
+			var left = opts.stationary ? Math.floor($(window).width() * 0.5 - (this.width * (obj.group.length))*0.5) : Math.floor($(window).width() * 0.5 - (obj.index * this.width + this.width * 0.5));
+			this.list.width(this.width * (obj.group.length + 1)).css('left', left);
 		},
 
 		beforeLoad: function (opts, obj) {
@@ -144,7 +145,7 @@
 
 		//Center list
 		onUpdate: function (opts, obj) {
-			if (this.list) {
+			if (this.list && !opts.stationary) {
 				this.list.stop(true).animate({
 					'left': Math.floor($(window).width() * 0.5 - (obj.index * this.width + this.width * 0.5))
 				}, 150);
