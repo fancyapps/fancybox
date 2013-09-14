@@ -1,0 +1,14 @@
+{
+	"name": "fancybox",
+	"version": "2.1.5",
+	"main": ["source/jquery.fancybox.css","source/jquery.fancybox.js"],
+	"ignore": [
+    "**/.*",
+    "*.json",
+    "demo"
+  ],
+	"dependencies": {
+		"jquery": "~1.10",
+		"jquery-mousewheel": "~3.1.3"
+	}
+}
