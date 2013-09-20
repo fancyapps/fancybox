@@ -261,7 +261,7 @@
 					if (isQuery(element)) {
 						obj = {
 							href    : element.data('fancybox-href') || element.attr('href'),
-							title   : element.data('fancybox-title') || element.attr('title'),
+							title   : $('<div/>').text( element.data('fancybox-title') || element.attr('title') ).html(),
 							isDom   : true,
 							element : element
 						};
@@ -363,7 +363,7 @@
 		cancel: function () {
 			var coming = F.coming;
 
-			if (false === F.trigger('onCancel')) {
+			if (coming && false === F.trigger('onCancel')) {
 				return;
 			}
 
@@ -1469,12 +1469,13 @@
 
 			// Stop the slideshow if this is the last item
 			if (!current.loop && current.index === current.group.length - 1) {
+
 				F.play( false );
 
 			} else if (F.opts.autoPlay && !F.player.isActive) {
 				F.opts.autoPlay = false;
 
-				F.play();
+				F.play(true);
 			}
 		},
 
