@@ -189,8 +189,8 @@
 			beforeClose  : $.noop, // Before closing
 			afterClose   : $.noop, // After closing
 
-            // CSS3 Transitions and Transforms (requires jquery.transit.js)
-            useCSS3 : false
+			// CSS3 Transitions and Transforms (requires jquery.transit.js)
+			useCSS3 : false
 		},
 
 		//Current state
@@ -531,7 +531,7 @@
 		},
 
 		// Center inside viewport and toggle position type to fixed or absolute if needed
-		reposition: function (e, onlyAbsolute) {
+		reposition: function (e, onlyAbsolute, duration) {
 			var current = F.current,
 				wrap    = current ? current.wrap : null,
 				pos;
@@ -542,15 +542,24 @@
 				if (e && e.type === 'scroll') {
 					delete pos.position;
 
-                    if (current.useCSS3) {
-                        wrap.stop(true, true).transition(pos, 200);
-                    }
-                    else {
-                        wrap.stop(true, true).animate(pos, 200);
-                    }
+					if (current.useCSS3) {
+						wrap.stop(true, true).transition(pos, 200);
+					}
+					else {
+						wrap.stop(true, true).animate(pos, 200);
+					}
 
 				} else {
-					wrap.css(pos);
+					if (current.useCSS3) {
+						var startPos = current.pos,
+						F._convertEndPosLeftTopToXY(startPos, pos);
+						// Set opacity to 1 since on changeIn() item is hidden.
+						pos.opacity = 1;
+						wrap.transition(pos, null == duration ? 200 : duration);
+					}
+					else {
+						wrap.css(pos);
+					}
 
 					current.pos = $.extend({}, current.dim, pos);
 				}
@@ -1158,7 +1167,7 @@
 			// Set initial dimensions and start position
 			F._setDimension();
 
-			F.reposition();
+			F.reposition(null, false, 0);
 
 			F.isOpen = false;
 			F.coming = null;
@@ -1426,7 +1435,57 @@
 			rez.top  = getValue(Math.max(rez.top,  rez.top  + ((viewport.h - height) * current.topRatio)));
 			rez.left = getValue(Math.max(rez.left, rez.left + ((viewport.w - width)  * current.leftRatio)));
 
+			if (current.useCSS3) {
+				var match = F.wrap.attr('style').match(/translate3d\(\s*?(.*?)px,\s*?(.*?)px,.*?\)/);
+				if (match && 0 < match.length) {
+					rez.x = parseInt(match[1], 10);
+					rez.y = parseInt(match[2], 10);
+				}
+				else {
+					rez.x = 0;
+					rez.y = 0;
+				}
+			}
 			return rez;
+		},
+
+		_convertEndPosLeftTopToXY: function(startPos, endPos) {
+			if (startPos && endPos) {
+				if (endPos.left) {
+					if (endPos.left.match(/[\-\+]=[0-9]+px/)) {
+						endPos.x = startPos.x + parseInt(endPos.left.replace(/=/, '').replace(/\+/, '').replace(/px/, ''), 10);
+						if (startPos.left && startPos.left.match(/[0-9]+px/)) {
+							var startLeft = parseInt(startPos.left.replace(/px/, ''), 10);
+							startPos.left = (startLeft - endPos.x) + 'px';
+						}
+						delete endPos.left;
+					}
+					else if (endPos.left.match(/[0-9]+px/) && startPos.left.match(/[0-9]+px/)) {
+						var startLeft = parseInt(startPos.left.replace(/px/, ''), 10);
+						var endLeft = parseInt(endPos.left.replace(/px/, ''), 10);
+						endPos.x = startPos.x + endLeft - startLeft;
+						delete endPos.left;
+					}
+				}
+
+				if (endPos.top) {
+					if (endPos.top && endPos.top.match(/[\-+]=[0-9]+px/)) {
+						endPos.y = startPos.y + parseInt(endPos.top.replace(/=/, '').replace(/\+/, '').replace(/px/, ''), 10);
+
+						if (startPos.top && startPos.top.match(/[0-9]+px/)) {
+							var startTop = parseInt(startPos.top.replace(/px/, ''), 10);
+							startPos.top = (startTop - endPos.y) + 'px';
+						}
+						delete endPos.top;
+					}
+					else if (endPos.top.match(/[0-9]+px/) && startPos.top.match(/[0-9]+px/)) {
+						var startTop = parseInt(startPos.top.replace(/px/, ''), 10);
+						var endTop = parseInt(endPos.top.replace(/px/, ''), 10);
+						endPos.y = startPos.y + endTop - startTop;
+						delete endPos.top;
+					}
+				}
+			}
 		},
 
 		_afterZoomIn: function () {
@@ -1608,22 +1667,23 @@
 				startPos.opacity = 0.1;
 			}
 
-            if (current.useCSS3) {
-                F.wrap.css(startPos).transition(endPos,
-                    /*duration :*/ effect === 'none' ? 0 : current.openSpeed,
-                    /*easing   :*/ 'in-out' /*current.openEasing*/,
-                    //step     : elastic ? this.step : null,
-                    /*complete :*/ F._afterZoomIn
-                );
-            }
-            else {
-                F.wrap.css(startPos).animate(endPos, {
-                    duration : effect === 'none' ? 0 : current.openSpeed,
-                    easing   : current.openEasing,
-                    step     : elastic ? this.step : null,
-                    complete : F._afterZoomIn
-                });
-            }
+			if (current.useCSS3) {
+				F._convertEndPosLeftTopToXY(startPos, endPos);
+				F.wrap.css(startPos).transition(endPos,
+					effect === 'none' ? 0 : current.openSpeed,
+					'in-out' /*current.openEasing*/,
+					//step     : elastic ? this.step : null,
+					F._afterZoomIn
+				);
+			}
+			else {
+				F.wrap.css(startPos).animate(endPos, {
+					duration : effect === 'none' ? 0 : current.openSpeed,
+					easing   : current.openEasing,
+					step     : elastic ? this.step : null,
+					complete : F._afterZoomIn
+				});
+			}
 		},
 
 		zoomOut: function () {
@@ -1640,22 +1700,25 @@
 				}
 			}
 
-            if (current.useCSS3) {
-                F.wrap.transition(endPos,
-                    /*duration :*/ effect === 'none' ? 0 : current.closeSpeed,
-                    /*easing   :*/ 'in-out' /*current.closeEasing*/,
-                    //step     : elastic ? this.step : null,
-                    /*complete :*/ F._afterZoomOut
-                );
-            }
-            else {
-                F.wrap.animate(endPos, {
-                    duration : effect === 'none' ? 0 : current.closeSpeed,
-                    easing   : current.closeEasing,
-                    step     : elastic ? this.step : null,
-                    complete : F._afterZoomOut
-                });
-            }
+			if (current.useCSS3) {
+				var startPos = current.pos;
+				F._convertEndPosLeftTopToXY(startPos, endPos);
+
+				F.wrap.transition(endPos,
+					effect === 'none' ? 0 : current.closeSpeed,
+					'in-out' /*current.closeEasing*/,
+					//step     : elastic ? this.step : null,
+					F._afterZoomOut
+				);
+			}
+			else {
+				F.wrap.animate(endPos, {
+					duration : effect === 'none' ? 0 : current.closeSpeed,
+					easing   : current.closeEasing,
+					step     : elastic ? this.step : null,
+					complete : F._afterZoomOut
+				});
+			}
 		},
 
 		changeIn: function () {
@@ -1688,19 +1751,29 @@
 
 			} else {
 				if (current.useCSS3) {
-                    F.wrap.css(startPos).transition(endPos,
-                        /*duration :*/ effect === 'none' ? 0 : current.nextSpeed,
-                        /*easing   :*/ 'in-out' /*current.nextEasing*/,
-                        /*complete :*/ F._afterZoomIn
-                    );
-                }
-                else {
-                    F.wrap.css(startPos).animate(endPos, {
+					/*
+					F._convertEndPosLeftTopToXY(startPos, endPos);
+					F.wrap.css(startPos).transition(endPos,
+					 effect === 'none' ? 0 : current.nextSpeed,
+					 'in-out',
+					 F._afterZoomIn
+					 );
+					 */
+
+					// Instead of 2 transitions, the first here in changeIn() and the second in reposition(), we'll just skip the changeIn() transition
+					// and rely on reposition() to transition to the end position and change opacity.
+					delete endPos.left;
+					delete endPos.top;
+					F.wrap.css(startPos);
+					F._afterZoomIn();
+				}
+				else {
+					F.wrap.css(startPos).animate(endPos, {
 						duration : current.nextSpeed,
 						easing   : current.nextEasing,
 						complete : F._afterZoomIn
 					});
-                }
+				}
 			}
 		},
 
@@ -1715,24 +1788,26 @@
 				endPos[ direction === 'down' || direction === 'up' ? 'top' : 'left' ] = ( direction === 'up' || direction === 'left' ? '-' : '+' ) + '=' + distance + 'px';
 			}
 
-            if (previous.useCSS3) {
-                previous.wrap.transition(endPos,
-                    /*duration :*/ effect === 'none' ? 0 : previous.prevSpeed,
-                    /*easing   :*/ 'in-out' /*previous.prevEasing*/,
-                    /*complete :*/ function () {
-                        $(this).trigger('onReset').remove();
-                    }
-                );
-            }
-            else {
-                previous.wrap.animate(endPos, {
-                    duration : effect === 'none' ? 0 : previous.prevSpeed,
-                    easing   : previous.prevEasing,
-                    complete : function () {
-                        $(this).trigger('onReset').remove();
-                    }
-                });
-            }
+			if (previous.useCSS3) {
+				var startPos  = previous.pos;
+				F._convertEndPosLeftTopToXY(startPos, endPos);
+				previous.wrap.transition(endPos,
+					effect === 'none' ? 0 : previous.prevSpeed,
+					'in-out',
+					function () {
+						$(this).trigger('onReset').remove();
+					}
+				);
+			}
+			else {
+				previous.wrap.animate(endPos, {
+					duration : effect === 'none' ? 0 : previous.prevSpeed,
+					easing   : previous.prevEasing,
+					complete : function () {
+						$(this).trigger('onReset').remove();
+					}
+				});
+			}
 		}
 	};
 
