@@ -551,7 +551,7 @@
 
 				} else {
 					if (current.useCSS3) {
-						var startPos = current.pos,
+						var startPos = current.pos;
 						F._convertEndPosLeftTopToXY(startPos, pos);
 						// Set opacity to 1 since on changeIn() item is hidden.
 						pos.opacity = 1;
