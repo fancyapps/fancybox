@@ -46,6 +46,7 @@
 	width: 30px;
 	height: 30px;
 	text-indent: -9999px;
+	background-color: transparent;
 	background-image: url('fancybox_buttons.png');
 	background-repeat: no-repeat;
 	outline: none;
