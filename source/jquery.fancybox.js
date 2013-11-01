@@ -55,6 +55,7 @@
 		defaults: {
 			padding : 15,
 			margin  : 20,
+			maxMargin : [ 5, 5, 5, 5 ],
 
 			width     : 800,
 			height    : 600,
@@ -782,6 +783,7 @@
 				href,
 				type,
 				margin,
+				maxMargin,
 				padding;
 
 			index = getScalar( index );
@@ -795,6 +797,7 @@
 
 			// Convert margin and padding properties to array - top, right, bottom, left
 			margin  = coming.margin;
+			maxMargin  = coming.maxMargin;
 			padding = coming.padding;
 
 			if ($.type(margin) === 'number') {
@@ -1147,6 +1150,13 @@
 			// Set scrolling before calculating dimensions
 			current.inner.css('overflow', scrolling === 'yes' ? 'scroll' : (scrolling === 'no' ? 'hidden' : scrolling));
 
+			// backup initial margins - this should be in an array
+			// but how to copy by value and not reference?
+			current.initMargin0 = current.margin[0];
+			current.initMargin1 = current.margin[1];
+			current.initMargin2 = current.margin[2];
+			current.initMargin3 = current.margin[3];
+
 			// Set initial dimensions and start position
 			F._setDimension();
 
@@ -1170,6 +1180,10 @@
 		},
 
 		_setDimension: function () {
+
+			// restore margins and padding to init values
+			F.current.margin =  [ F.current.initMargin0, F.current.initMargin1, F.current.initMargin2, F.current.initMargin3 ];
+
 			var viewport   = F.getViewport(),
 				steps      = 0,
 				canShrink  = false,
@@ -1281,6 +1295,13 @@
 				maxWidth  = Math.min(viewport.w - wSpace, maxWidth);
 				maxHeight = Math.min(viewport.h - hSpace, maxHeight);
 			}
+			else {
+				//make sure fits within document window (fix when image is large and current.fitToView == false)
+				if ( maxWidth >= window.innerWidth )
+					maxWidth = window.innerWidth - current.maxMargin[1] - current.maxMargin[3] - wPadding;
+				if ( maxHeight >= window.innerHeight )
+					maxHeight = window.innerHeight - current.maxMargin[0] - current.maxMargin[2] - hPadding;
+			}
 
 			maxWidth_  = viewport.w - wMargin;
 			maxHeight_ = viewport.h - hMargin;
@@ -1358,6 +1379,21 @@
 				} else {
 					width  = Math.max(minWidth,  Math.min(width,  width  - (width_  - maxWidth_)));
 					height = Math.max(minHeight, Math.min(height, height - (height_ - maxHeight_)));
+				}
+			}
+
+			// adjust margins if image doesn't fit inside the window
+			// TODO also remove padding, how to do this?
+			else {
+				if ( width + wMargin + wPadding > window.innerWidth ) {
+					var diff = width + wMargin + wPadding - window.innerWidth;
+					current.margin[1] = Math.max(0, current.margin[1] - diff/2);
+					current.margin[3] = Math.max(current.maxMargin[3], current.margin[3] - diff/2);
+				}
+				if ( height + hMargin + hPadding > window.innerHeight ) {
+					var diff = height + hMargin + hPadding - window.innerHeight;
+					current.margin[0] = Math.max(current.maxMargin[0], current.margin[0] - diff/2);
+					current.margin[2] = Math.max(0, current.margin[2] - diff/2);
 				}
 			}
 
