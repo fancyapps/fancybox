@@ -30,6 +30,12 @@
 		$(document).ready(function() {
 
 			/*
+			 *  Simple image gallery. Uses default settings
+			 */
+
+			$(".basic").fancybox({ closeBtn  : false, helpers: { title: null } });
+
+			/*
 			 *  Large image test
 			 */
 			$('.large_image_test').fancybox({
@@ -39,7 +45,7 @@
 				prevEffect : 'none',
 				nextEffect : 'none',
         
-				maxMargin : [ 5, 5, 35, 5 ],
+				fullscreenMargin : [ 0, 0, 30, 0 ],
 
 				closeBtn  : false,
 
@@ -85,6 +91,7 @@
 		<a class="large_image_test" data-fancybox-group="large_image_test" href="http://upload.wikimedia.org/wikipedia/commons/f/f4/Mercator_projection_SW.jpg" data-fancybox-group="button" title="full"><img src="http://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Mercator_projection_SW.jpg/283px-Mercator_projection_SW.jpg" alt="" /></a>
 		<a class="large_image_test" data-fancybox-group="large_image_test" href="http://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Mercator_projection_SW.jpg/283px-Mercator_projection_SW.jpg"  data-fullimg-href="http://upload.wikimedia.org/wikipedia/commons/f/f4/Mercator_projection_SW.jpg" data-fancybox-group="button" title="small+full"><img src="http://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Mercator_projection_SW.jpg/283px-Mercator_projection_SW.jpg"alt="" /></a>
 		<a class="large_image_test" data-fancybox-group="large_image_test" href="http://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Mercator_projection_SW.jpg/707px-Mercator_projection_SW.jpg"  data-fullimg-href="http://upload.wikimedia.org/wikipedia/commons/f/f4/Mercator_projection_SW.jpg" data-fancybox-group="button" title="medium+full"><img src="http://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Mercator_projection_SW.jpg/283px-Mercator_projection_SW.jpg"alt="" /></a>
+		<a class="basic" data-fancybox-group="large_image_test" href="http://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Mercator_projection_SW.jpg/707px-Mercator_projection_SW.jpg"  data-fullimg-href="http://upload.wikimedia.org/wikipedia/commons/f/f4/Mercator_projection_SW.jpg" data-fancybox-group="button" title="medium+full no helpers"><img src="http://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Mercator_projection_SW.jpg/283px-Mercator_projection_SW.jpg"alt="" /></a>
 	</p>
 
 </body>
