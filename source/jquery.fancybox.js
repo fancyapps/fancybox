@@ -10,7 +10,8 @@
  *
  */
 
-;(function (window, document, $, undefined) {
+;(function (root) {
+var factory = (function (window, document, $, undefined) {
 	"use strict";
 
 	var H = $("html"),
@@ -2014,4 +2015,17 @@
 		$("<style type='text/css'>.fancybox-margin{margin-right:" + (w2 - w1) + "px;}</style>").appendTo("head");
 	});
 
-}(window, document, jQuery));
+});
+
+// If AMD (http://requirejs.org/docs/whyamd.html) is supported, then wrap the factory with an AMD definition,
+// otherwise fall back to the normal style.
+if(typeof define == 'function' && define.amd) {
+	define('fancybox', [ 'jquery' ], function(jQuery) {
+		factory.apply(root, [ window, document, jQuery ]); // Preserve global "this"
+	});
+} else {
+	factory(window, document, jQuery);
+}
+
+
+}(window));

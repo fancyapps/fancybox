@@ -14,7 +14,8 @@
  *     });
  *
  */
-;(function ($) {
+;(function (root) {
+var factory = (function ($) {
 	//Shortcut for fancyBox object
 	var F = $.fancybox;
 
@@ -162,4 +163,16 @@
 		}
 	}
 
-}(jQuery));
+});
+
+// If AMD (http://requirejs.org/docs/whyamd.html) is supported, then wrap the factory with an AMD definition,
+// otherwise fall back to the normal style.
+if(typeof define == 'function' && define.amd) {
+	define('fancybox/thumbs', [ 'jquery', 'fancybox' ], function(jQuery) {
+		factory.apply(root, [ jQuery ]);  // Preserve global "this"
+	});
+} else {
+	factory(jQuery);
+}
+
+}(window));
