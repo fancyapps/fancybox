@@ -89,7 +89,7 @@
 	F.helpers.media = {
 		defaults : {
 			youtube : {
-				matcher : /(youtube\.com|youtu\.be|youtube-nocookie\.com)\/(watch\?v=|v\/|u\/|embed\/?)?(videoseries\?list=(.*)|[\w-]{11}|\?listType=(.*)&list=(.*)).*/i,
+				matcher : /(youtube\.com|youtube\.com\/watch\?feature=player_embedded|youtu\.be|youtube-nocookie\.com)\/(watch\?v=|v\/|u\/|embed\/?)?(videoseries\?list=(.*)|[\w-]{11}|\?listType=(.*)&list=(.*)).*/i,
 				params  : {
 					autoplay    : 1,
 					autohide    : 1,
