@@ -106,11 +106,10 @@
 				matcher : /(?:vimeo(?:pro)?.com)\/(?:[^\d]+)?(\d+)(?:.*)/,
 				params  : {
 					autoplay      : 1,
-					hd            : 1,
-					show_title    : 1,
-					show_byline   : 1,
-					show_portrait : 0,
-					fullscreen    : 1
+					title         : 1,
+					byline        : 1,
+					portrait      : 0,
+					loop          : 0
 				},
 				type : 'iframe',
 				url  : '//player.vimeo.com/video/$1'
