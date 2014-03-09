@@ -1,4 +1,10 @@
 /*! fancyBox v2.1.5 fancyapps.com | fancyapps.com/fancybox/#license */
+
+.fancybox {
+	cursor: -webkit-zoom-in;
+	cursor: -moz-zoom-in;
+}
+
 .fancybox-wrap,
 .fancybox-skin,
 .fancybox-outer,
