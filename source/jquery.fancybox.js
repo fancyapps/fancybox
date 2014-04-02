@@ -949,7 +949,7 @@
 				F.coming.width  = this.width / F.opts.pixelRatio;
 				F.coming.height = this.height / F.opts.pixelRatio;
 
-				F._afterLoad();
+				F._afterLoad(img);
 			};
 
 			img.onerror = function () {
@@ -959,6 +959,7 @@
 			};
 
 			img.src = F.coming.href;
+			img.className = 'fancybox-image';
 
 			if (img.complete !== true) {
 				F.showLoading();
@@ -1047,7 +1048,7 @@
 			}
 		},
 
-		_afterLoad: function () {
+		_afterLoad: function (element) {
 			var coming   = F.coming,
 				previous = F.current,
 				placeholder = 'fancybox-placeholder',
@@ -1083,7 +1084,6 @@
 			F.unbindEvents();
 
 			current   = coming;
-			content   = coming.content;
 			type      = coming.type;
 			scrolling = coming.scrolling;
 
@@ -1096,45 +1096,50 @@
 				previous : previous
 			});
 
-			href = current.href;
-
-			switch (type) {
-				case 'inline':
-				case 'ajax':
-				case 'html':
-					if (current.selector) {
-						content = $('<div>').html(content).find(current.selector);
-
-					} else if (isQuery(content)) {
-						if (!content.data(placeholder)) {
-							content.data(placeholder, $('<div class="' + placeholder + '"></div>').insertAfter( content ).hide() );
-						}
-
-						content = content.show().detach();
-
-						current.wrap.bind('onReset', function () {
-							if ($(this).find(content).length) {
-								content.hide().replaceAll( content.data(placeholder) ).data(placeholder, false);
+			if (element) {
+				content	= element;
+			} else {
+				href	= current.href;
+				content = coming.content;
+	
+				switch (type) {
+					case 'inline':
+					case 'ajax':
+					case 'html':
+						if (current.selector) {
+							content = $('<div>').html(content).find(current.selector);
+	
+						} else if (isQuery(content)) {
+							if (!content.data(placeholder)) {
+								content.data(placeholder, $('<div class="' + placeholder + '"></div>').insertAfter( content ).hide() );
 							}
+	
+							content = content.show().detach();
+	
+							current.wrap.bind('onReset', function () {
+								if ($(this).find(content).length) {
+									content.hide().replaceAll( content.data(placeholder) ).data(placeholder, false);
+								}
+							});
+						}
+					break;
+	
+					case 'image':
+						content = current.tpl.image.replace(/\{href\}/g, href);
+					break;
+	
+					case 'swf':
+						content = '<object id="fancybox-swf" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="100%"><param name="movie" value="' + href + '"></param>';
+						embed   = '';
+	
+						$.each(current.swf, function(name, val) {
+							content += '<param name="' + name + '" value="' + val + '"></param>';
+							embed   += ' ' + name + '="' + val + '"';
 						});
-					}
-				break;
-
-				case 'image':
-					content = current.tpl.image.replace(/\{href\}/g, href);
-				break;
-
-				case 'swf':
-					content = '<object id="fancybox-swf" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="100%"><param name="movie" value="' + href + '"></param>';
-					embed   = '';
-
-					$.each(current.swf, function(name, val) {
-						content += '<param name="' + name + '" value="' + val + '"></param>';
-						embed   += ' ' + name + '="' + val + '"';
-					});
-
-					content += '<embed src="' + href + '" type="application/x-shockwave-flash" width="100%" height="100%"' + embed + '></embed></object>';
-				break;
+	
+						content += '<embed src="' + href + '" type="application/x-shockwave-flash" width="100%" height="100%"' + embed + '></embed></object>';
+					break;
+				}
 			}
 
 			if (!(isQuery(content) && content.parent().is(current.inner))) {
