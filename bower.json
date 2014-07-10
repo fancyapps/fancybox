@@ -1,6 +1,6 @@
 {
-	"name": "fancybox",
-	"version": "2.1.5",
+	"name": "fancybox-scss",
+	"version": "2.2.0",
 	"main": ["source/jquery.fancybox.css","source/jquery.fancybox.js"],
 	"ignore": [
     "**/.*",
