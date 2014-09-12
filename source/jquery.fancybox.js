@@ -1350,7 +1350,7 @@
 
 						inner.width( width ).height( height );
 
-						wrap.width( width + wPadding );
+						wrap.width( width ).height( height );
 
 						width_  = wrap.width();
 						height_ = wrap.height();
@@ -1368,7 +1368,7 @@
 
 			inner.width( width ).height( height );
 
-			wrap.width( width + wPadding );
+			wrap.width( width + wPadding ).height( height + hPadding );
 
 			width_  = wrap.width();
 			height_ = wrap.height();
