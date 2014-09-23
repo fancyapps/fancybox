@@ -856,6 +856,7 @@
 			}
 
 			type = coming.type;
+            coming.href = coming.href || coming.element[0].src;
 			href = coming.href;
 
 			if (!type) {
