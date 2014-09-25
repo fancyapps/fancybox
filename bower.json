@@ -1,14 +1,24 @@
 {
 	"name": "fancybox",
 	"version": "2.1.5",
-	"main": ["source/jquery.fancybox.css","source/jquery.fancybox.js"],
+	"main": [
+		"source/jquery.fancybox.css",
+		"source/jquery.fancybox.js",
+		"source/blank.gif",
+		"source/fancybox_loading.gif",
+		"source/fancybox_loading@2x.gif",
+		"source/fancybox_overlay.png",
+		"source/fancybox_sprite.png",
+		"source/fancybox_sprite@2x.png",
+		"source/jquery.fancybox.pack.js"
+	],
 	"ignore": [
-    "**/.*",
-    "*.json",
-    "demo"
-  ],
+    	"**/.*",
+    	"fancybox.jquery.json",
+    	"demo"
+	],
 	"dependencies": {
-		"jquery": "~1.10",
+		"jquery": ">=1.10",
 		"jquery-mousewheel": "~3.1.3"
 	}
 }
