@@ -6,16 +6,8 @@
     },
     "extra": {
         "component": {
-            "scripts": [
-                "source/jquery.fancybox.pack.js"
-            ],
-            "styles": [
-                "source/jquery.fancybox.css"
-            ],
             "files": [
-                "helpers/*",
-                "source/*.gif",
-                "source/*.png"
+                "source/*"
             ]
         }
     }
