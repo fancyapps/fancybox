@@ -1,5 +1,5 @@
 {
-    "name": "BenExile/fancyBox",
+    "name": "benexile/fancybox",
     "type": "component",
     "require": {
         "robloach/component-installer": "*"
