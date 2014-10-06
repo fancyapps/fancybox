@@ -1,0 +1,22 @@
+{
+    "name": "BenExile/fancyBox",
+    "type": "component",
+    "require": {
+        "robloach/component-installer": "*"
+    },
+    "extra": {
+        "component": {
+            "scripts": [
+                "source/jquery.fancybox.pack.js"
+            ],
+            "styles": [
+                "source/jquery.fancybox.css"
+            ],
+            "files": [
+                "helpers/*",
+                "source/*.gif",
+                "source/*.png"
+            ]
+        }
+    }
+}
