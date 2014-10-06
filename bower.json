@@ -9,8 +9,7 @@
 		"source/fancybox_loading@2x.gif",
 		"source/fancybox_overlay.png",
 		"source/fancybox_sprite.png",
-		"source/fancybox_sprite@2x.png",
-		"source/jquery.fancybox.pack.js"
+		"source/fancybox_sprite@2x.png"
 	],
 	"ignore": [
     	"**/.*",
