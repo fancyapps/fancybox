@@ -1829,7 +1829,7 @@
 		beforeShow : function(opts, obj) {
 			if (obj.locked && !this.el.hasClass('fancybox-lock')) {
 				if (this.fixPosition !== false) {
-					$('*').filter(function(){
+					$('*:not(object)').filter(function(){
 						return ($(this).css('position') === 'fixed' && !$(this).hasClass("fancybox-overlay") && !$(this).hasClass("fancybox-wrap") );
 					}).addClass('fancybox-margin');
 				}
