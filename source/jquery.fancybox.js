@@ -1701,7 +1701,7 @@
 			css            : {},        // custom CSS properties
 			locked         : !isTouch,  // if true, the content will be locked into overlay
 			fixed          : true       // if false, the overlay CSS position property will not be set to "fixed"
-			stopPropagation: false  	// If true, fancyBox will expose click event when user clicks on the overlay
+			stopPropagation: false  	// If true, fancyBox will prevent expose click event to parent node when user clicks on the overlay
 		},
 
 		overlay : null,      // current handle
