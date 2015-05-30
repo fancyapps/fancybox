@@ -198,6 +198,18 @@
 				});
 			});
 
+            $("#fancybox-manual-d-file").on('change', function() {
+                if (this.files && this.files.length) {
+                    var getBlobURL =
+                        (window.URL && URL.createObjectURL.bind(URL)) ||
+                        (window.webkitURL && webkitURL.createObjectURL.bind(webkitURL)) ||
+                        window.createObjectURL;
+                    $("#fancybox-manual-d").attr('href', getBlobURL(this.files[0]));
+                }
+                else {
+                    alert("Your browser does not support File objects for inputs of type 'file'");
+                }
+            });
 
 		});
 	</script>
@@ -304,6 +316,13 @@
 		<li><a id="fancybox-manual-b" href="javascript:;">Open single item, custom options</a></li>
 		<li><a id="fancybox-manual-c" href="javascript:;">Open gallery</a></li>
 	</ul>
+
+    <h3>BLOB source</h3>
+    <ul>
+        <li><input id="fancybox-manual-d-file" type="file" accept="image/*"/>
+            <a id="fancybox-manual-d" href="" class="fancybox">Open choosen image</a>
+        </li>
+    </ul>
 
 	<p>
 		Photo Credit: Instagrammer @whitjohns
