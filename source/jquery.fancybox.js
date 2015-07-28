@@ -183,7 +183,7 @@
 			// Callbacks
 			onCancel     : $.noop, // If canceling
 			beforeLoad   : $.noop, // Before loading
-			afterLoad    : $.noop, // After loading
+			afterLoad    : function(current, previous) {$.fancybox.update();}, // After loading
 			beforeShow   : $.noop, // Before changing in current item
 			afterShow    : $.noop, // After opening
 			beforeChange : $.noop, // Before changing gallery item
