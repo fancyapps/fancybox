@@ -86,6 +86,7 @@
 			autoPlay   : false,
 			playSpeed  : 3000,
 			preload    : 3,
+			preloadAjaxImages: false,
 			modal      : false,
 			loop       : true,
 
@@ -985,6 +986,15 @@
 					if (textStatus === 'success') {
 						coming.content = data;
 
+						if (coming.preloadAjaxImages) {
+							if (imagesLoaded) {
+								return imagesLoaded(coming.content, function(){
+									F._afterLoad();
+								})
+							} else {
+								console.warn("imagesLoaded is not available. Skipping image preloading...")
+							}
+						}
 						F._afterLoad();
 					}
 				}
