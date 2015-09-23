@@ -87,6 +87,7 @@
 			playSpeed  : 3000,
 			preload    : 3,
 			preloadAjaxImages: false,
+
 			modal      : false,
 			loop       : true,
 
