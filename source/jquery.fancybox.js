@@ -992,11 +992,12 @@
 								coming.content = $.parseHTML(coming.content);
 								return imagesLoaded(coming.content, function(){
 									F._afterLoad();
-								})
+								});
 							} else {
-								console.warn("imagesLoaded is not available. Skipping image preloading...")
+								console.warn("imagesLoaded is not available. Skipping image preloading...");
 							}
 						}
+
 						F._afterLoad();
 					}
 				}
