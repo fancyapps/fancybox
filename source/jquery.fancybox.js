@@ -988,9 +988,7 @@
 
 						if (coming.preloadAjaxImages) {
 							if (imagesLoaded) {
-								var parser = new DOMParser(),
-										doc = parser.parseFromString(coming.content, "text/xml");
-								coming.content = doc.firstChild;
+								coming.content = $.parseHTML(coming.content);
 								return imagesLoaded(coming.content, function(){
 									F._afterLoad();
 								})
