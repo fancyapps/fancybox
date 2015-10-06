@@ -22,7 +22,7 @@ Load files in the <head> section of your HTML document. Make sure you also add t
         <script type="text/javascript" src="/fancybox/jquery.fancybox.pack.js"></script>
     </head>
 
-Create your links with a `title` if you want a title to be shown, and add a class:
+Create your links with a `title` (or `data-fancybox-title`) if you want a title to be shown, and add a class:
 
     <a href="large_image.jpg" class="fancybox" title="Sample title"><img src="small_image.jpg" /></a>
 
