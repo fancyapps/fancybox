@@ -1,0 +1,14 @@
+{
+    "name": "fancyapps/fancybox",
+    "type": "component",
+    "require": {
+        "robloach/component-installer": "*"
+    },
+    "extra": {
+        "component": {
+            "files": [
+                "source/*"
+            ]
+        }
+    }
+}
