@@ -97,7 +97,9 @@
 					rel         : 0,
 					hd          : 1,
 					wmode       : 'opaque',
-					enablejsapi : 1
+					enablejsapi : 1,
+                    			ps: 'docs',
+                    			controls: 1
 				},
 				type : 'iframe',
 				url  : '//www.youtube.com/embed/$3'
