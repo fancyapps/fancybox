@@ -1122,6 +1122,7 @@
 				break;
 
 				case 'image':
+					href = href.replace('$&', '$$$&');
 					content = current.tpl.image.replace(/\{href\}/g, href);
 				break;
 
