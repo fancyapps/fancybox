@@ -46,7 +46,8 @@ May also be passed an optional options object which will extend the default valu
         $(document).ready(function() {
             $('.fancybox').fancybox({
                 padding : 0,
-                openEffect  : 'elastic'
+                openEffect  : 'elastic',
+                closeBtn: false
             });
         });
     </script>
