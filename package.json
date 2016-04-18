@@ -1,0 +1,47 @@
+{
+  "name": "fancybox",
+  "title": "fancyBox",
+  "description": "fancyBox offers an elegant way to present images, html content and multimedia for webpages",
+  "keywords": [
+    "lightbox",
+    "effect",
+    "responsive",
+    "modal",
+    "window",
+    "ui"
+  ],
+  "licenses": [
+    {
+      "type": "fancyBox",
+      "url": "http://fancyapps.com/fancybox/#license"
+    }
+  ],
+  "version": "2.1.5",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fancyapps/fancyBox"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "del": "^0.1.2",
+    "gulp": "^3.6.0",
+    "gulp-autoprefixer": "0.0.7",
+    "gulp-clean": "^0.3.2",
+    "gulp-clean-css": "^2.0.4",
+    "gulp-concat": "^2.3.4",
+    "gulp-csso": "^0.2.9",
+    "gulp-jshint": "^1.8.4",
+    "gulp-load-plugins": "^0.5.0",
+    "gulp-newer": "^1.1.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-plumber-notifier": "0.0.3",
+    "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.5.4",
+    "gulp-sass": "^2.2.0",
+    "gulp-uglify": "^1.0.0",
+    "gulp-util": "^3.0.7"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  }
+}
