@@ -1,3 +1,4 @@
 .project
 .settings
 dist/
+demo/*.mp4

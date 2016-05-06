@@ -25,10 +25,10 @@
 	transform: translate3d(0, 0, 0);
 	z-index: 8020;
 }
-
+/* remove background-color of fancybox */
 .fancybox-skin {
 	position: relative;
-	background: #f9f9f9;
+	/*background: #f9f9f9;*/
 	color: #444;
 	text-shadow: none;
 	-webkit-border-radius: 4px;
@@ -39,12 +39,12 @@
 .fancybox-opened {
 	z-index: 8030;
 }
-
-.fancybox-opened .fancybox-skin {
+/* remove box-shadow of fancybox */
+/*.fancybox-opened .fancybox-skin {
 	-webkit-box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 	   -moz-box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 	        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-}
+}*/
 
 .fancybox-outer, .fancybox-inner {
 	position: relative;

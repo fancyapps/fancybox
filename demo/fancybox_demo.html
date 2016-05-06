@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>fancyBox and video demo</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+	<!-- Add jQuery library -->
+	<script type="text/javascript" src="../lib/jquery-1.10.2.min.js"></script>
+   
+	<!-- Add fancyBox main JS and CSS files -->
+	<script type="text/javascript" src="../source/jquery.fancybox.js?v=2.1.5"></script>
+	<link rel="stylesheet" type="text/css" href="../source/jquery.fancybox.css?v=2.1.5" media="screen" />
+<body>
+    <a class="fancybox" href="video_demo.html" title=""><img src="1_b.jpg" alt=""></a>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // fancybox initialazation
+            $(".fancybox").fancybox({
+                'type':'iframe',
+                'padding':0,
+                'width':'60%',
+                'height':'60%',
+                'scrolling':'no',
+                'iframe':{'scrolling':'no'}
+            });
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title>Video.js Example Embed</title>
+  <link href="../lib/video-js.min.css" rel="stylesheet">
+  <style>
+      html,body {
+         width: 100%;
+         height: 100%;
+      }
+      body {
+          margin: auto;
+      }
+      .video-js {
+          margin: auto;
+      }
+      /* responsive width and height */
+      .my-video-dimensions {
+          width: auto;
+          height: auto;
+      }
+      /* video center */
+      #my-video {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: 0;
+      }
+  </style>
+</head>
+<body>
+    <video id="my-video" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" width="auto" height="auto"
+    poster data-setup='{ "playbackRates": [0.5, 1, 1.5, 2] }'>
+        <source src="http://vjs.zencdn.net/v/oceans.mp4" type='video/mp4'>
+        <source src="http://vjs.zencdn.net/v/oceans.webm" type='video/webm'>
+        <!--<source src="video1.mp4" type='video/mp4'>-->
+        <!--<source src="video2.mp4" type='video/mp4'>-->
+        <p class="vjs-no-js">
+            To view this video please enable JavaScript, and consider upgrading to a web browser that
+            <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+        </p>
+    </video>
+    <script src="../lib/video.min.js"></script>
+</body>
+</html>
