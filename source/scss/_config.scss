@@ -1,0 +1,27 @@
+  ///////////////////////////////////////////////////////////
+ //  Fancy box css config (main file)                     //
+///////////////////////////////////////////////////////////
+
+// fancy loading image
+$loading-img : "../img/fancybox_loading.gif" !default;
+// fancy loading image end
+
+$loading-retina-img : "../img/fancybox_loading@2x.gif" !default;
+
+$fancybox-loading-pos : "0 -108px" !default;
+
+// fancy overlay background
+$fancybox-overlay-img : "../img/fancybox_overlay.png" !default;
+// fancy overlay background end
+
+// config fancybox control
+$fancybox-control-img : "../img/fancybox_sprite.png" !default;
+
+$fancybox-control-retina-img : "../img/fancybox_sprite@2x.png" !default;
+
+$fancybox-prev-pos : "0 -36px" !default;
+
+$fancybox-next-pos : "0 -72px" !default;
+
+$fancybox-close-pos : "0 0" !default;
+// config fancybox control end

@@ -1,0 +1,348 @@
+/// Mixin helper to output vendor-prefixed CSS
+///
+/// @name prefix($property, $value, $prefixes: ())
+///
+/// @param {string} $property - any valid css property (for eg. border-radius etc)
+///
+/// @param {number | list | arglist} $value    - any valid property value
+///
+/// @param {string} $prefixes - any valid vendor prefixes (for eg. 'webkit' , 'moz')
+///
+/// @author Hugo Giraudel
+
+// for enable/disable vendor prefix
+$prefix-for-webkit :    true !global;
+$prefix-for-mozilla :   true !global;
+$prefix-for-microsoft : true !global;
+$prefix-for-opera :     true !global;
+$prefix-for-spec :      true !global;
+
+@mixin prefix ($property, $value, $prefixes: ()) {
+  @each $prefix in $prefixes {
+    @if($prefix == webkit) {
+      @if ($prefix-for-webkit) {
+        -webkit-#{$property}: $value;
+      }
+    }
+    @else if ($prefix == moz) {
+      @if($prefix-for-mozilla) {
+        -moz-#{$property}: $value;
+      }
+    }
+    @else if ($prefix == o) {
+      @if($prefix-for-opera) {
+        -o-#{$property}: $value;
+      }
+    }
+    @else if ($prefix == ms) {
+      @if($prefix-for-microsoft) {
+        -ms-#{$property}: $value;
+      }
+    }
+    @else if ($prefix == spec) {
+      @if($prefix-for-spec) {
+        #{$property}: $value;
+      }
+    }
+    @else {
+      @warn "Unrecognized prefix: #{$prefix}";
+    }
+  }
+}
+
+
+/// Mixin allows you to add rounded borders to elements
+///
+/// @name border-radius($radius)
+///
+/// @param {number} $radius - Defines the shape of the corners.
+///
+/// @example scss
+/// .element {
+///    @include border-radius(100px);
+/// }
+///
+/// @example css
+/// .element {
+///   -webkit-border-radius: 100px;
+///   -moz-border-radius: 100px;
+///    border-radius: 100px;
+/// }
+///
+/// @require {mixin} prefix($property, $value, $prefixes: ())
+
+@mixin border-radius ($radius) {
+    @include prefix(border-radius, $radius, 'webkit' 'moz' 'spec');
+}
+
+
+/// Mixin allows you to apply box shadow to box.
+///
+/// @name box-shadow($shadow-values...)
+///
+/// @param {arglist} $shadow-values
+///
+/// @example scss
+/// .element {
+///    @include box-shadow(10px 5px 5px rgba(0, 0, 0, 0.5));
+/// }
+///
+/// @example css
+/// .element {
+///    -webkit-box-shadow: 10px 5px 5px rgba(0, 0, 0, 0.5);
+///    -moz-box-shadow: 10px 5px 5px rgba(0, 0, 0, 0.5);
+///    box-shadow: 10px 5px 5px rgba(0, 0, 0, 0.5);
+/// }
+///
+/// @require {mixin} prefix($property, $value, $prefixes: ())
+
+@mixin box-shadow ($shadow-values...) {
+  @include prefix(box-shadow, $shadow-values, 'webkit' 'moz' 'spec');
+}
+
+
+/// Mixin allows you to set height and width of elements
+///
+/// @name size($width, $height: $width)
+///
+/// @param {number} $width - Define the width of element.
+///
+/// @param {number} $height(optional) - Define height of element
+///
+/// @example scss (for same height and width)
+/// .element {
+///    @include size(100px);
+/// }
+///
+/// @example css
+/// .element {
+///    width: 100px;
+///    height: 100px;
+/// }
+///
+/// @example scss
+/// .element {
+///    @include size(100px, 50px)
+/// }
+///
+/// @example css
+/// .element {
+///    width: 100px;
+///    height: 50
+/// }
+@mixin size ($width, $height: $width) {
+    width: $width;
+    height: $height;
+}
+
+
+/// Mixin allows you to positioning elements
+///
+/// @name position($position, $posvalue : null)
+///
+/// @param {string} $position - Defines position of type (relative, absolute, fixed or sticky.)
+///
+/// @param {list} $posvalue - Set the top edge
+///
+/// @example scss (mixin with 1 argument)
+/// .element {
+///    @include position(absolute, 0);
+/// }
+///
+/// @example css
+/// .element {
+///    position: absolute;
+///    top: 0;
+///    right: 0;
+///    bottom: 0;
+///    left: 0;
+/// }
+///
+/// @example scss (mixin with 2 argument)
+/// .element {
+///    @include position(absolute, 13px 13px);
+/// }
+///
+/// @example css
+/// .element {
+///    position: absolute;
+///    top: 13px;
+///    bottom: 13px;
+///    right: 13px;
+///    left: 13px;
+/// }
+///
+/// @example scss (mixin with 3 argument)
+/// .element {
+///    @include position(absolute, 13px 13px 10px);
+/// }
+///
+/// @example css
+/// .element {
+///    position: absolute;
+///    top: 13px;
+///    right: 13px;
+///    left: 13px;
+///    bottom: 10px;
+/// }
+///
+/// @example scss (mixin with 4 argument)
+/// .element {
+///    @include position(absolute, 13px 20px 10px 5px);
+/// }
+///
+/// @example css
+/// .element {
+///    position: absolute;
+///    top: 13px;
+///    right: 20px;
+///    bottom: 10px;
+///    left: 5px;
+/// }
+
+@mixin position ($position, $posvalue : null) {
+
+  @if not index(relative absolute fixed sticky, $position) {
+     @error "Position must be either 'relative', 'absolute', 'fixed' or 'sticky'.";
+  }
+
+ $posvalue-length : length($posvalue);
+
+ $offset : top right bottom left;
+
+
+ @if($posvalue-length > 4) {
+
+   @error "position list must be 4 or under 4";
+
+ } @else {
+
+   position : $position;
+   $i : 0;
+
+   @if ($posvalue-length == 4) {
+
+         @each $pos in $posvalue {
+          $i : $i + 1;
+
+          @if ($i == 1 and $posvalue != null) {
+
+            top : nth($posvalue, $i);
+          }
+
+          @if ($i == 2 and $posvalue != null) {
+          
+             right : nth($posvalue, $i);
+          
+          }
+          
+          @if ($i == 3 and $posvalue != null) {
+          
+            bottom : nth($posvalue, $i);
+          
+          }
+          
+          @if ($i == 4 and $posvalue != null) {
+          
+            left :  nth($posvalue, $i);
+          
+          }
+       }
+
+  } @elseif ($posvalue-length == 3) {
+
+      @each $pos in $posvalue {
+
+         $i : $i + 1;
+
+         @if ($i == 1 and $posvalue != null) {
+           top : nth($posvalue, $i);
+         }
+
+         @if ($i == 2 and $posvalue != null) {
+            right : nth($posvalue, $i);
+            left : nth($posvalue, $i);
+         }
+
+         @if ($i == 3 and $posvalue != null) {
+            bottom : nth($posvalue, $i);
+         }
+
+     }
+
+  } @elseif ($posvalue-length == 2) {
+
+      @each $pos in $posvalue {
+
+         $i : $i + 1;
+
+         @if ($i == 1 and $posvalue != null) {
+           top : nth($posvalue, $i);
+           bottom: nth($posvalue, $i);
+         }
+
+         @if ($i == 2 and $posvalue != null) {
+            right : nth($posvalue, $i);
+            left : nth($posvalue, $i);
+         }
+
+     }
+
+  } @elseif ($posvalue-length == 1) {
+
+      @each $pos in $posvalue {
+
+         $i : $i + 1;
+
+         @if ($i == 1 and $posvalue != null) {
+           top : nth($posvalue, $i);
+           right : nth($posvalue, $i);
+           bottom : nth($posvalue, $i);
+           left : nth($posvalue, $i);
+         }
+
+     }
+
+  }
+
+  }
+}
+
+
+/// Mixin allows you to make css gradient for fancybox button helper
+///
+/// @name fancy-gradient( $color1, $color2, $color3, $color4)
+///
+/// @param {string} $color1 - Define color for first argument.
+///
+/// @param {string} $color2 - Define color for second argument.
+///
+/// @param {string} $color3 - Define color for third argument.
+///
+/// @param {string} $color4 - Define color for fourth argument.
+///
+/// @example scss
+/// .element {
+///    @include fancy-gradient(#444444, #343434, #292929, #333333);
+/// }
+///
+/// @example css
+/// .element {
+///    background: #343434;
+///    background: -moz-linear-gradient(top, #444444 0%, #343434 50%, #292929 50%, #333333 100%);
+///    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #444444), color-stop(50%, #343434), color-stop(50%, #292929), color-stop(100%, #333333));
+///    background: -webkit-linear-gradient(top, #444444 0%, #343434 50%, #292929 50%, #333333 100%);
+///    background: -o-linear-gradient(top, #444444 0%, #343434 50%, #292929 50%, #333333 100%);
+///    background: -ms-linear-gradient(top, #444444 0%, #343434 50%, #292929 50%, #333333 100%);
+///    background: linear-gradient(to bottom, #444444 0%, #343434 50%, #292929 50%, #333333 100%);
+/// }
+
+@mixin fancy-gradient ($color1, $color2, $color3, $color4) {
+  background: $color2;
+  background: -moz-linear-gradient(top, $color1 0%, $color2 50%, $color3 50%, $color4 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, $color1), color-stop(50%, $color2), color-stop(50%, $color3), color-stop(100%, $color4));
+  background: -webkit-linear-gradient(top, $color1 0%, $color2 50%, $color3 50%, $color4 100%);
+  background: -o-linear-gradient(top, $color1 0%, $color2 50%, $color3 50%,$color4 100%);
+  background: -ms-linear-gradient(top, $color1 0%, $color2 50%, $color3 50%, $color4 100%);
+  background: linear-gradient(to bottom, $color1 0%, $color2 50%,$color3 50%,$color4 100%);
+}

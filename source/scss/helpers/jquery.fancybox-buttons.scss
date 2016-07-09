@@ -1,0 +1,90 @@
+@import "../partial/mixin";
+
+@import "helpers-config";
+
+#fancybox-buttons {
+	@include position(fixed, null null null 0);
+	width: 100%;
+	z-index: 8050;
+}
+
+#fancybox-buttons.top {
+	top: 10px;
+}
+
+#fancybox-buttons.bottom {
+	bottom: 10px;
+}
+
+#fancybox-buttons ul {
+	display: block;
+	@include size(166px, 30px);
+	margin: 0 auto;
+	padding: 0;
+	list-style: none;
+	border: 1px solid #111;
+	border-radius: 3px;
+	@include box-shadow(inset 0 0 0 1px rgba(255,255,255,.05));
+	@include fancy-gradient(#444444, #343434, #292929, #333333);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#444444', endColorstr='#222222',GradientType=0 );
+}
+
+#fancybox-buttons ul li {
+	float: left;
+	margin: 0;
+	padding: 0;
+}
+
+#fancybox-buttons a {
+	display: block;
+	@include size(30px);
+	text-indent: -9999px;
+	background-color: transparent;
+	background-image: url($fancybox-btn-img);
+	background-repeat: no-repeat;
+	outline: none;
+	opacity: 0.8;
+}
+
+#fancybox-buttons a:hover {
+	opacity: 1;
+}
+
+#fancybox-buttons a.btnPrev {
+	background-position: unquote($fancybox-btn-prev-pos);
+}
+
+#fancybox-buttons a.btnNext {
+	background-position: unquote($fancybox-btn-next-pos);
+	border-right: 1px solid #3e3e3e;
+}
+
+#fancybox-buttons a.btnPlay {
+	background-position: unquote($fancybox-btn-play-pos);
+}
+
+#fancybox-buttons a.btnPlayOn {
+	background-position: unquote($fancybox-btn-play-on-pos);
+}
+
+#fancybox-buttons a.btnToggle {
+	background-position: unquote($fancybox-btn-toggle-pos);
+	border-left: 1px solid #111;
+	border-right: 1px solid #3e3e3e;
+	width: 35px
+}
+
+#fancybox-buttons a.btnToggleOn {
+	background-position: unquote($fancybox-btn-toggle-on-pos);
+}
+
+#fancybox-buttons a.btnClose {
+	border-left: 1px solid #111;
+	width: 35px;
+	background-position: unquote($fancybox-btn-close-pos); 
+}
+
+#fancybox-buttons a.btnDisabled {
+	opacity : 0.4;
+	cursor: default;
+}

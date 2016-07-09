@@ -1,0 +1,30 @@
+/* Overlay helper */
+.fancybox-lock {
+    overflow: visible !important;
+    width: auto;
+}
+
+.fancybox-lock body {
+    overflow: hidden !important;
+}
+
+.fancybox-lock-test {
+    overflow-y: hidden !important;
+}
+
+.fancybox-overlay {
+	@include position(absolute, 0 null null 0);
+	overflow: hidden;
+	display: none;
+	z-index: 8010;
+	background: url($fancybox-overlay-img);
+}
+
+.fancybox-overlay-fixed {
+	@include position(fixed, null 0 0 null);
+}
+
+.fancybox-lock .fancybox-overlay {
+	overflow: auto;
+	overflow-y: scroll;
+}
