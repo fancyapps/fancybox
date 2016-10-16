@@ -151,6 +151,15 @@
 				type : 'image',
 				url  : '//twitpic.com/show/full/$1/'
 			},
+			instagram_embed : {
+				matcher : /(instagr\.am|instagram\.com)\/p\/([a-zA-Z0-9_\-]+)\/embed\/?/i,
+				type: 'iframe',
+				url: '//$0',
+				opts: {
+					width: 612,
+					height: 720
+				}
+			},
 			instagram : {
 				matcher : /(instagr\.am|instagram\.com)\/p\/([a-zA-Z0-9_\-]+)\/?/i,
 				type : 'image',
@@ -171,7 +180,8 @@
 				what,
 				item,
 				rez,
-				params;
+				params,
+				extraOpts;
 
 			for (what in opts) {
 				if (opts.hasOwnProperty(what)) {
@@ -184,6 +194,8 @@
 
 						url = $.type( item.url ) === "function" ? item.url.call( this, rez, params, obj ) : format( item.url, rez, params );
 
+						extraOpts = item.opts;
+
 						break;
 					}
 				}
@@ -192,6 +204,10 @@
 			if (type) {
 				obj.href = url;
 				obj.type = type;
+				
+				if($.type(extraOpts) == 'object') {
+					$.extend(true, obj, extraOpts);
+				}
 
 				obj.autoHeight = false;
 			}
