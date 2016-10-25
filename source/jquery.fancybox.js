@@ -1829,8 +1829,8 @@
 		beforeShow : function(opts, obj) {
 			if (obj.locked && !this.el.hasClass('fancybox-lock')) {
 				if (this.fixPosition !== false) {
-					$('*:not(object)').filter(function(){
-						return ($(this).css('position') === 'fixed' && !$(this).hasClass("fancybox-overlay") && !$(this).hasClass("fancybox-wrap") );
+					$('div:not(.fancybox-overlay), div:not(.fancybox-wrap)').filter(function(){
+						return $(this).css('position') === 'fixed';
 					}).addClass('fancybox-margin');
 				}
 
