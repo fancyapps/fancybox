@@ -50,6 +50,9 @@
  *          http://www.metacafe.com/watch/7635964/
  *      Dailymotion
  *          http://www.dailymotion.com/video/xoytqh_dr-seuss-the-lorax-premiere_people
+ *      Blip.tv
+ *          http://blip.tv/file/get/Futurehb-DaleyAddition958.flv
+ *          http://blip.tv/play/AYKn_x0A.html
  *      Twitvid
  *          http://twitvid.com/QY7MD
  *      Twitpic
@@ -137,6 +140,22 @@
 				},
 				type : 'swf',
 				url  : '//www.dailymotion.com/swf/video/$1'
+			},
+			blip : {
+				matcher : /blip\.tv\/file\/get\/([a-zA-Z0-9\?\=\-\.]+)/i,
+				params  : {
+					autoStart : 'true'
+				},
+				type : 'swf',
+				url  : '//blip.tv/scripts/flash/blipplayer.swf?file=http://blip.tv/file/get/$1'
+			},
+			blip_iframe : {
+				matcher : /blip\.tv\/play\/([a-zA-Z0-9_\-\?\=]+).html/i,
+				params  : {
+					autoStart : 'true'
+				},
+				type : 'iframe',
+				url  : '//blip.tv/play/$1.html?p=1'
 			},
 			twitvid : {
 				matcher : /twitvid\.com\/([a-zA-Z0-9_\-\?\=]+)/i,
