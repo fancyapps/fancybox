@@ -1695,12 +1695,13 @@
 
 	F.helpers.overlay = {
 		defaults : {
-			closeClick : true,      // if true, fancyBox will be closed when user clicks on the overlay
-			speedOut   : 200,       // duration of fadeOut animation
-			showEarly  : true,      // indicates if should be opened immediately or wait until the content is ready
-			css        : {},        // custom CSS properties
-			locked     : !isTouch,  // if true, the content will be locked into overlay
-			fixed      : true       // if false, the overlay CSS position property will not be set to "fixed"
+			closeClick     : true,      // if true, fancyBox will be closed when user clicks on the overlay
+			speedOut       : 200,       // duration of fadeOut animation
+			showEarly      : true,      // indicates if should be opened immediately or wait until the content is ready
+			css            : {},        // custom CSS properties
+			locked         : !isTouch,  // if true, the content will be locked into overlay
+			fixed          : true       // if false, the overlay CSS position property will not be set to "fixed"
+			stopPropagation: false  	// If true, fancyBox will prevent expose click event to parent node when user clicks on the overlay
 		},
 
 		overlay : null,      // current handle
@@ -1749,6 +1750,9 @@
 
 			if (opts.closeClick) {
 				this.overlay.bind('click.overlay', function(e) {
+					if(opts.stopPropagation) {
+						e.stopPropagation();
+					}
 					if ($(e.target).hasClass('fancybox-overlay')) {
 						if (F.isActive) {
 							F.close();
