@@ -1007,7 +1007,7 @@
 			if (coming.iframe.preload) {
 				F.showLoading();
 
-				iframe.one('load', function() {
+				iframe.on('load', function() {
 					$(this).data('ready', 1);
 
 					// iOS will lose scrolling if we resize
