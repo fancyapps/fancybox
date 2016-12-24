@@ -1366,6 +1366,11 @@
 				width += scrollOut;
 			}
 
+			if (scrollOut && scrolling === 'visible' && (height < origHeight || width < origWidth)) {
+				height = origHeight;
+				width = origWidth;
+			}
+
 			inner.width( width ).height( height );
 
 			wrap.width( width + wPadding );
