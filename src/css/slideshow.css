@@ -1,0 +1,25 @@
+/* Slideshow button */
+
+.fancybox-button--play {}
+
+.fancybox-button--play::before {
+	top: 16px;
+	left: 18px;
+	width: 0;
+	height: 0;
+	border-top: 6px inset transparent;
+	border-bottom: 6px inset transparent;
+	border-left: 10px solid;
+	border-radius: 1px;
+	background: transparent;
+}
+
+.fancybox-button--pause::before {
+	top: 16px;
+	left: 18px;
+	width: 7px;
+	height: 11px;
+	border-style: solid;
+	border-width: 0 2px 0 2px;
+	background: transparent;
+}
