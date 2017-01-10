@@ -21,19 +21,6 @@ var banner = [
     '// ==================================================',
   ''].join('\n');
 
-// Watch for changes in files
-gulp.task('watch', function() {
-
-    // Create LiveReload server
-    livereload.listen();
-
-    // Watch any files
-    gulp.watch(['src/js/*.js']).on('change', livereload.changed);
-    gulp.watch(['src/css/*.css']).on('change', livereload.changed);
-    gulp.watch(['index.php']).on('change', livereload.changed);
-
-});
-
 
 // Concatenate & Minify JS
 
@@ -45,24 +32,24 @@ gulp.task('scripts', function() {
         .pipe(rename({suffix: '.min'}))
         .pipe(uglify())
         .pipe(header(banner))
-        .pipe(gulp.dest('../web/public/fancybox'));
+        .pipe(gulp.dest('dist'));
 });
 
-// Compile CSS from Sass files
+// Compile CSS
 
-gulp.task('sass', function() {
-    return gulp.src('src/css/*.css') // Gets all files ending with .scss in app/scss and children dirs
+gulp.task('css', function() {
+    return gulp.src('src/css/*.css') // Gets all files src/css
         .pipe(sass())
         .pipe(autoprefixer({
-            browsers: ['last 2 versions'],
+            browsers: ['last 5 versions'],
             cascade: false
         }))
         .pipe(concat('jquery.fancybox.css'))
         .pipe(gulp.dest('dist'))
         .pipe(rename({suffix: '.min'}))
         .pipe(cssnano({zindex: false}))
-        .pipe(gulp.dest('../web/public/fancybox'));
+        .pipe(gulp.dest('dist'));
 });
 
 // Default Task
-gulp.task('default', ['scripts', 'sass']);
+gulp.task('default', ['scripts', 'css']);

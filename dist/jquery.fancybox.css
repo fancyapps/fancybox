@@ -181,6 +181,8 @@
   z-index: 99995;
   background: transparent;
   cursor: default;
+  -webkit-transform-origin: top left;
+  -ms-transform-origin: top left;
   transform-origin: top left;
   max-width: none;
   max-height: none;
@@ -188,9 +190,11 @@
   backface-visibility: hidden; }
 
 .fancybox-controls--canzoomOut .fancybox-image {
+  cursor: -webkit-zoom-out;
   cursor: zoom-out; }
 
 .fancybox-controls--canzoomIn .fancybox-image {
+  cursor: -webkit-zoom-in;
   cursor: zoom-in; }
 
 .fancybox-controls--canGrab .fancybox-image {
@@ -343,6 +347,8 @@
   background: transparent;
   border-top: solid 2px currentColor;
   border-right: solid 2px currentColor;
+  -webkit-transform: rotate(-135deg);
+  -ms-transform: rotate(-135deg);
   transform: rotate(-135deg); }
 
 .fancybox-button--right::after {
@@ -353,6 +359,8 @@
   background: transparent;
   border-top: solid 2px currentColor;
   border-right: solid 2px currentColor;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
   transform: rotate(45deg); }
 
 .fancybox-button--left {
@@ -374,9 +382,13 @@
   left: calc(50% - 8px); }
 
 .fancybox-button--close::before {
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
   transform: rotate(45deg); }
 
 .fancybox-button--close::after {
+  -webkit-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
   transform: rotate(-45deg); }
 
 /* Loading spinner */
@@ -386,6 +398,7 @@
   border-radius: 100%;
   height: 50px;
   width: 50px;
+  -webkit-animation: fancybox-rotate .6s infinite linear;
   animation: fancybox-rotate .6s infinite linear;
   background: transparent;
   position: absolute;
@@ -395,10 +408,20 @@
   margin-left: -25px;
   z-index: 99999; }
 
-@keyframes fancybox-rotate {
+@-webkit-keyframes fancybox-rotate {
   from {
+    -webkit-transform: rotate(0deg);
     transform: rotate(0deg); }
   to {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg); } }
+
+@keyframes fancybox-rotate {
+  from {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg); }
+  to {
+    -webkit-transform: rotate(359deg);
     transform: rotate(359deg); } }
 
 /* Styling for Small-Screen Devices */
