@@ -51,5 +51,17 @@ gulp.task('css', function() {
         .pipe(gulp.dest('dist'));
 });
 
+// scss files
+gulp.task('sass', function() {
+    return gulp.src('src/scss/*.scss')
+        .pipe(sass().on('error', sass.logError))
+        .pipe(gulp.dest('src/css'));
+});
+
+// scss watcher
+gulp.task('watch', function() {
+    gulp.watch('src/scss/*.scss', ['sass']);
+});
+
 // Default Task
 gulp.task('default', ['scripts', 'css']);

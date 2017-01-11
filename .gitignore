@@ -1,1 +1,11 @@
-/node_modules
+*.DS_Store
+*._*
+*Thumbs.db
+*.thumbnails
+
+.project
+.settings
+.idea
+
+.sass-cache
+node_modules
