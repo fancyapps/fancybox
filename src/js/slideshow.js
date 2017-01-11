@@ -1,15 +1,12 @@
-
-
 // ==========================================================================
+//
 // slideShow v1.0.0
 // Enables slideshow functionality
 //
 // Example of usage:
 // $.fancybox.getInstance().slideShow.start()
 //
-// Credits: Janis Skarnelis - janis@fancyapps.com
 // ==========================================================================
-
 ;(function (document, $) {
 	'use strict';
 

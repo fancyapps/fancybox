@@ -145,8 +145,9 @@
   margin: 44px auto;
   padding: 0;
   border: 0;
-  width: 800px;
-  height: 600px;
+  width: 80%;
+  height: 80%;
+  max-height: calc(100% - 88px);
   vertical-align: middle;
   line-height: normal;
   text-align: left;
@@ -251,10 +252,12 @@
   border-width: 0;
   cursor: pointer;
   background: #fff;
-  transition: all 0.2s;
+  transition: background 0.2s;
   box-sizing: border-box;
-  outline: none;
   z-index: 2; }
+
+.fancybox-close-small:focus {
+  outline: 1px dotted #888; }
 
 .fancybox-slide--video .fancybox-close-small {
   top: -36px;
@@ -467,10 +470,10 @@
   background: transparent; }
 
 /* Thumbs */
-.fancybox-button--grid span {
+.fancybox-button--thumbs span {
   font-size: 23px; }
 
-.fancybox-button--grid::before {
+.fancybox-button--thumbs::before {
   top: 20px;
   left: 21px;
   width: 3px;
@@ -482,7 +485,7 @@
 .fancybox-container--thumbs .fancybox-caption-wrap {
   right: 220px; }
 
-.fancybox-grid {
+.fancybox-thumbs {
   position: absolute;
   top: 0;
   right: 0;
@@ -498,7 +501,7 @@
   -webkit-tap-highlight-color: transparent;
   box-sizing: border-box; }
 
-.fancybox-grid > ul {
+.fancybox-thumbs > ul {
   list-style: none;
   position: absolute;
   position: relative;
@@ -510,7 +513,7 @@
   overflow-y: auto;
   font-size: 0; }
 
-.fancybox-grid > ul > li {
+.fancybox-thumbs > ul > li {
   float: left;
   overflow: hidden;
   max-width: 50%;
@@ -529,10 +532,10 @@
   backface-visibility: hidden;
   box-sizing: border-box; }
 
-li.fancybox-grid-loading {
+li.fancybox-thumbs-loading {
   background: rgba(0, 0, 0, 0.1); }
 
-.fancybox-grid > ul > li > img {
+.fancybox-thumbs > ul > li > img {
   position: absolute;
   top: 0;
   left: 0;
@@ -546,7 +549,7 @@ li.fancybox-grid-loading {
   -ms-user-select: none;
   user-select: none; }
 
-.fancybox-grid > ul > li:before {
+.fancybox-thumbs > ul > li:before {
   content: '';
   position: absolute;
   top: 0;
@@ -559,12 +562,12 @@ li.fancybox-grid-loading {
   opacity: 0;
   transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
 
-.fancybox-grid > ul > li.fancybox-grid-active:before {
+.fancybox-thumbs > ul > li.fancybox-thumbs-active:before {
   opacity: 1; }
 
 /* Styling for Small-Screen Devices */
 @media all and (max-width: 800px) {
-  .fancybox-grid {
+  .fancybox-thumbs {
     display: none !important; }
   .fancybox-container--thumbs .fancybox-infobar {
     margin-left: auto; }

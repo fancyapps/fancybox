@@ -155,8 +155,9 @@
 	margin: 44px auto;
 	padding: 0;
 	border: 0;
-	width: 800px;
-	height: 600px;
+	width: 80%;
+	height: 80%;
+	max-height: calc(100% - 88px);
 	vertical-align: middle;
 	line-height: normal;
 	text-align: left;
@@ -267,10 +268,13 @@
 	border-width: 0;
 	cursor: pointer;
 	background: #fff;
-	transition: all 0.2s;
+	transition: background 0.2s;
 	box-sizing: border-box;
-	outline: none;
 	z-index: 2;
+}
+
+.fancybox-close-small:focus {
+	outline: 1px dotted #888;
 }
 
 .fancybox-slide--video .fancybox-close-small {

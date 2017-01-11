@@ -1,8 +1,8 @@
 // ==========================================================================
+//
 // Guestures v1.0.0
 // Adds touch guestures
 //
-// Credits: Janis Skarnelis - janis@fancyapps.com
 // ==========================================================================
 ;(function (window, document, $) {
 	'use strict';

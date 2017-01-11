@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.0
+// fancyBox v3.0.1
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -85,7 +85,7 @@
             tpl : '<iframe id="fancybox-frame{rnd}" name="fancybox-frame{rnd}" class="fancybox-iframe" frameborder="0" vspace="0" hspace="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen allowtransparency="true" src=""></iframe>',
 
             // Preload iframe before displaying it
-            // This allows to calculate iframe content height
+            // This allows to calculate iframe content width and height
             // (note: Due to "Same Origin Policy", you can't get cross domain data).
             preload : true,
 
@@ -93,10 +93,7 @@
             scrolling : 'no',
 
             // Custom CSS styling for iframe wrapping element
-            css : {
-                'width'  : '80%',
-                'height' : '80%'
-            }
+            css : {}
 
         },
 
@@ -107,7 +104,7 @@
         slideClass : '',
 
         // Base template for layout
-        baseTpl	: '<div class="fancybox-container" role="dialog">' +
+        baseTpl	: '<div class="fancybox-container" role="dialog" tabindex="-1">' +
                 '<div class="fancybox-bg"></div>' +
                 '<div class="fancybox-controls">' +
                     '<div class="fancybox-infobar">' +
@@ -133,10 +130,12 @@
         // Error message template
         errorTpl : '<div class="fancybox-error"><p>The requested content cannot be loaded. <br /> Please try again later.<p></div>',
 
+        closeTpl : '<button data-fancybox-close class="fancybox-close-small">×</button>',
+
         // Container is injected into this element
         parentEl : 'body',
 
-        // Enable questures (tap, zoom, pan and pinch)
+        // Enable gestures (tap, zoom, pan and pinch)
         touch : true,
 
         // Enable keyboard navigation
@@ -229,7 +228,7 @@
         var FancyBox = function( content, opts, index ) {
             var self = this;
 
-            self.opts  = $.extend( {}, defaults, opts || {} );
+            self.opts  = $.extend( true, {}, defaults, opts || {} );
 
             self.currIndex = parseInt( index, 10 ) || 0;
             self.prevIndex = null;
@@ -245,7 +244,7 @@
             }
 
             // Save last active element and current scroll position
-            self.$lastFocus = $(document.activeElement);
+            self.$lastFocus = $(document.activeElement).blur();
 
             self.scrollTop	= $W.scrollTop();
             self.scrollLeft	= $W.scrollLeft();
@@ -436,16 +435,13 @@
                     if ( obj.opts.smallBtn == 'auto' ) {
 
                         if ( $.inArray( type, ['html', 'inline', 'ajax'] ) > -1 ) {
-
                             obj.opts.buttons  = false;
                             obj.opts.smallBtn = true;
 
                         } else {
-
-                            obj.opts.buttons  = true;
                             obj.opts.smallBtn = false;
-
                         }
+
                     }
 
                     if ( type === 'pdf' ) {
@@ -1598,18 +1594,19 @@
 
             setIframe : function( slide ) {
                 var self	= this,
+                    opts    = slide.opts.iframe,
                     $slide	= slide.$slide,
                     $iframe;
 
                 slide.$content = $('<div class="fancybox-content"></div>')
-                    .css( slide.opts.iframe.css )
+                    .css( opts.css )
                     .appendTo( $slide );
 
-                $iframe = $( slide.opts.iframe.tpl.replace(/\{rnd\}/g, new Date().getTime()) )
-                    .attr('scrolling', $.fancybox.isTouch ? 'auto' : slide.opts.iframe.scrolling)
+                $iframe = $( opts.tpl.replace(/\{rnd\}/g, new Date().getTime()) )
+                    .attr('scrolling', $.fancybox.isTouch ? 'auto' : opts.scrolling)
                     .appendTo( slide.$content );
 
-                if ( slide.opts.iframe.preload ) {
+                if ( opts.preload ) {
 
                     self.showLoading( slide );
 
@@ -1619,7 +1616,6 @@
                     // (due to browser security policy)
 
                     $iframe.on('load.fb error.fb', function(e) {
-
                         this.isReady = 1;
 
                         slide.$slide.trigger( 'refresh' );
@@ -1647,7 +1643,6 @@
                         // it will fail if frame is not with the same origin
 
                         try {
-
                             $contents	= $iframe.contents();
                             $body		= $contents.find('body');
 
@@ -1689,9 +1684,7 @@
                 $iframe.attr( 'src', slide.src );
 
                 if ( slide.opts.smallBtn ) {
-
-                    slide.$content.prepend( '<button data-fancybox-close class="fancybox-close-small">×</button>' );
-
+                    slide.$content.prepend( slide.opts.closeTpl );
                 }
 
                 // Remove iframe if closing or changing gallery item
@@ -1771,7 +1764,7 @@
                 slide.$content.appendTo( slide.$slide );
 
                 if ( slide.opts.smallBtn === true ) {
-                    slide.$content.remove( '.fancybox-close-small' ).eq(0).prepend( '<button data-fancybox-close class="fancybox-close-small">×</button>' );
+                    slide.$content.remove( '.fancybox-close-small' ).eq(0).append( slide.opts.closeTpl );
                 }
 
                 this.afterLoad( slide );
@@ -2202,7 +2195,7 @@
 
         $.fancybox = {
 
-            version  : "3.0.0",
+            version  : "3.0.1",
             defaults : defaults,
 
 
@@ -2565,14 +2558,12 @@
 
     }(window, document, window.jQuery));
 
-
 // ==========================================================================
-// Media v1.0.0
+//
+// Media v1.0.1
 // Adds additional media type support
 //
-// Credits: Janis Skarnelis - janis@fancyapps.com
 // ==========================================================================
-
 ;(function ($) {
 
 	'use strict';
@@ -2632,11 +2623,9 @@
 				fullscreen: 1,
 				api: 1
 			},
-			//idPlace : 5,
 			paramPlace : 7,
 			type: 'iframe',
-			url: '//player.vimeo.com/video/$5',
-			//thumb: 'http://vimeo.com/api/v2/video/$5.json?callback=showThumb'
+			url: '//player.vimeo.com/video/$5'
 		},
 
 		metacafe: {
@@ -2716,7 +2705,7 @@
 
 					urlParams = urlParams.split('&');
 
-					for (var m = 0; m < urlParams.length; ++m) {
+					for ( var m = 0; m < urlParams.length; ++m ) {
 						var p = urlParams[ m ].split('=', 2);
 
 						if ( p.length == 2 ) {
@@ -2729,16 +2718,17 @@
 					id = rez[ el.idPlace ];
 				}
 
-				params = $.extend( true, {}, el.params, item.opts[el], o );
+				params = $.extend( true, {}, el.params, item.opts[ n ], o );
 
 				url   = $.type(el.url) === "function" ? el.url.call(this, rez, params, item) : format(el.url, rez, params);
 				thumb = $.type(el.thumb) === "function" ? el.thumb.call(this, rez, params, item) : format(el.thumb, rez);
 
 				return false;
 			});
+
 			// If it is found, then change content type and update the url
 
-			if (type) {
+			if ( type ) {
 				item.src  = url;
 				item.type = type;
 
@@ -2747,23 +2737,20 @@
 				}
 
 				if ( id ) {
-					item.opts.id =  provider + '-' + id;
+					item.opts.id = provider + '-' + id;
 				}
 
-				if (type === 'iframe' || type === 'swf') {
-					item.opts.padding	= 0;
-					item.opts.slideShow  = false;
-					//item.opts.fullScreen = false;
-				}
-
-				if (type === 'iframe') {
-					item.opts.iframe.preload    = false;
-					item.opts.iframe.scrolling  = "no";
-
-					item.opts.smallBtn = false;
-
-					item.opts.closeBtn   = true;
-					item.opts.fullScreen = false;
+				if ( type === 'iframe' ) {
+					$.extend(true, item.opts, {
+						iframe : {
+							preload   : false,
+							scrolling : "no"
+						},
+						smallBtn   : false,
+						closeBtn   : true,
+						fullScreen : false,
+						slideShow  : false
+					});
 
 					item.opts.slideClass += ' fancybox-slide--video';
 				}
@@ -2777,10 +2764,10 @@
 }(window.jQuery));
 
 // ==========================================================================
+//
 // Guestures v1.0.0
 // Adds touch guestures
 //
-// Credits: Janis Skarnelis - janis@fancyapps.com
 // ==========================================================================
 ;(function (window, document, $) {
 	'use strict';
@@ -3434,18 +3421,15 @@
 
 }(window, document, window.jQuery));
 
-
-
 // ==========================================================================
+//
 // slideShow v1.0.0
 // Enables slideshow functionality
 //
 // Example of usage:
 // $.fancybox.getInstance().slideShow.start()
 //
-// Credits: Janis Skarnelis - janis@fancyapps.com
 // ==========================================================================
-
 ;(function (document, $) {
 	'use strict';
 
@@ -3567,14 +3551,12 @@
 
 }(document, window.jQuery));
 
-
 // ==========================================================================
+//
 // fullScreen v1.0.0
 // Adds fullscreen functionality
 //
-// Credits: Janis Skarnelis - janis@fancyapps.com
 // ==========================================================================
-
 ;(function (document, $) {
 	'use strict';
 
@@ -3698,12 +3680,11 @@
 }(document, window.jQuery));
 
 // ==========================================================================
+//
 // Thumbnails v1.0.0
 // Displays thumbnails in a grid
 //
-// Credits: Janis Skarnelis - janis@fancyapps.com
 // ==========================================================================
-
 ;(function (document, $) {
 	'use strict';
 
@@ -3725,7 +3706,7 @@
 		init : function() {
 			var self = this;
 
-			self.$button = $('<button data-fancybox-grid class="fancybox-button fancybox-button--grid" title="Thumbnails (G)"></button>')
+			self.$button = $('<button data-fancybox-thumbs class="fancybox-button fancybox-button--thumbs" title="Thumbnails (G)"></button>')
 				.appendTo( this.instance.$refs.buttons )
 				.on('touchend click', function(e) {
 					e.stopPropagation();
@@ -3741,7 +3722,7 @@
 				list,
 				src;
 
-			this.$grid = $('<div class="fancybox-grid"></div>').appendTo( instance.$refs.container );
+			this.$grid = $('<div class="fancybox-thumbs"></div>').appendTo( instance.$refs.container );
 
 			list = '<ul>';
 
@@ -3754,7 +3735,7 @@
 				}
 
 				if ( src && src.length ) {
-					list += '<li data-index="' + i + '"  tabindex="0" class="fancybox-grid-loading"><img data-src="' + src + '" /></li>';
+					list += '<li data-index="' + i + '"  tabindex="0" class="fancybox-thumbs-loading"><img data-src="' + src + '" /></li>';
 				}
 
 			});
@@ -3769,7 +3750,7 @@
 
 			this.$list.find('img').hide().one('load', function() {
 
-				var $parent		= $(this).parent().removeClass('fancybox-grid-loading'),
+				var $parent		= $(this).parent().removeClass('fancybox-thumbs-loading'),
 					thumbWidth	= $parent.outerWidth(),
 					thumbHeight	= $parent.outerHeight(),
 					width,
@@ -3814,9 +3795,9 @@
 
 			this.$list
 				.children()
-				.removeClass('fancybox-grid-active')
+				.removeClass('fancybox-thumbs-active')
 				.filter('[data-index="' + this.instance.current.index  + '"]')
-				.addClass('fancybox-grid-active')
+				.addClass('fancybox-thumbs-active')
 				.focus();
 
 		},
@@ -3910,6 +3891,10 @@
 
 		if ( self ) {
 			self.$button.show();
+		}
+
+		if ( instance.opts.thumbs.showOnStart === true ) {
+			self.show();
 		}
 
 		if ( self && self.isVisible ) {

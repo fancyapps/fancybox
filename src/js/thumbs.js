@@ -1,10 +1,9 @@
 // ==========================================================================
+//
 // Thumbnails v1.0.0
 // Displays thumbnails in a grid
 //
-// Credits: Janis Skarnelis - janis@fancyapps.com
 // ==========================================================================
-
 ;(function (document, $) {
 	'use strict';
 
@@ -26,7 +25,7 @@
 		init : function() {
 			var self = this;
 
-			self.$button = $('<button data-fancybox-grid class="fancybox-button fancybox-button--grid" title="Thumbnails (G)"></button>')
+			self.$button = $('<button data-fancybox-thumbs class="fancybox-button fancybox-button--thumbs" title="Thumbnails (G)"></button>')
 				.appendTo( this.instance.$refs.buttons )
 				.on('touchend click', function(e) {
 					e.stopPropagation();
@@ -42,7 +41,7 @@
 				list,
 				src;
 
-			this.$grid = $('<div class="fancybox-grid"></div>').appendTo( instance.$refs.container );
+			this.$grid = $('<div class="fancybox-thumbs"></div>').appendTo( instance.$refs.container );
 
 			list = '<ul>';
 
@@ -55,7 +54,7 @@
 				}
 
 				if ( src && src.length ) {
-					list += '<li data-index="' + i + '"  tabindex="0" class="fancybox-grid-loading"><img data-src="' + src + '" /></li>';
+					list += '<li data-index="' + i + '"  tabindex="0" class="fancybox-thumbs-loading"><img data-src="' + src + '" /></li>';
 				}
 
 			});
@@ -70,7 +69,7 @@
 
 			this.$list.find('img').hide().one('load', function() {
 
-				var $parent		= $(this).parent().removeClass('fancybox-grid-loading'),
+				var $parent		= $(this).parent().removeClass('fancybox-thumbs-loading'),
 					thumbWidth	= $parent.outerWidth(),
 					thumbHeight	= $parent.outerHeight(),
 					width,
@@ -115,9 +114,9 @@
 
 			this.$list
 				.children()
-				.removeClass('fancybox-grid-active')
+				.removeClass('fancybox-thumbs-active')
 				.filter('[data-index="' + this.instance.current.index  + '"]')
-				.addClass('fancybox-grid-active')
+				.addClass('fancybox-thumbs-active')
 				.focus();
 
 		},
@@ -211,6 +210,10 @@
 
 		if ( self ) {
 			self.$button.show();
+		}
+
+		if ( instance.opts.thumbs.showOnStart === true ) {
+			self.show();
 		}
 
 		if ( self && self.isVisible ) {

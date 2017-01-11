@@ -1,11 +1,9 @@
-
 // ==========================================================================
-// Media v1.0.0
+//
+// Media v1.0.1
 // Adds additional media type support
 //
-// Credits: Janis Skarnelis - janis@fancyapps.com
 // ==========================================================================
-
 ;(function ($) {
 
 	'use strict';
@@ -65,11 +63,9 @@
 				fullscreen: 1,
 				api: 1
 			},
-			//idPlace : 5,
 			paramPlace : 7,
 			type: 'iframe',
-			url: '//player.vimeo.com/video/$5',
-			//thumb: 'http://vimeo.com/api/v2/video/$5.json?callback=showThumb'
+			url: '//player.vimeo.com/video/$5'
 		},
 
 		metacafe: {
@@ -149,7 +145,7 @@
 
 					urlParams = urlParams.split('&');
 
-					for (var m = 0; m < urlParams.length; ++m) {
+					for ( var m = 0; m < urlParams.length; ++m ) {
 						var p = urlParams[ m ].split('=', 2);
 
 						if ( p.length == 2 ) {
@@ -162,16 +158,17 @@
 					id = rez[ el.idPlace ];
 				}
 
-				params = $.extend( true, {}, el.params, item.opts[el], o );
+				params = $.extend( true, {}, el.params, item.opts[ n ], o );
 
 				url   = $.type(el.url) === "function" ? el.url.call(this, rez, params, item) : format(el.url, rez, params);
 				thumb = $.type(el.thumb) === "function" ? el.thumb.call(this, rez, params, item) : format(el.thumb, rez);
 
 				return false;
 			});
+
 			// If it is found, then change content type and update the url
 
-			if (type) {
+			if ( type ) {
 				item.src  = url;
 				item.type = type;
 
@@ -180,23 +177,20 @@
 				}
 
 				if ( id ) {
-					item.opts.id =  provider + '-' + id;
+					item.opts.id = provider + '-' + id;
 				}
 
-				if (type === 'iframe' || type === 'swf') {
-					item.opts.padding	= 0;
-					item.opts.slideShow  = false;
-					//item.opts.fullScreen = false;
-				}
-
-				if (type === 'iframe') {
-					item.opts.iframe.preload    = false;
-					item.opts.iframe.scrolling  = "no";
-
-					item.opts.smallBtn = false;
-
-					item.opts.closeBtn   = true;
-					item.opts.fullScreen = false;
+				if ( type === 'iframe' ) {
+					$.extend(true, item.opts, {
+						iframe : {
+							preload   : false,
+							scrolling : "no"
+						},
+						smallBtn   : false,
+						closeBtn   : true,
+						fullScreen : false,
+						slideShow  : false
+					});
 
 					item.opts.slideClass += ' fancybox-slide--video';
 				}

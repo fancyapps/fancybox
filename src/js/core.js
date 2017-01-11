@@ -75,7 +75,7 @@
             tpl : '<iframe id="fancybox-frame{rnd}" name="fancybox-frame{rnd}" class="fancybox-iframe" frameborder="0" vspace="0" hspace="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen allowtransparency="true" src=""></iframe>',
 
             // Preload iframe before displaying it
-            // This allows to calculate iframe content height
+            // This allows to calculate iframe content width and height
             // (note: Due to "Same Origin Policy", you can't get cross domain data).
             preload : true,
 
@@ -83,10 +83,7 @@
             scrolling : 'no',
 
             // Custom CSS styling for iframe wrapping element
-            css : {
-                'width'  : '80%',
-                'height' : '80%'
-            }
+            css : {}
 
         },
 
@@ -97,7 +94,7 @@
         slideClass : '',
 
         // Base template for layout
-        baseTpl	: '<div class="fancybox-container" role="dialog">' +
+        baseTpl	: '<div class="fancybox-container" role="dialog" tabindex="-1">' +
                 '<div class="fancybox-bg"></div>' +
                 '<div class="fancybox-controls">' +
                     '<div class="fancybox-infobar">' +
@@ -123,10 +120,12 @@
         // Error message template
         errorTpl : '<div class="fancybox-error"><p>The requested content cannot be loaded. <br /> Please try again later.<p></div>',
 
+        closeTpl : '<button data-fancybox-close class="fancybox-close-small">×</button>',
+
         // Container is injected into this element
         parentEl : 'body',
 
-        // Enable questures (tap, zoom, pan and pinch)
+        // Enable gestures (tap, zoom, pan and pinch)
         touch : true,
 
         // Enable keyboard navigation
@@ -219,7 +218,7 @@
         var FancyBox = function( content, opts, index ) {
             var self = this;
 
-            self.opts  = $.extend( {}, defaults, opts || {} );
+            self.opts  = $.extend( true, {}, defaults, opts || {} );
 
             self.currIndex = parseInt( index, 10 ) || 0;
             self.prevIndex = null;
@@ -235,7 +234,7 @@
             }
 
             // Save last active element and current scroll position
-            self.$lastFocus = $(document.activeElement);
+            self.$lastFocus = $(document.activeElement).blur();
 
             self.scrollTop	= $W.scrollTop();
             self.scrollLeft	= $W.scrollLeft();
@@ -426,16 +425,13 @@
                     if ( obj.opts.smallBtn == 'auto' ) {
 
                         if ( $.inArray( type, ['html', 'inline', 'ajax'] ) > -1 ) {
-
                             obj.opts.buttons  = false;
                             obj.opts.smallBtn = true;
 
                         } else {
-
-                            obj.opts.buttons  = true;
                             obj.opts.smallBtn = false;
-
                         }
+
                     }
 
                     if ( type === 'pdf' ) {
@@ -1588,18 +1584,19 @@
 
             setIframe : function( slide ) {
                 var self	= this,
+                    opts    = slide.opts.iframe,
                     $slide	= slide.$slide,
                     $iframe;
 
                 slide.$content = $('<div class="fancybox-content"></div>')
-                    .css( slide.opts.iframe.css )
+                    .css( opts.css )
                     .appendTo( $slide );
 
-                $iframe = $( slide.opts.iframe.tpl.replace(/\{rnd\}/g, new Date().getTime()) )
-                    .attr('scrolling', $.fancybox.isTouch ? 'auto' : slide.opts.iframe.scrolling)
+                $iframe = $( opts.tpl.replace(/\{rnd\}/g, new Date().getTime()) )
+                    .attr('scrolling', $.fancybox.isTouch ? 'auto' : opts.scrolling)
                     .appendTo( slide.$content );
 
-                if ( slide.opts.iframe.preload ) {
+                if ( opts.preload ) {
 
                     self.showLoading( slide );
 
@@ -1609,7 +1606,6 @@
                     // (due to browser security policy)
 
                     $iframe.on('load.fb error.fb', function(e) {
-
                         this.isReady = 1;
 
                         slide.$slide.trigger( 'refresh' );
@@ -1637,7 +1633,6 @@
                         // it will fail if frame is not with the same origin
 
                         try {
-
                             $contents	= $iframe.contents();
                             $body		= $contents.find('body');
 
@@ -1679,9 +1674,7 @@
                 $iframe.attr( 'src', slide.src );
 
                 if ( slide.opts.smallBtn ) {
-
-                    slide.$content.prepend( '<button data-fancybox-close class="fancybox-close-small">×</button>' );
-
+                    slide.$content.prepend( slide.opts.closeTpl );
                 }
 
                 // Remove iframe if closing or changing gallery item
@@ -1761,7 +1754,7 @@
                 slide.$content.appendTo( slide.$slide );
 
                 if ( slide.opts.smallBtn === true ) {
-                    slide.$content.remove( '.fancybox-close-small' ).eq(0).prepend( '<button data-fancybox-close class="fancybox-close-small">×</button>' );
+                    slide.$content.remove( '.fancybox-close-small' ).eq(0).append( slide.opts.closeTpl );
                 }
 
                 this.afterLoad( slide );
@@ -2192,7 +2185,7 @@
 
         $.fancybox = {
 
-            version  : "3.0.0",
+            version  : "3.0.1",
             defaults : defaults,
 
 

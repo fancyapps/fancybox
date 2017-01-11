@@ -1,11 +1,11 @@
 
 /* Thumbs */
 
-.fancybox-button--grid span{
+.fancybox-button--thumbs span{
 	font-size: 23px;
 }
 
-.fancybox-button--grid::before {
+.fancybox-button--thumbs::before {
 	top: 20px;
 	left: 21px;
 	width: 3px;
@@ -19,7 +19,7 @@
 	right: 220px;
 }
 
-.fancybox-grid {
+.fancybox-thumbs {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -36,7 +36,7 @@
 	box-sizing: border-box;
 }
 
-.fancybox-grid > ul {
+.fancybox-thumbs > ul {
 	list-style: none;
 	position: absolute;
 	position: relative;
@@ -49,7 +49,7 @@
 	font-size: 0;
 }
 
-.fancybox-grid > ul > li {
+.fancybox-thumbs > ul > li {
 	float: left;
 	overflow: hidden;
 	max-width: 50%;
@@ -68,11 +68,11 @@
     box-sizing: border-box;
 }
 
-li.fancybox-grid-loading {
+li.fancybox-thumbs-loading {
 	background: rgba(0,0,0,0.1);
 }
 
-.fancybox-grid > ul > li > img {
+.fancybox-thumbs > ul > li > img {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -84,7 +84,7 @@ li.fancybox-grid-loading {
 	user-select: none;
 }
 
-.fancybox-grid > ul > li:before {
+.fancybox-thumbs > ul > li:before {
 	content:'';
 	position: absolute;
 	top: 0;
@@ -98,7 +98,7 @@ li.fancybox-grid-loading {
 	transition: all 0.2s cubic-bezier(.25,.46,.45,.94);
 }
 
-.fancybox-grid > ul > li.fancybox-grid-active:before {
+.fancybox-thumbs > ul > li.fancybox-thumbs-active:before {
 	opacity: 1;
 }
 
@@ -106,7 +106,7 @@ li.fancybox-grid-loading {
 
 @media all and (max-width: 800px) {
 
-	.fancybox-grid {
+	.fancybox-thumbs {
 		display: none !important;
 	}
 

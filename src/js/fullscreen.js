@@ -1,11 +1,9 @@
-
 // ==========================================================================
+//
 // fullScreen v1.0.0
 // Adds fullscreen functionality
 //
-// Credits: Janis Skarnelis - janis@fancyapps.com
 // ==========================================================================
-
 ;(function (document, $) {
 	'use strict';
 
