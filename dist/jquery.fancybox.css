@@ -11,9 +11,9 @@
   height: 100%;
   z-index: 99993;
   -webkit-backface-visibility: hidden;
-  backface-visibility: hidden; }
+  backface-visibility: hidden;
+  /* Make sure that the first one is on the top */ }
 
-/* Make sure that the first one is on the top */
 .fancybox-container ~ .fancybox-container {
   z-index: 99992; }
 
@@ -117,7 +117,7 @@
   -webkit-overflow-scrolling: touch;
   -webkit-tap-highlight-color: transparent; }
 
-.fancybox-slide::before {
+.fancybox-slide:before {
   content: '';
   display: inline-block;
   vertical-align: middle;
@@ -327,8 +327,7 @@
 .fancybox-button:hover {
   background: rgba(0, 0, 0, 0.8); }
 
-.fancybox-button::before,
-.fancybox-button::after {
+.fancybox-button:before, .fancybox-button:after {
   content: '';
   pointer-events: none;
   position: absolute;
@@ -339,7 +338,10 @@
   box-sizing: border-box;
   display: inline-block; }
 
-.fancybox-button--left::after {
+.fancybox-button--left {
+  border-bottom-left-radius: 5px; }
+
+.fancybox-button--left:after {
   left: 20px;
   top: 18px;
   width: 6px;
@@ -351,7 +353,10 @@
   -ms-transform: rotate(-135deg);
   transform: rotate(-135deg); }
 
-.fancybox-button--right::after {
+.fancybox-button--right {
+  border-bottom-right-radius: 5px; }
+
+.fancybox-button--right:after {
   right: 20px;
   top: 18px;
   width: 6px;
@@ -363,16 +368,10 @@
   -ms-transform: rotate(45deg);
   transform: rotate(45deg); }
 
-.fancybox-button--left {
-  border-bottom-left-radius: 5px; }
-
-.fancybox-button--right {
-  border-bottom-right-radius: 5px; }
-
 .fancybox-button--close {
   float: right; }
 
-.fancybox-button--close::before, .fancybox-button--close::after {
+.fancybox-button--close:before, .fancybox-button--close:after {
   content: '';
   display: inline-block;
   position: absolute;
@@ -381,12 +380,12 @@
   top: calc(50% - 1px);
   left: calc(50% - 8px); }
 
-.fancybox-button--close::before {
+.fancybox-button--close:before {
   -webkit-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
   transform: rotate(45deg); }
 
-.fancybox-button--close::after {
+.fancybox-button--close:after {
   -webkit-transform: rotate(-45deg);
   -ms-transform: rotate(-45deg);
   transform: rotate(-45deg); }
@@ -437,7 +436,7 @@
     margin: 0; } }
 
 /* Fullscreen  */
-.fancybox-button--fullscreen::before {
+.fancybox-button--fullscreen:before {
   width: 15px;
   height: 11px;
   left: 15px;
@@ -446,7 +445,7 @@
   background: none; }
 
 /* Slideshow button */
-.fancybox-button--play::before {
+.fancybox-button--play:before {
   top: 16px;
   left: 18px;
   width: 0;
@@ -457,7 +456,7 @@
   border-radius: 1px;
   background: transparent; }
 
-.fancybox-button--pause::before {
+.fancybox-button--pause:before {
   top: 16px;
   left: 18px;
   width: 7px;
@@ -470,12 +469,12 @@
 .fancybox-button--grid span {
   font-size: 23px; }
 
-.fancybox-button--grid::before {
+.fancybox-button--grid:before {
   top: 20px;
   left: 21px;
   width: 3px;
   height: 3px;
-  box-shadow: 0 -4px 0, -4px -4px 0, 4px -4px 0, 0 0 0 32px inset, -4px 0 0, 4px 0 0, 0 4px 0, -4px 4px 0, 4px 4px 0; }
+  box-shadow: 0 -4px 0 #FFF, -4px -4px 0 #FFF, 4px -4px 0 #FFF, inset 0 0 0 32px #FFF, -4px 0 0 #FFF, 4px 0 0 #FFF, 0 4px 0 #FFF, -4px 4px 0 #FFF, 4px 4px 0 #FFF; }
 
 .fancybox-container--thumbs .fancybox-controls,
 .fancybox-container--thumbs .fancybox-slider-wrap,
@@ -500,7 +499,6 @@
 
 .fancybox-grid > ul {
   list-style: none;
-  position: absolute;
   position: relative;
   width: 100%;
   height: 100%;
@@ -529,9 +527,6 @@
   backface-visibility: hidden;
   box-sizing: border-box; }
 
-li.fancybox-grid-loading {
-  background: rgba(0, 0, 0, 0.1); }
-
 .fancybox-grid > ul > li > img {
   position: absolute;
   top: 0;
@@ -546,6 +541,9 @@ li.fancybox-grid-loading {
   -ms-user-select: none;
   user-select: none; }
 
+.fancybox-grid > ul > li.fancybox-grid-active:before {
+  opacity: 1; }
+
 .fancybox-grid > ul > li:before {
   content: '';
   position: absolute;
@@ -559,8 +557,8 @@ li.fancybox-grid-loading {
   opacity: 0;
   transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
 
-.fancybox-grid > ul > li.fancybox-grid-active:before {
-  opacity: 1; }
+li.fancybox-grid-loading {
+  background: rgba(0, 0, 0, 0.1); }
 
 /* Styling for Small-Screen Devices */
 @media all and (max-width: 800px) {
