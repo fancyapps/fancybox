@@ -139,8 +139,11 @@
 
 		};
 
+		this.$target = $( e.target );
+
 		// Ignore taping on links, buttons and scrollable items
-		if ( $(e.target).is('a') || $(e.target).is('button') || $(e.target).is('input') || $(e.target).is('textarea') || $(e.target).parent().is('a') || e.target.nodeType == 3 || isScrollable( e.target ) ) {
+		if ( this.$target.is('a') || this.$target.is('button') || this.$target.is('input') || this.$target.is('textarea') ||
+		 	this.$target.parent().is('a') || e.target.nodeType == 3 || isScrollable( e.target ) ) {
 			return;
 		}
 
@@ -157,12 +160,6 @@
 		}
 
 		$.fancybox.stop( self.instance.$refs.slider );
-
-		if ( this.instance.opts.closeClickOutside && $(e.target).is('.fancybox-slide') ) {
-			this.instance.close();
-
-			return;
-		}
 
 		this.$image   = current.isLoaded ? current.$image : current.$ghost || current.$image;
 		this.$content = current.isLoaded ? current.$content : null;
@@ -578,6 +575,13 @@
         y = y - this.instance.$refs.slider_wrap.offset().top;
 
 		if ( !$.fancybox.isTouch ) {
+
+
+			if ( self.instance.opts.closeClickOutside && self.$target.is('.fancybox-slide') ) {
+				self.instance.close();
+
+				return;
+			}
 
 			if ( self.instance.current.type == 'image' && self.instance.current.isMoved ) {
 

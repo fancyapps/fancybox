@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.2
+// fancyBox v3.0.4
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -466,7 +466,7 @@
                             keyboard	: 0,
                             slideShow	: 0,
                             fullScreen	: 0,
-                            mouseWheel	: 0
+                            closeClickOutside	: 0
                         });
 
                     }
@@ -1660,7 +1660,9 @@
 
                             $wrap.css({
                                 width	: '100%',
-                                height	: '9999px'
+                                height	: '9999px',
+                                'max-width'  : 'none',
+                                'max-height' : 'none'
                             });
 
                             scrollWidth = $iframe[0].contentWindow.document.documentElement.scrollWidth;
@@ -1670,8 +1672,8 @@
                             // Update wrapper size so it matches
 
                             $wrap.css({
-                                'width'		: frameWidth + ( $wrap.outerWidth() - $wrap.innerWidth() ),
-                                'height'	: Math.ceil( $contents.find('html').height() + ( $wrap.outerHeight() - $wrap.innerHeight() ) )
+                                'width'  : frameWidth + ( $wrap.outerWidth() - $wrap.innerWidth() ),
+                                'height' : Math.ceil( $contents.find('html').height() + ( $wrap.outerHeight() - $wrap.innerHeight() ) )
                             });
 
                         }
@@ -1759,6 +1761,8 @@
                     }
 
                     $(this).empty();
+
+                    slide.isLoaded = false;
 
                 });
 
@@ -2198,7 +2202,7 @@
 
         $.fancybox = {
 
-            version  : "3.0.2",
+            version  : "3.0.4",
             defaults : defaults,
 
 
@@ -2907,8 +2911,11 @@
 
 		};
 
+		this.$target = $( e.target );
+
 		// Ignore taping on links, buttons and scrollable items
-		if ( $(e.target).is('a') || $(e.target).is('button') || $(e.target).is('input') || $(e.target).is('textarea') || $(e.target).parent().is('a') || e.target.nodeType == 3 || isScrollable( e.target ) ) {
+		if ( this.$target.is('a') || this.$target.is('button') || this.$target.is('input') || this.$target.is('textarea') ||
+		 	this.$target.parent().is('a') || e.target.nodeType == 3 || isScrollable( e.target ) ) {
 			return;
 		}
 
@@ -2925,12 +2932,6 @@
 		}
 
 		$.fancybox.stop( self.instance.$refs.slider );
-
-		if ( this.instance.opts.closeClickOutside && $(e.target).is('.fancybox-slide') ) {
-			this.instance.close();
-
-			return;
-		}
 
 		this.$image   = current.isLoaded ? current.$image : current.$ghost || current.$image;
 		this.$content = current.isLoaded ? current.$content : null;
@@ -3346,6 +3347,13 @@
         y = y - this.instance.$refs.slider_wrap.offset().top;
 
 		if ( !$.fancybox.isTouch ) {
+
+
+			if ( self.instance.opts.closeClickOutside && self.$target.is('.fancybox-slide') ) {
+				self.instance.close();
+
+				return;
+			}
 
 			if ( self.instance.current.type == 'image' && self.instance.current.isMoved ) {
 

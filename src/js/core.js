@@ -456,7 +456,7 @@
                             keyboard	: 0,
                             slideShow	: 0,
                             fullScreen	: 0,
-                            mouseWheel	: 0
+                            closeClickOutside	: 0
                         });
 
                     }
@@ -1650,7 +1650,9 @@
 
                             $wrap.css({
                                 width	: '100%',
-                                height	: '9999px'
+                                height	: '9999px',
+                                'max-width'  : 'none',
+                                'max-height' : 'none'
                             });
 
                             scrollWidth = $iframe[0].contentWindow.document.documentElement.scrollWidth;
@@ -1660,8 +1662,8 @@
                             // Update wrapper size so it matches
 
                             $wrap.css({
-                                'width'		: frameWidth + ( $wrap.outerWidth() - $wrap.innerWidth() ),
-                                'height'	: Math.ceil( $contents.find('html').height() + ( $wrap.outerHeight() - $wrap.innerHeight() ) )
+                                'width'  : frameWidth + ( $wrap.outerWidth() - $wrap.innerWidth() ),
+                                'height' : Math.ceil( $contents.find('html').height() + ( $wrap.outerHeight() - $wrap.innerHeight() ) )
                             });
 
                         }
@@ -1749,6 +1751,8 @@
                     }
 
                     $(this).empty();
+
+                    slide.isLoaded = false;
 
                 });
 
@@ -2188,7 +2192,7 @@
 
         $.fancybox = {
 
-            version  : "3.0.2",
+            version  : "3.0.4",
             defaults : defaults,
 
 
