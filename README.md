@@ -10,7 +10,7 @@ Follow [@thefancyapps](//twitter.com/thefancyapps) for updates.
 
 ## Quick start
 
-1.  Add latest jQuery and fancyBox files
+1\.  Add latest jQuery and fancyBox files
 
 ```html
 <script src="//code.jquery.com/jquery-3.1.1.min.js"></script>
@@ -20,7 +20,7 @@ Follow [@thefancyapps](//twitter.com/thefancyapps) for updates.
 ```
 
 
-2.  Create links
+2\.  Create links
 
 ```html
 <a data-fancybox="gallery" href="big_1.jpg">
@@ -33,7 +33,7 @@ Follow [@thefancyapps](//twitter.com/thefancyapps) for updates.
 ```
 
 
-3. Enjoy!
+3\. Enjoy!
 
 
 ## License
