@@ -178,8 +178,9 @@
 
 		.content {
 			position: relative;
-			max-width: 980px;
+			max-width: 1020px;
 			margin: 0 auto;
+			padding: 0 50px;
 		}
 
 		section .content {
@@ -187,13 +188,13 @@
 		}
 
 		footer .content {
-			padding: 6em 0 3em 240px;
+			padding: 6em 50px 3em 240px;
 		}
 
 		aside {
 			position: absolute;
 			top: 0;
-			left : 0;
+			left : 50px;
 			width: 200px;
 		}
 
@@ -227,6 +228,24 @@
 			list-style: none;
 			padding: 1.5em 0;
 			margin: 0;
+		}
+
+		@media all and (max-width: 800px) {
+
+			aside {
+				position: relative;
+				left: 0;
+			}
+
+			.content {
+				padding: 0 25px;
+			}
+
+			section .content,
+			footer .content {
+				padding-left: 25px;
+			}
+
 		}
 
 	</style>
@@ -543,23 +562,79 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 				Supported sites can be used with fancyBox by just providing the page URL:
 			</p>
 
-			<pre><code>&lt;!-- YouTube --&gt;
-&lt;a data-fancybox href=&quot;https://www.youtube.com/watch?v=_sI_Ps7JSEk&amp;amp;autoplay=1&amp;amp;rel=0&amp;amp;controls=0&amp;amp;showinfo=0&quot;&gt;YouTube video&lt;/a&gt;
+			<pre><code>&lt;a data-fancybox href="https://www.youtube.com/watch?v=_sI_Ps7JSEk"&gt;
+  YouTube video
+&lt;/a&gt;
 
-&lt;!-- Vimeo --&gt;
-&lt;a data-fancybox href=&quot;https://vimeo.com/191947042?color=f00&quot;&gt;Vimeo video&lt;/a&gt;
+&lt;a data-fancybox href="https://vimeo.com/191947042"&gt;
+  Vimeo video
+&lt;/a&gt;
 
-&lt;-- Google maps --&gt;
-&lt;a data-fancybox href=&quot;https://www.google.lv/maps/place/Googleplex/@37.4220041,-122.0833494,17z/data=!4m5!3m4!1s0x0:0x6c296c66619367e0!8m2!3d37.4219998!4d-122.0840572&quot;&gt;Google Map&lt;/a&gt;
+&lt;a data-fancybox href=&quot;https://www.google.com/maps/place/Googleplex/@37.4220041,-122.0833494,17z/data=!4m5!3m4!1s0x0:0x6c296c66619367e0!8m2!3d37.4219998!4d-122.0840572&quot;&gt;
+	Google Map
+&lt;/a&gt;
 
-&lt;!-- Instagram --&gt;
-&lt;a data-fancybox href=&quot;https://www.instagram.com/p/BNXYW8-goPI/?taken-by=jamesrelfdyer&quot; data-caption=&quot;&lt;span title=&amp;quot;Edited&amp;quot;&gt;balloon rides at dawn ✨🎈&lt;br&gt;was such a magical experience floating over napa valley as the golden light hit the hills.&lt;br&gt;&lt;a href=&amp;quot;https://www.instagram.com/jamesrelfdyer/&amp;quot;&gt;@jamesrelfdyer&lt;/a&gt;&lt;/span&gt;&quot;&gt;Instagram photo&lt;/a&gt;</code></pre>
+&lt;a data-fancybox href=&quot;https://www.instagram.com/p/BNXYW8-goPI/?taken-by=jamesrelfdyer&quot; data-caption=&quot;&lt;span title=&amp;quot;Edited&amp;quot;&gt;balloon rides at dawn ✨🎈&lt;br&gt;was such a magical experience floating over napa valley as the golden light hit the hills.&lt;br&gt;&lt;a href=&amp;quot;https://www.instagram.com/jamesrelfdyer/&amp;quot;&gt;@jamesrelfdyer&lt;/a&gt;&lt;/span&gt;&quot;&gt;
+	Instagram photo
+&lt;/a&gt;</code></pre>
 			<p class="demo">
 				<a href="http://codepen.io/fancyapps/pen/LxEOwL?editors=1000" target="_blank">View demo on CodePen</a>
 			</p>
 
+			<h3>Video dimensions</h3>
+
+			<p>
+				Resize video display with the following CSS:
+			</p>
+
+			<pre><code>.fancybox-slide--video .fancybox-content {
+	width  : 800px;
+	height : 600px;
+	max-width  : 80%;
+	max-height : 80%;
+}</code></pre>
+			<p class="demo">
+				<a href="http://codepen.io/fancyapps/pen/PWZrzw?editors=1100" target="_blank">View demo on CodePen</a>
+			</p>
+
+			<p>
+				Obviously, you can choose any size you like, any combination with <code>min</code>/<code>max</code> values.
+			</p>
+
+			<h3>Video parameters</h3>
+
+			<p>
+				Controlling a video via URL parameters:
+			</p>
+
+			<pre><code>&lt;a data-fancybox href=&quot;https://www.youtube.com/watch?v=_sI_Ps7JSEk&amp;amp;autoplay=1&amp;amp;rel=0&amp;amp;controls=0&amp;amp;showinfo=0&quot;&gt;
+  YouTube video - hide controls and info
+&lt;/a&gt;
+
+&lt;a data-fancybox href=&quot;https://vimeo.com/191947042?color=f00&quot;&gt;
+  Vimeo video - custom color
+&lt;/a&gt;</code></pre>
+			<p class="demo">
+				<a href="http://codepen.io/fancyapps/pen/mRVNyO?editors=1000" target="_blank">View demo on CodePen</a>
+			</p>
 
 
+			<p>
+				Via JavaScript:
+			</p>
+
+			<pre><code>$('[data-fancybox]').fancybox({
+	youtube : {
+		controls : 0,
+		showinfo : 0
+	},
+	vimeo : {
+		color : 'f00'
+	}
+});</code></pre>
+			<p class="demo">
+				<a href="http://codepen.io/fancyapps/pen/Qdyeyr?editors=1010" target="_blank">View demo on CodePen</a>
+			</p>
 
 <!--
 
@@ -688,7 +763,7 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 	// Container is injected into this element
 	parentEl : 'body',
 
-	// Enable questures (tap, zoom, pan and pinch)
+	// Enable gestures (tap, zoom, pan and pinch)
 	touch : true,
 
 	// Enable keyboard navigation
@@ -995,7 +1070,7 @@ FAQ
 
 				// Toggle fixed position depending on visibility
 
-				if ( self.stickyTop > windowTop ) {
+				if ( $(window).width() < 800 || self.stickyTop > windowTop ) {
 					stickyPosition = 'relative';
 
 				} else {

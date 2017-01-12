@@ -118,8 +118,8 @@
 
 	$(document).on('onInit.fb', function(e, instance) {
 
-		if ( !!instance.opts.fullScreen && !instance.fullScreen) {
-			instance.fullScreen = new FullScreen( instance );
+		if ( !!instance.opts.fullScreen && !instance.FullScreen) {
+			instance.FullScreen = new FullScreen( instance );
 		}
 
 	});

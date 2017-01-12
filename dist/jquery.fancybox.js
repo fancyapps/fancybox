@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.1
+// fancyBox v3.0.2
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -604,30 +604,30 @@
 
 							e.preventDefault();
 
-							if ( self.slideShow ) {
+							if ( self.SlideShow ) {
 								e.preventDefault();
 
-								self.slideShow.toggle();
+								self.SlideShow.toggle();
 							}
 
 						break;
 
                         case 70: // "M"
 
-							if ( self.fullScreen ) {
+							if ( self.FullScreen ) {
 								e.preventDefault();
 
-								self.fullScreen.toggle();
+								self.FullScreen.toggle();
 							}
 
 						break;
 
                         case 71: // "G"
 
-							if ( self.fancyThumbs ) {
+							if ( self.Thumbs ) {
 								e.preventDefault();
 
-								self.fancyThumbs.toggle();
+								self.Thumbs.toggle();
 							}
 
 						break;
@@ -2195,7 +2195,7 @@
 
         $.fancybox = {
 
-            version  : "3.0.1",
+            version  : "3.0.2",
             defaults : defaults,
 
 
@@ -3671,8 +3671,8 @@
 
 	$(document).on('onInit.fb', function(e, instance) {
 
-		if ( !!instance.opts.fullScreen && !instance.fullScreen) {
-			instance.fullScreen = new FullScreen( instance );
+		if ( !!instance.opts.fullScreen && !instance.FullScreen) {
+			instance.FullScreen = new FullScreen( instance );
 		}
 
 	});
