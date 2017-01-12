@@ -144,6 +144,9 @@
         // Try to focus on first focusable element after opening
         focus : true,
 
+        // Close when clicked outside of the content
+        closeClickOutside : true,
+
         // Callbacks
         beforeLoad	 : $.noop,
         afterLoad    : $.noop,
@@ -2922,6 +2925,12 @@
 		}
 
 		$.fancybox.stop( self.instance.$refs.slider );
+
+		if ( this.instance.opts.closeClickOutside && $(e.target).is('.fancybox-slide') ) {
+			this.instance.close();
+
+			return;
+		}
 
 		this.$image   = current.isLoaded ? current.$image : current.$ghost || current.$image;
 		this.$content = current.isLoaded ? current.$content : null;

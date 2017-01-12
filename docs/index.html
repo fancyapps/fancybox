@@ -712,7 +712,7 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 		tpl : '&lt;iframe id=&quot;fancybox-frame{rnd}&quot; name=&quot;fancybox-frame{rnd}&quot; class=&quot;fancybox-iframe&quot; frameborder=&quot;0&quot; vspace=&quot;0&quot; hspace=&quot;0&quot; webkitAllowFullScreen mozallowfullscreen allowFullScreen allowtransparency=&quot;true&quot; src=&quot;&quot;&gt;&lt;/iframe&gt;',
 
 		// Preload iframe before displaying it
-		// This allows to calculate iframe content height
+		// This allows to calculate iframe content width and height
 		// (note: Due to &quot;Same Origin Policy&quot;, you can't get cross domain data).
 		preload : true,
 
@@ -720,10 +720,7 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 		scrolling : 'no',
 
 		// Custom CSS styling for iframe wrapping element
-		css : {
-			'width'  : '80%',
-			'height' : '80%'
-		}
+		css : {}
 
 	},
 
@@ -734,7 +731,7 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 	slideClass : '',
 
 	// Base template for layout
-	baseTpl	: '&lt;div class=&quot;fancybox-container&quot; role=&quot;dialog&quot;&gt;' +
+	baseTpl	: '&lt;div class=&quot;fancybox-container&quot; role=&quot;dialog&quot; tabindex=&quot;-1&quot;&gt;' +
 			'&lt;div class=&quot;fancybox-bg&quot;&gt;&lt;/div&gt;' +
 			'&lt;div class=&quot;fancybox-controls&quot;&gt;' +
 				'&lt;div class=&quot;fancybox-infobar&quot;&gt;' +
@@ -760,6 +757,8 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 	// Error message template
 	errorTpl : '&lt;div class=&quot;fancybox-error&quot;&gt;&lt;p&gt;The requested content cannot be loaded. &lt;br /&gt; Please try again later.&lt;p&gt;&lt;/div&gt;',
 
+	closeTpl : '&lt;button data-fancybox-close class=&quot;fancybox-close-small&quot;&gt;×&lt;/button&gt;',
+
 	// Container is injected into this element
 	parentEl : 'body',
 
@@ -771,6 +770,9 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 
 	// Try to focus on first focusable element after opening
 	focus : true,
+
+	// Close when clicked outside of the content
+	closeClickOutside : true,
 
 	// Callbacks
 	beforeLoad	 : $.noop,
@@ -829,13 +831,14 @@ API
 -->
 				<h2 id="api">API</h2>
 
-				<h3>Methods</h3>
-
 				<p>
-					The fancyBox API offers a couple of methods to control fancyBox and are publicly available to all active instances.
+					The fancyBox API offers a couple of methods to control fancyBox.
 
 					This gives you the ability to extend the plugin and to integrate it with other web application components.
 				</p>
+
+				<h3>Instance methods</h3>
+
 				<p>
 					In order to use these methods, you need an instance of the plugin's object:
 				</p>
@@ -902,10 +905,30 @@ $instance.close();
 					You can also do something like this:
 				</p>
 
-				<pre><code>$.fancybox.getInstance().jumpTo(1);
+				<pre><code>$.fancybox.getInstance().jumpTo(1);</code></pre>
 
-// or simply:
-$.fancybox.getInstance('jumpTo', 1);</code></pre>
+				<p>
+					or simply:
+				</p>
+
+				<pre><code>$.fancybox.getInstance('jumpTo', 1);</code></pre>
+
+
+
+				<h3>Core methods</h3>
+
+				<p>
+					Core methods are methods which affect/handle instances.
+				</p>
+
+
+				<pre><code>// Open the fancyBox right away
+$.fancybox.open( items, opts, index );
+
+// Close only active or all fancyBox instances
+$.fancybox.close( all );
+</code></pre>
+
 
 
 				<h3>Events</h3>

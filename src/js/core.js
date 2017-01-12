@@ -134,6 +134,9 @@
         // Try to focus on first focusable element after opening
         focus : true,
 
+        // Close when clicked outside of the content
+        closeClickOutside : true,
+
         // Callbacks
         beforeLoad	 : $.noop,
         afterLoad    : $.noop,
