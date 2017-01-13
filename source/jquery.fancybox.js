@@ -1248,17 +1248,16 @@
        }
 
        if (current.autoWidth) {
-         // raiz do problema
-         origWidth = inner[0].scrollWidth;
+         origWidth = inner[0].scrollWidth; // find div
        }
 
        if (current.autoHeight) {
-         origHeight = inner[0].scrollHeight;
+         origHeight = inner[0].scrollHeight; // find div
        }
 
        inner.removeClass( 'fancybox-tmp' );
      }
-
+    
      width  = getScalar( origWidth );
      height = getScalar( origHeight );
 
