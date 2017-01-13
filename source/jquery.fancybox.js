@@ -1,7 +1,6 @@
 /*!
  * fancyBox - jQuery Plugin
- * version: 2.1.5 (Fri, 14 Jun 2013) AAA
- ** Correção - APlicação com marionete e bug no Safari
+ * version: 2.1.5 (Fri, 14 Jun 2013)
  * @requires jQuery v1.6 or later
  *
  * Examples at http://fancyapps.com/fancybox/
