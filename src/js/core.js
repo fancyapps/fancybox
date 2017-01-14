@@ -591,7 +591,7 @@
 
     					break;
 
-                        case 70: // "M"
+                        case 70: // "F"
 
     						if ( self.FullScreen ) {
     							e.preventDefault();
