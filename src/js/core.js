@@ -14,7 +14,7 @@
     var defaults = {
 
         // Animation speed
-        speed : 300,
+        speed : 316,
 
         // Enable infinite gallery navigation
         loop : true,
@@ -399,6 +399,10 @@
 
                 if ( $.type( self.opts.caption ) === 'function' ) {
                     obj.opts.caption = self.opts.caption.apply( item, [ self, obj ] );
+
+                } else {
+                    // Make sure we have a string
+                    obj.opts.caption === undefined ? '' : obj.opts.caption + '';
                 }
 
                 if ( type === 'ajax' ) {
@@ -2174,7 +2178,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.5",
+        version  : "3.0.6",
         defaults : defaults,
 
 
