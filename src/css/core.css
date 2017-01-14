@@ -156,8 +156,7 @@
 	padding: 0;
 	border: 0;
 	width: 80%;
-	height: 80%;
-	max-height: calc(100% - 88px);
+	height: calc(100% - 88px);
 	vertical-align: middle;
 	line-height: normal;
 	text-align: left;
@@ -234,8 +233,6 @@
 	top: -9999px;
 	left: -9999px;
 	visibility: hidden;
-	width: 100%;
-	height: 9999px;
 }
 
 .fancybox-error {

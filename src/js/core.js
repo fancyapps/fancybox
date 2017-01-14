@@ -175,44 +175,24 @@
                     window.setTimeout(callback, 1000 / 60); };
                 })();
 
-        // Calculate scrollbar width
-        // Used for compensating missing browser's vertical scrollbar
-        // ==========================================================
 
-        var measureScrollbar = function() {
-            var div	= $( '<div />' ).css({
-                position    : 'absolute',
-                top         : '-9999px',
-                width       : '50px',
-                height      : '50px',
-                overflow    : 'scroll'
-            }).appendTo( document.body );
+    // Check if element is inside the viewport by at least 1 pixel
+    // ===========================================================
 
-            var width = div[0].offsetWidth - div[0].clientWidth;
+    var isElementInViewport = function( el ) {
+        var rect;
 
-            div.remove();
+        if ( typeof $ === "function" && el instanceof $ ) {
+            el = el[0];
+        }
 
-            return width;
+        rect = el.getBoundingClientRect();
 
-        };
-
-        // Check if element is inside the viewport by at least 1 pixel
-        // ================
-
-        var isElementInViewport = function( el ) {
-            var rect;
-
-            if ( typeof $ === "function" && el instanceof $ ) {
-                el = el[0];
-            }
-
-            rect = el.getBoundingClientRect();
-
-            return rect.bottom > 0 &&
-                    rect.right > 0 &&
-                    rect.left < (window.innerWidth || document.documentElement.clientWidth)  &&
-                    rect.top < (window.innerHeight || document.documentElement.clientHeight);
-        };
+        return rect.bottom > 0 &&
+                rect.right > 0 &&
+                rect.left < (window.innerWidth || document.documentElement.clientWidth)  &&
+                rect.top < (window.innerHeight || document.documentElement.clientHeight);
+    };
 
 
         // Class definition
@@ -237,7 +217,7 @@
             }
 
             // Save last active element and current scroll position
-            self.$lastFocus = $(document.activeElement).blur();
+            self.$lastFocus = $(document.activeElement);
 
             self.scrollTop	= $W.scrollTop();
             self.scrollLeft	= $W.scrollLeft();
@@ -256,19 +236,27 @@
         $.extend(FancyBox.prototype, {
 
             // Create DOM structure
-            // =========================
+            // ====================
 
             init : function() {
 
                 var self = this;
                 var	$container;
+                var w1, w2;
 
-                if ( !$('body').hasClass('fancybox-enabled') ) {
-                    $( '<style id="fancybox-noscroll">' )
-                        .prop( 'type', 'text/css')
-                        .html( '.compensate-for-scrollbar, .fancybox-enabled { margin-right: ' + ( measureScrollbar() + parseFloat( $('body').css('margin-right') ) ) + 'px; }' ).appendTo( 'head' );
+                if ( !$( 'body' ).hasClass( 'fancybox-enabled' ) ) {
 
-                    $('body').addClass('fancybox-enabled');
+                    w1 = $( 'body' ).width();
+
+                    $( 'body' ).addClass( 'fancybox-enabled' );
+
+                    w2 = $( 'body' ).width();
+
+                    // Body width has increased - compensate missing scrollbars
+                    if ( w2 - w1 > 1 ) {
+                        $( '<style id="fancybox-noscroll" type="text/css">' ).html( '.compensate-for-scrollbar, .fancybox-enabled { margin-right: ' + ( w2 - w1 ) + 'px; }' ).appendTo( 'head' );
+                    }
+
                 }
 
                 $container = $( self.opts.baseTpl )
@@ -387,8 +375,6 @@
                         } else if ( src.charAt(0) === '#' ) {
                             type = 'inline';
 
-                        } else {
-                            type = 'iframe';
                         }
 
                         obj.type = type;
@@ -593,37 +579,37 @@
                         break;
 
                         case 80: // "P"
-						case 32: // Spacebar
+    					case 32: // Spacebar
 
-							e.preventDefault();
+    						e.preventDefault();
 
-							if ( self.SlideShow ) {
-								e.preventDefault();
+    						if ( self.SlideShow ) {
+    							e.preventDefault();
 
-								self.SlideShow.toggle();
-							}
+    							self.SlideShow.toggle();
+    						}
 
-						break;
+    					break;
 
                         case 70: // "M"
 
-							if ( self.FullScreen ) {
-								e.preventDefault();
+    						if ( self.FullScreen ) {
+    							e.preventDefault();
 
-								self.FullScreen.toggle();
-							}
+    							self.FullScreen.toggle();
+    						}
 
-						break;
+    					break;
 
                         case 71: // "G"
 
-							if ( self.Thumbs ) {
-								e.preventDefault();
+    						if ( self.Thumbs ) {
+    							e.preventDefault();
 
-								self.Thumbs.toggle();
-							}
+    							self.Thumbs.toggle();
+    						}
 
-						break;
+    					break;
                     }
                 });
 
@@ -798,7 +784,7 @@
 
                 if ( !self.slides[ pos ] && self.group[ index ] ) {
 
-                    $slide = $('<div class="fancybox-slide" tabindex="0"></div>').appendTo( self.$refs.slider );
+                    $slide = $('<div class="fancybox-slide"></div>').appendTo( self.$refs.slider );
 
                     self.slides[ pos ] = $.extend( true, {}, self.group[ index ], {
                         pos      : pos,
@@ -1255,6 +1241,7 @@
                     }
 
                 }
+
                 slide.$slide.trigger( 'refresh' );
 
             },
@@ -1601,9 +1588,9 @@
 
                 if ( opts.preload ) {
 
-                    self.showLoading( slide );
-
                     slide.$content.addClass( 'fancybox-tmp' );
+
+                    self.showLoading( slide );
 
                     // Unfortunately, it is not always possible to determine if iframe is successfully loaded
                     // (due to browser security policy)
@@ -1619,18 +1606,17 @@
 
                     // Recalculate iframe content size
 
-                    $slide.bind('refresh.fb', function() {
+                    $slide.on('refresh.fb', function() {
                         var $wrap = slide.$content,
                             $contents,
                             $body,
                             scrollWidth,
-                            frameWidth;
+                            frameWidth,
+                            frameHeight;
 
                         if ( $iframe[0].isReady !== 1 ) {
                             return;
                         }
-
-                        $wrap.removeClass( 'fancybox-tmp' );
 
                         // Check if content is accessible,
                         // it will fail if frame is not with the same origin
@@ -1643,30 +1629,23 @@
 
                         // Calculate dimensions for the wrapper
 
-                        if ( $body && $body.length ) {
-
-                            // Make the room for the iframe, so it can expand if needed.
-                            // Helps to remove scrollbars on IE.
-
-                            $wrap.css({
-                                width	: '100%',
-                                height	: '9999px',
-                                'max-width'  : 'none',
-                                'max-height' : 'none'
-                            });
+                        if ( $body && $body.length && !( opts.css.width !== undefined && opts.css.height !== undefined ) ) {
 
                             scrollWidth = $iframe[0].contentWindow.document.documentElement.scrollWidth;
-                            frameWidth	= Math.floor( $body.outerWidth(true) + ($wrap.width() - scrollWidth ) );
 
-                            // Calculate dimensions of iframe content
-                            // Update wrapper size so it matches
+                            frameWidth	= Math.ceil( $body.outerWidth(true) + ( $wrap.width() - scrollWidth ) );
+                            frameHeight	= Math.ceil( $body.outerHeight(true) );
+
+                            // Resize wrapper to fit iframe content
 
                             $wrap.css({
-                                'width'  : frameWidth + ( $wrap.outerWidth() - $wrap.innerWidth() ),
-                                'height' : Math.ceil( $contents.find('html').height() + ( $wrap.outerHeight() - $wrap.innerHeight() ) )
+                                'width'  : opts.css.width  === undefined ? frameWidth  + ( $wrap.outerWidth()  - $wrap.innerWidth() )  : opts.css.width,
+                                'height' : opts.css.height === undefined ? frameHeight + ( $wrap.outerHeight() - $wrap.innerHeight() ) : opts.css.height
                             });
 
                         }
+
+                        $wrap.removeClass( 'fancybox-tmp' );
 
                     });
 
@@ -1912,15 +1891,17 @@
             // ====================================================
 
             focus : function() {
-                var $el = this.current.$slide ? this.current.$slide.find('button,:input,[tabindex],a:not(".disabled")').filter(':visible:first') : null;
+                var $el = this.current && this.current.isComplete ? this.current.$slide.find('button,:input,[tabindex],a:not(".disabled")').filter(':visible:first') : null;
 
                 if ( !$el || !$el.length ) {
-                    $el = this.current ? this.$refs.container : null;
+                    $el = this.$refs.container
+
                 }
 
-                if ( $el ) {
-                    $el.focus();
-                }
+                $el.focus();
+
+                // Scroll position of wrapper element sometimes changes after focusing (IE)
+                this.$refs.slider_wrap.scrollLeft(0);
             },
 
 
@@ -2045,15 +2026,16 @@
 
                 instance = $.fancybox.getInstance();
 
-                if (instance) {
+                if ( instance ) {
 
                     instance.activate();
 
                 } else {
 
-                    $('body').removeClass('fancybox-enabled');
+                    $( 'body' ).removeClass( 'fancybox-enabled' );
 
-                    $("#fancybox-noscroll").remove();
+                    $( '#fancybox-noscroll' ).remove();
+
                 }
 
                 // Place back focus
@@ -2192,7 +2174,7 @@
 
         $.fancybox = {
 
-            version  : "3.0.4",
+            version  : "3.0.5",
             defaults : defaults,
 
 

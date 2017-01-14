@@ -123,6 +123,11 @@
 				id,
 				provider;
 
+			// Skip items that already have content type
+			if ( item.type ) {
+				return;
+			}
+
 			// Look for any matching media type
 
 			$.each(media, function ( n, el ) {
@@ -194,6 +199,11 @@
 
 					item.opts.slideClass += ' fancybox-slide--video';
 				}
+
+			} else {
+
+				// If no content type is found, then set it to `iframe` as fallback
+				item.type = 'iframe';
 
 			}
 
