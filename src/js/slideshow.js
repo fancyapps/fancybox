@@ -1,6 +1,6 @@
 // ==========================================================================
 //
-// slideShow v1.0.0
+// SlideShow
 // Enables slideshow functionality
 //
 // Example of usage:

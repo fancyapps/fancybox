@@ -26,7 +26,7 @@
 	left: 0;
 	background: #0f0f11;
 	opacity: 0;
-	transition: opacity 300ms cubic-bezier(.55,.06,.68,.19);
+	transition-timing-function: cubic-bezier(.55,.06,.68,.19);
 	backface-visibility: hidden;
 }
 
@@ -149,6 +149,12 @@
 	overflow: hidden;
 }
 
+
+.fancybox-slide--image::before {
+	display: none;
+}
+
+
 .fancybox-content {
 	display: inline-block;
 	position: relative;
@@ -184,7 +190,7 @@
 	background: transparent;
 }
 
-.fancybox-image {
+.fancybox-placeholder {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -195,36 +201,44 @@
 	background: transparent;
 	cursor: default;
 	transform-origin: top left;
-	max-width: none;
-	max-height: none;
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
 	backface-visibility: hidden;
 }
 
-.fancybox-controls--canzoomOut .fancybox-image {
-	cursor: zoom-out;
-}
-
-.fancybox-controls--canzoomIn .fancybox-image {
-	cursor: zoom-in;
-}
-
-.fancybox-controls--canGrab .fancybox-image {
-	cursor: grab;
-}
-
-.fancybox-controls--isGrabbing .fancybox-image {
-	cursor: grabbing;
-}
-
-.fancybox-image div {
-	width: 100%;
-	height: 100%;
-}
-
+.fancybox-image,
 .fancybox-spaceball {
 	position: absolute;
 	top: 0;
 	left: 0;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	max-width: none;
+	max-height: none;
+	background: transparent;
+	background-size: 100% 100%;
+}
+
+.fancybox-controls--canzoomOut .fancybox-placeholder {
+	cursor: zoom-out;
+}
+
+.fancybox-controls--canzoomIn .fancybox-placeholder {
+	cursor: zoom-in;
+}
+
+.fancybox-controls--canGrab .fancybox-placeholder {
+	cursor: grab;
+}
+
+.fancybox-controls--isGrabbing .fancybox-placeholder {
+	cursor: grabbing;
+}
+
+ .fancybox-spaceball {
 	z-index: 1;
 }
 
@@ -236,8 +250,14 @@
 }
 
 .fancybox-error {
+	position: absolute;
 	margin: 0;
 	padding: 40px;
+	top: 50%;
+	left: 50%;
+	width: 380px;
+	max-width: 100%;
+	transform: translate(-50%, -50%);
 	background: #fff;
 	cursor: default;
 }

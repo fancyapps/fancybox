@@ -110,11 +110,7 @@ li.fancybox-thumbs-loading {
 		display: none !important;
 	}
 
-	.fancybox-container--thumbs .fancybox-infobar {
-		margin-left: auto;
-	}
-
-	.fancybox-container--thumbs .fancybox-buttons,
+	.fancybox-container--thumbs .fancybox-controls,
 	.fancybox-container--thumbs .fancybox-slider-wrap,
 	.fancybox-container--thumbs .fancybox-caption-wrap {
 		right: 0;

@@ -650,8 +650,8 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 
 			<pre>defaults = {
 
-	// Animation speed
-	speed : 300,
+	// Animation duration in ms
+	speed : 330,
 
 	// Enable infinite gallery navigation
 	loop : true,
@@ -857,25 +857,25 @@ API
 
 
 				<pre><code>// Go to next gallery item
-$instance.next();
+$instance.next( duration );
 
 // Go to previous gallery item
-$instance.previous();
+$instance.previous( duration );
 
 // Switch to the other gallery item; accepts integer argument (an index of the desired item)
-$instance.jumpTo( index );
+$instance.jumpTo( index, duration );
 
 // Check if current image dimensions are smaller than actual
 $instance.isScaledDown();
 
 // Scale image to the actual size of the image
-$instance.scaleToActual( x, y );
+$instance.scaleToActual( x, y, duration );
 
 // Check if image dimensions exceed parent element
 $instance.canPan();
 
 // Scale image to fit inside parent element
-$instance.scaleToFit();
+$instance.scaleToFit( duration );
 
 // Move slider to current position
 // Update all slides (and their content) if needed
@@ -885,7 +885,7 @@ $instance.update( immediately, andSlides, andContent );
 $instance.updateSlide( slide, andContent );
 
 // Update infobar values, navigation button states and reveal caption
-$instance.updateControls();
+$instance.updateControls( force );
 
 // Load custom content into the slide
 $instance.setContent( slide, content );

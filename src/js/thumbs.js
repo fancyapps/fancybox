@@ -1,6 +1,6 @@
 // ==========================================================================
 //
-// Thumbnails v1.0.0
+// Thumbs
 // Displays thumbnails in a grid
 //
 // ==========================================================================
@@ -112,12 +112,14 @@
 
 		focus : function() {
 
-			this.$list
-				.children()
-				.removeClass('fancybox-thumbs-active')
-				.filter('[data-index="' + this.instance.current.index  + '"]')
-				.addClass('fancybox-thumbs-active')
-				.focus();
+			if ( this.instance.current ) {
+				this.$list
+					.children()
+					.removeClass('fancybox-thumbs-active')
+					.filter('[data-index="' + this.instance.current.index  + '"]')
+					.addClass('fancybox-thumbs-active')
+					.focus();
+			}
 
 		},
 
@@ -147,7 +149,9 @@
 
 			}
 
-			this.instance.update( true, true, true );
+			if ( !this.instance.allowZoomIn ) {
+				this.instance.update( true, true, true );
+			}
 
 		},
 
@@ -189,6 +193,7 @@
 		    		( instance.group[1].type == 'image' || instance.group[1].opts.thumb )
 			 	)
 		   ) {
+
 			instance.Thumbs = new FancyThumbs( instance );
 		}
 
@@ -208,12 +213,12 @@
 			return;
 		}
 
-		if ( self ) {
-			self.$button.show();
+		if ( instance.opts.thumbs.showOnStart === true && instance.allowZoomIn ) {
+			self.show();
 		}
 
-		if ( instance.opts.thumbs.showOnStart === true ) {
-			self.show();
+		if ( self ) {
+			self.$button.show();
 		}
 
 		if ( self && self.isVisible ) {
