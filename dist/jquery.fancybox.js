@@ -1487,24 +1487,17 @@
 
                 if ( slide.$ghost ) {
 
-                    if ( slide.timouts ) {
-                        clearTimeout( slide.timouts );
-                    }
+                    if ( !self.isClosing ) {
+                        if ( self.currIndex === slide.index && !self.isAnimating ) {
+                            slide.$ghost.fadeOut();
 
-                    slide.timouts = setTimeout(function() {
-
-                        if ( !self.isClosing ) {
-                            if ( self.currIndex === slide.index && !self.isAnimating ) {
-                                slide.$ghost.fadeOut();
-
-                            } else {
-                                slide.$ghost.hide();
-                            }
-
-                            self.afterLoad( slide );
+                        } else {
+                            slide.$ghost.hide();
                         }
 
-                    }, 250);
+                        self.afterLoad( slide );
+                    }
+
 
                 } else {
                     self.afterLoad( slide );
@@ -1857,6 +1850,11 @@
 
             // Scroll position of wrapper element sometimes changes after focusing (IE)
             this.$refs.slider_wrap.scrollLeft(0);
+
+            // And the same goes for slide element
+            if ( this.current ) {
+                this.current.$slide.scrollTop(0);
+            }
         },
 
 
