@@ -141,7 +141,7 @@
 		};
 
 		// Ignore taping on links, buttons and scrollable items
-		if ( isClickable( $target) || ( isScrollable( $target ) && !$target.hasClass('fancybox-slide') ) ) {
+		if ( isClickable( $target ) || isClickable( $target.parent() ) || ( isScrollable( $target ) && !$target.hasClass('fancybox-slide') ) ) {
 			return;
 		}
 
