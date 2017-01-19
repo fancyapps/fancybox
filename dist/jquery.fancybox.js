@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.7
+// fancyBox v3.0.8
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -566,7 +566,8 @@
                     return;
                 }
 
-                if ( keycode === 27 ) {
+                // Backspace and Esc keys
+                if ( keycode === 8 || keycode === 27 ) {
                     e.preventDefault();
 
                     self.close();
@@ -2124,7 +2125,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.7",
+        version  : "3.0.8",
         defaults : defaults,
 
 
