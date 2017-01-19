@@ -502,13 +502,13 @@
 		}
 
 		// Speed in px/ms
-		self.velocityX = self.distanceX / dMs;
-		self.velocityY = self.distanceY / dMs;
+		self.velocityX = self.distanceX / dMs * 0.5;
+		self.velocityY = self.distanceY / dMs * 0.5;
 
 		self.speed = current.opts.speed;
 
-		self.speedX = Math.max( 250, Math.min( 400, ( 1 / Math.abs( self.velocityX ) ) * self.speed ) );
-		self.speedY = Math.max( 250, Math.min( 400, ( 1 / Math.abs( self.velocityY ) ) * self.speed ) );
+		self.speedX = Math.max( self.speed - 120, Math.min( self.speed + 120, ( 1 / Math.abs( self.velocityX ) ) * self.speed ) );
+		self.speedY = Math.max( self.speed - 120, Math.min( self.speed + 120, ( 1 / Math.abs( self.velocityY ) ) * self.speed ) );
 
 		if ( swiping ) {
 			self.endSwiping( swiping );
@@ -536,7 +536,7 @@
 			// Continue vertical movement
 
 			$.fancybox.animate( self.$slider, null, {
-				top     : self.sliderStartPos.top + self.distanceY + self.velocityY * 100,
+				top     : self.sliderStartPos.top + self.distanceY + self.velocityY * 150,
 				left    : self.sliderStartPos.left,
 				opacity : 0
 			}, self.speedY );
@@ -562,8 +562,8 @@
 
 		var self = this;
 
-		var newOffsetX = self.contentLastPos.left + ( self.velocityX * self.speed );
-		var newOffsetY = self.contentLastPos.top  + ( self.velocityY * self.speed );
+		var newOffsetX = self.contentLastPos.left + ( self.velocityX * self.speed * 2 );
+		var newOffsetY = self.contentLastPos.top  + ( self.velocityY * self.speed * 2 );
 
 		var newPos = self.limitPosition( newOffsetX, newOffsetY, self.contentStartPos.width, self.contentStartPos.height );
 
