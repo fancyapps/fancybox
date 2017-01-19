@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.8
+// fancyBox v3.0.10
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -2123,7 +2123,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.8",
+        version  : "3.0.10",
         defaults : defaults,
 
 
@@ -2963,14 +2963,17 @@
 
 		self.distance = distance( self.newPoints[0], self.startPoints[0] );
 
-		if ( self.isSwiping ) {
-			self.onSwipe();
+		// Skip false ontouchmove events (Chrome)
+		if ( self.distance > 0 ) {
+			if ( self.isSwiping ) {
+				self.onSwipe();
 
-		} else if ( self.isPanning ) {
-			self.onPan();
+			} else if ( self.isPanning ) {
+				self.onPan();
 
-		} else if ( self.isZooming ) {
-			self.onZoom();
+			} else if ( self.isZooming ) {
+				self.onZoom();
+			}
 		}
 
 	};
