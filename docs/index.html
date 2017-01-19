@@ -459,17 +459,23 @@
 			<pre><code>&lt;a href=&quot;image.jpg&quot; data-fancybox=&quot;images&quot; data-width=&quot;2048&quot; data-height=&quot;1365&quot;&gt;
     &lt;img src=&quot;thumbnail.jpg&quot; /&gt;
 &lt;/a&gt;</code></pre>
-
 			<p class="demo">
 				<a href="http://codepen.io/fancyapps/pen/wgBrXd?editors=1000" target="_blank">View demo on CodePen</a>
 			</p>
 
 			<p>
-
-				While this does not protect your images from truly determined users, it should discourage the vast majority from ripping off your files.
-
+				It is also possible to protect images from downloading by right-click.
+				While this does not protect from truly determined users, it should discourage the vast majority from ripping off your files.
 			</p>
 
+			<pre><code>$('[data-fancybox]').fancybox({
+	image : {
+		protect: true
+	}
+});</code></pre>
+			<p class="demo">
+				<a href="http://codepen.io/fancyapps/pen/RKKqLx?editors=1010" target="_blank">View demo on CodePen</a>
+			</p>
 
 			<h3>Inline</h3>
 
