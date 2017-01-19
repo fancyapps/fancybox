@@ -230,6 +230,11 @@
 			margin: 0;
 		}
 
+		aside ul ul {
+			padding: 0 0 0.5em 1.5em;
+			font-size: 90%;
+		}
+
 		@media all and (max-width: 800px) {
 
 			aside {
@@ -270,7 +275,16 @@
 				<ul class="sticky">
 					<li><a href="#setup">Setup</a></li>
 					<li><a href="#usage">How to Use</a></li>
-					<li><a href="#media_types">Media types</a></li>
+					<li>
+						<a href="#media_types">Media types</a>
+
+						<ul>
+							<li><a href="#images">Images</a></li>
+							<li><a href="#inline">Inline</a></li>
+							<li><a href="#ajax">Ajax</a></li>
+							<li><a href="#iframe">Iframe</a></li>
+						</ul>
+					</li>
 					<li><a href="#embedding">Embedding</a></li>
 					<li><a href="#options">Options</a></li>
 					<li><a href="#api">Api</a></li>
@@ -430,7 +444,7 @@
 			<h2 id="media_types">Media types</h2>
 
 
-			<h3>Images</h3>
+			<h3 id="images">Images</h3>
 
 			<p>
 				The standard way of using fancyBox is with a number of thumbnail images that link to larger images:
@@ -477,7 +491,7 @@
 				<a href="http://codepen.io/fancyapps/pen/RKKqLx?editors=1010" target="_blank">View demo on CodePen</a>
 			</p>
 
-			<h3>Inline</h3>
+			<h3 id="inline">Inline</h3>
 
 			<p>
 				For your Inline HTML you have to place a DIV Container into the content of the page:
@@ -499,7 +513,7 @@
 				<a href="http://codepen.io/fancyapps/pen/MJYOOd?editors=1000" target="_blank">View demo on CodePen</a>
 			</p>
 
-			<h3>Ajax</h3>
+			<h3 id="ajax">Ajax</h3>
 
 			<p>
 				To load content via AJAX, you need to add a <code>data-type="ajax"</code> attribute to your link:
@@ -524,7 +538,7 @@
 				<a href="http://codepen.io/fancyapps/pen/MJwWKz?editors=1100" target="_blank">View demo on CodePen</a>
 			</p>
 
-			<h3>Iframe</h3>
+			<h3 id="iframe">Iframe</h3>
 
 			<p>
 				If the content can be shown on a page, and placement in an iframe is not blocked by script or security configuration of that page,
@@ -1014,7 +1028,7 @@ FAQ
 &lt;/nav&gt;</code></pre>
 
 
-				<h3>Customizing caption</h3>
+				<h3>How to customize caption</h3>
 
 				<p>
 					Example of appending image download link:
@@ -1032,9 +1046,30 @@ FAQ
 		}
 	}
 });</code></pre>
-
 				<p class="demo">
 					<a href="http://codepen.io/fancyapps/pen/ygeYGx?editors=1010" target="_blank">View demo on CodePen</a>
+				</p>
+
+				<h3>How to create custom button in the toolbar</h3>
+
+				<p>
+					Example of using callback to access toolbar element and append custom button:
+				</p>
+
+				<pre><code>$( '[data-fancybox]' ).fancybox({
+	onInit : function( instance ) {
+		instance.$refs.downloadButton = $('&lt;a class=&quot;fancybox-button fancybox-download&quot;&gt;&lt;/a&gt;')
+			.appendTo( instance.$refs.buttons );
+	},
+	beforeMove: function( instance, current ) {
+		instance.$refs.downloadButton.attr('href', current.src);
+	}
+});
+
+</code></pre>
+
+				<p class="demo">
+					<a href="http://codepen.io/fancyapps/pen/dNGapJ" target="_blank">View demo on CodePen</a>
 				</p>
 
 
