@@ -881,8 +881,6 @@
 
                     $what.css('transition', 'none');
 
-                    $.fancybox.setTranslate( $what, end );
-
                     callback();
 
                     self.isAnimating = false;

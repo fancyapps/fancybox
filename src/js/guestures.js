@@ -187,7 +187,7 @@
 
 		if ( self.startPoints.length == 1 ) {
 
-			if ( current.type === 'image' && ( self.contentStartPos.width > self.canvasWidth || self.contentStartPos.height > self.canvasHeight  ) ) {
+			if ( current.type === 'image' && ( self.contentStartPos.width > self.canvasWidth + 1 || self.contentStartPos.height > self.canvasHeight + 1 ) ) {
 
 				$.fancybox.stop( self.$content );
 

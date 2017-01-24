@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.14
+// fancyBox v3.0.15
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -697,6 +697,7 @@
 
             if ( self.group.length > 1 && !firstRun ) {
 
+                // Calculate closest position of upcoming item from the current one
                 if ( self.group.length == 2 ) {
                     pos = to - self.currIndex + self.currPos;
 
@@ -889,8 +890,6 @@
                 setTimeout(function() {
 
                     $what.css('transition', 'none');
-
-                    $.fancybox.setTranslate( $what, end );
 
                     callback();
 
@@ -2159,7 +2158,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.14",
+        version  : "3.0.15",
         defaults : defaults,
 
 
@@ -2944,7 +2943,7 @@
 
 		if ( self.startPoints.length == 1 ) {
 
-			if ( current.type === 'image' && ( self.contentStartPos.width > self.canvasWidth || self.contentStartPos.height > self.canvasHeight  ) ) {
+			if ( current.type === 'image' && ( self.contentStartPos.width > self.canvasWidth + 1 || self.contentStartPos.height > self.canvasHeight + 1 ) ) {
 
 				$.fancybox.stop( self.$content );
 
