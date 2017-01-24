@@ -734,6 +734,12 @@
 
             }
 
+            if ( !self.slides[ pos ] ) {
+                // Something went wrong
+                // Maybe this method was called while previous loop was still executing
+                return;
+            }
+
             self.current = self.slides[ pos ];
 
             self.current.isMoved    = false;
@@ -1664,16 +1670,17 @@
             } else {
 
                 if ( $.type( content ) === 'string' ) {
+
                     content = $('<div>').append( content ).contents();
 
                     if ( content[0].nodeType === 3 ) {
                         content = $('<div>').html( content );
                     }
+
                 }
 
-                // If we have "selector" property, then display only matching element
                 if ( slide.opts.selector ) {
-                    content = content.find( slide.opts.selector );
+                    content = $('<div>').html( content ).find( slide.opts.selector );
                 }
 
             }
@@ -1693,9 +1700,7 @@
 
             });
 
-            slide.$content = $( content );
-
-            slide.$content.appendTo( slide.$slide );
+            slide.$content = $( content ).appendTo( slide.$slide );
 
             if ( slide.opts.smallBtn === true ) {
                 slide.$content.find( '.fancybox-close-small' ).remove().end().eq(0).append( slide.opts.closeTpl );
@@ -2147,7 +2152,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.12",
+        version  : "3.0.13",
         defaults : defaults,
 
 
@@ -2237,7 +2242,7 @@
         getTranslate : function( $el ) {
             var position, matrix;
 
-            if ( !$el ) {
+            if ( !$el || !$el.length ) {
                 return false;
             }
 

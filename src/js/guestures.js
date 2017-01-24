@@ -165,7 +165,6 @@
 		self.$wrap.on('touchmove.fb mousemove.fb',  $.proxy(self, "ontouchmove"));
 		self.$wrap.on('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(self, "ontouchend"));
 
-		self.$content = $content;
 		self.$target  = $target;
 		self.$content = $content;
 
