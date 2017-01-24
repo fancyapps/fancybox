@@ -200,6 +200,7 @@
 	z-index: 99995;
 	background: transparent;
 	cursor: default;
+	overflow: visible;
 	transform-origin: top left;
 	background-size: 100% 100%;
 	background-repeat: no-repeat;

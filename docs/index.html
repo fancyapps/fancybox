@@ -1,9 +1,10 @@
 <!doctype html>
 <html>
 <head>
-	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
-
 	<title>fancyBox - touch enabled, responsive and fully customizable lightbox script</title>
+
+	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
+	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 
 	<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Open+Sans:400,700" rel="stylesheet">
 
@@ -899,7 +900,7 @@ $instance.scaleToFit( duration );
 
 // Move slider to current position
 // Update all slides (and their content) if needed
-$instance.update( immediately, andSlides, andContent );
+$instance.update( andSlides, andContent, duration );
 
 // Update slide position and make content fit in slide if needed
 $instance.updateSlide( slide, andContent );

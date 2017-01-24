@@ -184,6 +184,7 @@
   z-index: 99995;
   background: transparent;
   cursor: default;
+  overflow: visible;
   -webkit-transform-origin: top left;
   -ms-transform-origin: top left;
   transform-origin: top left;

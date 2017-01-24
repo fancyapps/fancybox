@@ -50,7 +50,7 @@
 
 	var isClickable = function( $el ) {
 
-	 	return $el.is('a') || $el.is('button') || $el.is('input') || $el.is('textarea') || $.isFunction( $el.get(0).onclick );
+	 	return $el.is('a') || $el.is('button') || $el.is('input') || $el.is('select') || $el.is('textarea') || $.isFunction( $el.get(0).onclick );
 
 	};
 
@@ -205,7 +205,7 @@
 
 		}
 
-		if ( current.type === 'image' && self.startPoints.length == 2 && ( current.isLoaded || current.$ghost ) ) {
+		if ( current.type === 'image' && !current.hasError && self.startPoints.length == 2 && ( current.isLoaded || current.$ghost ) ) {
 
 			self.isZooming = true;
 			self.canTap    = false;
@@ -237,6 +237,10 @@
 
 		self.newPoints = pointers( e );
 
+		if ( !self.newPoints.length ) {
+			return;
+		}
+
 		self.distanceX = distance( self.newPoints[0], self.startPoints[0], 'x' );
 		self.distanceY = distance( self.newPoints[0], self.startPoints[0], 'y' );
 
@@ -244,6 +248,7 @@
 
 		// Skip false ontouchmove events (Chrome)
 		if ( self.distance > 0 ) {
+
 			if ( self.isSwiping ) {
 				self.onSwipe();
 
@@ -253,6 +258,7 @@
 			} else if ( self.isZooming ) {
 				self.onZoom();
 			}
+
 		}
 
 	};
@@ -277,6 +283,9 @@
 
 				self.isSwiping = swiping;
 				self.canTap    = false;
+
+				self.instance.current.isMoved = false;
+				self.instance.allowZoomIn = false;
 
 				// Reset points to avoid jumping, because we dropped first swipes to calculate the angle
 				self.startPoints = self.newPoints;
@@ -510,8 +519,8 @@
 
 		self.speed = current.opts.speed;
 
-		self.speedX = Math.max( self.speed - 120, Math.min( self.speed + 120, ( 1 / Math.abs( self.velocityX ) ) * self.speed ) );
-		self.speedY = Math.max( self.speed - 120, Math.min( self.speed + 120, ( 1 / Math.abs( self.velocityY ) ) * self.speed ) );
+		self.speedX = Math.max( self.speed * 0.75, Math.min( self.speed * 1.5, ( 1 / Math.abs( self.velocityX ) ) * self.speed ) );
+		self.speedY = Math.max( self.speed * 0.75, Math.min( self.speed * 1.5, ( 1 / Math.abs( self.velocityY ) ) * self.speed ) );
 
 		if ( swiping ) {
 			self.endSwiping( swiping );
@@ -555,7 +564,7 @@
 		} else {
 
 			// Move back to center
-			self.instance.update( false, false, true );
+			self.instance.update( false, true, self.speedX );
 
 		}
 
