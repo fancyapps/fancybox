@@ -1,7 +1,7 @@
 {
   "name": "fancybox",
   "description": "Touch enabled, responsive and fully customizable jQuery lightbox script",
-  "version": "3.0.0",
+  "version": "3.0.14",
   "homepage": "http://fancyapps.com/fancybox/",
   "main": "./dist/jquery.fancybox.js",
   "author": "fancyApps",
@@ -20,11 +20,13 @@
     "gulp-livereload": "^3.8.1",
     "gulp-notify": "^2.2.0",
     "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.5.4",
     "gulp-sass": "^3.0.0",
     "gulp-uglify": "^2.0.0",
+    "gulp-util": "^3.0.8",
     "jshint": "^2.9.4"
-},
-"keywords": [
+  },
+  "keywords": [
     "touch",
     "responsive",
     "lightbox",

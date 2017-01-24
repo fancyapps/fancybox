@@ -144,14 +144,10 @@
 				this.focus();
 
 			} else if ( this.$grid ) {
-
 				this.$grid.hide();
-
 			}
 
-			if ( !this.instance.allowZoomIn ) {
-				this.instance.update( true, true, true );
-			}
+			this.instance.update();
 
 		},
 
@@ -174,13 +170,10 @@
 		toggle : function() {
 
 			if ( this.isVisible ) {
-
 				this.hide();
 
 			} else {
-
 				this.show();
-
 			}
 		}
 
@@ -202,27 +195,28 @@
 	$(document).on('beforeMove.fb', function(e, instance, item) {
 		var self = instance.Thumbs;
 
-		if ( item.modal ) {
-
-			if ( self ) {
-				self.$button.hide();
-
-				self.hide();
-			}
-
+		if ( !self ) {
 			return;
 		}
 
-		if ( instance.opts.thumbs.showOnStart === true && instance.allowZoomIn ) {
-			self.show();
-		}
+		if ( item.modal ) {
 
-		if ( self ) {
+			self.$button.hide();
+
+			self.hide();
+
+
+		} else {
+
 			self.$button.show();
-		}
 
-		if ( self && self.isVisible ) {
-			self.focus();
+			if ( instance.opts.thumbs.showOnStart === true && instance.allowZoomIn ) {
+				self.show();
+
+			} else if ( self.isVisible ) {
+				self.focus();
+			}
+
 		}
 
 	});

@@ -201,12 +201,12 @@
     var FancyBox = function( content, opts, index ) {
         var self = this;
 
-        self.currIndex = parseInt( index, 10 ) || 0;
-        self.prevIndex = null;
-
-        self.opts  = $.extend( true, {}, defaults, opts || {} );
+        self.opts  = $.extend( true, { index : index }, defaults, opts || {} );
         self.id    = self.opts.id || ++called;
         self.group = [];
+
+        self.currIndex = parseInt( self.opts.index, 10 ) || 0;
+        self.prevIndex = null;
 
         // Create group elements from original item collection
         self.createGroup( content );
@@ -671,16 +671,12 @@
             var self = this,
                 firstRun = self.prevIndex === null,
                 index,
-                pos,
-                start,
-                end;
+                pos;
 
             to = parseInt( to, 10 );
 
             index = to;
             pos   = to;
-            start = to - 1;
-            end   = to + 1;
 
             index = index % self.group.length;
             index = index < 0 ? self.group.length + index : index;
@@ -691,8 +687,7 @@
 
             if ( self.group.length > 1 && !firstRun ) {
 
-                // Calculate closest position from current one
-
+                // Calculate closest position of upcoming item from the current one
                 if ( self.group.length == 2 ) {
                     pos = to - self.currIndex + self.currPos;
 
@@ -708,8 +703,6 @@
                     }
                 }
 
-                start = Math.min(self.currPos, pos - 1);
-                end   = Math.max(self.currPos, pos + 1);
             }
 
             self.prevIndex = self.currIndex;
@@ -721,23 +714,14 @@
             // Create missing slides including previous and next slides
             if ( self.group.length > 1 ) {
 
-                for ( var i = start; i <= end; i++ ) {
-
-                    if ( self.opts.loop || ( i >= 0 && i < self.group.length ) ) {
-                        self.createSlide( i );
-                    }
-                }
+                self.createSlide( pos - 1 );
+                self.createSlide( pos );
+                self.createSlide( pos + 1 );
 
             } else {
 
                 self.createSlide( 0 );
 
-            }
-
-            if ( !self.slides[ pos ] ) {
-                // Something went wrong
-                // Maybe this method was called while previous loop was still executing
-                return;
             }
 
             self.current = self.slides[ pos ];
@@ -934,6 +918,8 @@
                 $.fancybox.setTranslate( $what, reset );
 
                 self.isOpening = false;
+
+                self.update( false, true, 0 );
 
                 self.updateCursor();
 
@@ -1192,7 +1178,13 @@
 
             var leftValue = ( self.current.pos * Math.floor( self.current.$slide.width() ) * -1 ) - ( self.current.pos * self.current.opts.gutter ) ;
 
+            if ( self.isOpening === true ) {
+                return;
+            }
+
             duration = parseInt( duration, 10 );
+
+            $.fancybox.stop( self.$refs.slider );
 
             if ( andSlides === false ) {
                 self.updateSlide( self.current, andContent );
@@ -1435,6 +1427,9 @@
 
                         // Check if we can perform zoom-in animation
                         if ( !self.allowZoomIn || !( slide.index === self.currIndex && self.zoomIn() ) ) {
+
+                            self.isOpening = false;
+
                             self.updateSlide( slide, true );
 
                             slide.$placeholder.show();
@@ -1841,6 +1836,9 @@
             curent.isComplete = true;
 
             if ( !(self.allowZoomIn && self.zoomIn() ) ) {
+
+                self.isOpening = false;
+
                 self.revealImage( curent );
             }
 
@@ -2152,7 +2150,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.13",
+        version  : "{fancybox-version}",
         defaults : defaults,
 
 

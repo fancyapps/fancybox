@@ -6,34 +6,37 @@ var gulp = require('gulp'),
     cssnano = require('gulp-cssnano'),
     sass = require('gulp-sass'),
     autoprefixer = require('gulp-autoprefixer'),
-    header = require('gulp-header');
+    header = require('gulp-header'),
+    replace = require('gulp-replace'),
+    gutil = require('gulp-util');
 
-var banner = [
-    '// ==================================================',
-    '// fancyBox v3.0.0',
+var pkg = require('./package.json');
+var banner = ['// ==================================================',
+    '// fancyBox v${pkg.version}',
     '//',
     '// Licensed GPLv3 for open source use',
     '// or fancyBox Commercial License for commercial use',
     '//',
     '// http://fancyapps.com/fancybox/',
-    '// Copyright 2017 fancyApps',
+    '// Copyright ${new Date().getFullYear()} fancyApps',
     '//',
     '// ==================================================',
-  ''].join('\n');
-
+    ''].join('\n');
 
 // Concatenate & Minify JS
 
 gulp.task('scripts', function() {
     return gulp.src(['src/js/core.js', 'src/js/media.js', 'src/js/guestures.js', 'src/js/slideshow.js', 'src/js/fullscreen.js', 'src/js/thumbs.js'])
         .pipe(concat('jquery.fancybox.js'))
-        .pipe(header(banner))
+        .pipe(replace(/({fancybox-version})/g, pkg.version))
+        .pipe(header(banner, { pkg : pkg } ))
         .pipe(gulp.dest('dist'))
         .pipe(rename({suffix: '.min'}))
         .pipe(uglify())
-        .pipe(header(banner))
+        .pipe(header(banner, { pkg : pkg } ))
         .pipe(gulp.dest('dist'));
-});
+    });
+
 
 // Compile CSS
 
