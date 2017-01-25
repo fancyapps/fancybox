@@ -881,7 +881,7 @@
 
                 setTimeout(function() {
 
-                    $what.css('transition', 'none');
+                    $what.css( 'transition', 'none' );
 
                     callback();
 
@@ -2208,9 +2208,7 @@
                 // Try to find and close next instance
 
                 if ( all === true ) {
-
                     this.close();
-
                 }
             }
 

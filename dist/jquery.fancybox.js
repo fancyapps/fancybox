@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.16
+// fancyBox v3.0.17
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -891,7 +891,7 @@
 
                 setTimeout(function() {
 
-                    $what.css('transition', 'none');
+                    $what.css( 'transition', 'none' );
 
                     callback();
 
@@ -2160,7 +2160,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.16",
+        version  : "3.0.17",
         defaults : defaults,
 
 
@@ -2218,9 +2218,7 @@
                 // Try to find and close next instance
 
                 if ( all === true ) {
-
                     this.close();
-
                 }
             }
 
@@ -3893,7 +3891,9 @@
 				this.$grid.hide();
 			}
 
-			this.instance.update();
+			if ( !this.instance.allowZoomIn ) {
+				this.instance.update();
+			}
 
 		},
 

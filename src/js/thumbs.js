@@ -147,7 +147,9 @@
 				this.$grid.hide();
 			}
 
-			this.instance.update();
+			if ( !this.instance.allowZoomIn ) {
+				this.instance.update();
+			}
 
 		},
 
