@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.15
+// fancyBox v3.0.16
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -653,7 +653,7 @@
                 this.jumpTo( this.currIndex - 1, duration );
 
             } else {
-                this.update( false );
+                this.update( false, false, duration );
             }
 
         },
@@ -668,7 +668,7 @@
                 this.jumpTo( this.currIndex + 1, duration );
 
             } else {
-                this.update( false );
+                this.update( false, false, duration );
             }
 
         },
@@ -721,17 +721,19 @@
             self.currIndex = index;
             self.currPos   = pos;
 
-            // Create missing slides including previous and next slides
+            // Create slides
+
+            self.createSlide( pos );
+
             if ( self.group.length > 1 ) {
 
-                self.createSlide( pos - 1 );
-                self.createSlide( pos );
-                self.createSlide( pos + 1 );
+                if ( self.opts.loop || pos - 1 >= 0 ) {
+                    self.createSlide( pos - 1 );
+                }
 
-            } else {
-
-                self.createSlide( 0 );
-
+                if ( self.opts.loop || pos + 1 < self.group.length ) {
+                    self.createSlide( pos + 1 );
+                }
             }
 
             self.current = self.slides[ pos ];
@@ -871,6 +873,8 @@
 
             }
 
+            self.updateCursor( end.width, end.height );
+
             // There is no need to animate width/height
             delete end.width;
             delete end.height;
@@ -878,8 +882,6 @@
             $.fancybox.setTranslate( $what, start );
 
             $what.show();
-
-            self.updateCursor( end.width, end.height );
 
             setTimeout(function() {
 
@@ -1190,7 +1192,7 @@
                 return;
             }
 
-            duration = parseInt( duration, 10 );
+            duration = parseInt( duration, 10 ) || 0;
 
             $.fancybox.stop( self.$refs.slider );
 
@@ -1972,11 +1974,11 @@
 
             // Clean up
 
-            this.hideLoading( current );
+            self.hideLoading( current );
 
-            this.hideControls();
+            self.hideControls();
 
-            this.updateCursor();
+            self.updateCursor();
 
             self.trigger( 'beforeClose', current, e );
 
@@ -2158,7 +2160,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.15",
+        version  : "3.0.16",
         defaults : defaults,
 
 
