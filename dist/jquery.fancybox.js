@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.18
+// fancyBox v3.0.19
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -741,7 +741,7 @@
             self.current.isMoved    = false;
             self.current.isComplete = false;
 
-            duration = parseInt( duration === undefined ? self.current.opts.speed : duration, 10 );
+            duration = parseInt( duration === undefined ? self.current.opts.speed * 1.5 : duration, 10 );
 
             // Move slider to the next position
             // Note: the content might still be loading
@@ -905,7 +905,7 @@
 
                 }, duration + 20 );
 
-            }, 90);
+            }, 70);
 
             return true;
 
@@ -2168,7 +2168,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.18",
+        version  : "3.0.19",
         defaults : defaults,
 
 
@@ -3283,8 +3283,8 @@
 
 		self.speed = current.opts.speed;
 
-		self.speedX = Math.max( self.speed * 0.75, Math.min( self.speed * 1.5, ( 1 / Math.abs( self.velocityX ) ) * self.speed ) );
-		self.speedY = Math.max( self.speed * 0.75, Math.min( self.speed * 1.5, ( 1 / Math.abs( self.velocityY ) ) * self.speed ) );
+		self.speedX = Math.max( self.speed * 0.5, Math.min( self.speed * 1.5, ( 1 / Math.abs( self.velocityX ) ) * self.speed ) );
+		self.speedY = Math.max( self.speed * 0.5, Math.min( self.speed * 1.5, ( 1 / Math.abs( self.velocityY ) ) * self.speed ) );
 
 		if ( swiping ) {
 			self.endSwiping( swiping );

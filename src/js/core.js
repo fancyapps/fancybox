@@ -731,7 +731,7 @@
             self.current.isMoved    = false;
             self.current.isComplete = false;
 
-            duration = parseInt( duration === undefined ? self.current.opts.speed : duration, 10 );
+            duration = parseInt( duration === undefined ? self.current.opts.speed * 1.5 : duration, 10 );
 
             // Move slider to the next position
             // Note: the content might still be loading
@@ -895,7 +895,7 @@
 
                 }, duration + 20 );
 
-            }, 90);
+            }, 70);
 
             return true;
 
