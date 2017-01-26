@@ -2224,9 +2224,10 @@
 
 
         // Test for the existence of touch events in the browser
-        // =====================================================
+        // Limit to mobile devices
+        // ====================================================
 
-        isTouch : document.createTouch !== undefined,
+        isTouch : document.createTouch !== undefined && /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent),
 
 
         // Detect if 'translate3d' support is available
