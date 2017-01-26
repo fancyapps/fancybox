@@ -149,11 +149,9 @@
 	overflow: hidden;
 }
 
-
 .fancybox-slide--image::before {
 	display: none;
 }
-
 
 .fancybox-content {
 	display: inline-block;

@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.17
+// fancyBox v3.0.18
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -764,7 +764,9 @@
             }
 
             // Set position immediately on first opening
-            self.update( true, false, firstRun ? 0 : duration );
+            self.update( true, false, firstRun ? 0 : duration, function() {
+                self.afterMove();
+            });
 
             self.loadSlide( self.current );
 
@@ -804,10 +806,10 @@
             var self     = this;
             var current  = self.current;
             var $what    = current.$placeholder;
+            var opacity  = current.opts.opacity;
             var $thumb   = current.opts.$thumb;
             var thumbPos = $thumb ? $thumb.offset() : 0;
             var slidePos = current.$slide.offset();
-            var opacity  = current.opts.opacity;
             var props;
             var start;
             var end;
@@ -834,7 +836,7 @@
                 opacity = Math.abs( current.width / current.height - props.width / props.height ) > 0.1;
             }
 
-            if ( type === 'in' ) {
+            if ( type === 'In' ) {
 
                 start = props;
                 end   = self.getFitPos( current );
@@ -883,6 +885,8 @@
 
             $what.show();
 
+            self.trigger( 'beforeZoom' + type );
+
             setTimeout(function() {
 
                 $what.css( 'transition', 'all ' + duration + 'ms' );
@@ -892,6 +896,8 @@
                 setTimeout(function() {
 
                     $what.css( 'transition', 'none' );
+
+                    self.trigger( 'afterZoom' + type );
 
                     callback();
 
@@ -917,7 +923,7 @@
             self.allowZoomIn = false;
             self.isOpening   = true;
 
-            return self.zoomInOut( 'in', current.opts.speed, function() {
+            return self.zoomInOut( 'In', current.opts.speed, function() {
 
                 var reset = $.fancybox.getTranslate( $what );
 
@@ -930,8 +936,6 @@
                 self.isOpening = false;
 
                 self.update( false, true, 0 );
-
-                self.updateCursor();
 
                 if ( current.$ghost ) {
                     self.setBigImage( current );
@@ -950,7 +954,7 @@
             var self     = this;
             var current  = self.current;
 
-            if ( self.zoomInOut( 'out', current.opts.speed, callback ) ) {
+            if ( self.zoomInOut( 'Out', current.opts.speed, callback ) ) {
 
                 self.$refs.bg.css('transition-duration', current.opts.speed + 'ms');
 
@@ -1182,7 +1186,7 @@
         // Update all slides (and their content)
         // =====================================
 
-        update : function( andSlides, andContent, duration ) {
+        update : function( andSlides, andContent, duration, callback ) {
 
             var self = this;
 
@@ -1215,7 +1219,9 @@
                 }, duration, function() {
                     self.current.isMoved = true;
 
-                    self.afterMove();
+                    if ( $.type( callback ) === 'function' ) {
+                        callback.apply( self );
+                    }
 
                 });
 
@@ -1223,13 +1229,14 @@
 
                 $.fancybox.setTranslate( self.$refs.slider, { left : leftValue } );
 
-                self.afterMove();
+                if ( $.type( callback ) === 'function' ) {
+                    callback.apply( self );
+                }
 
             }
 
             self.updateCursor();
 
-            self.trigger( 'onUpdate' );
         },
 
 
@@ -1255,6 +1262,7 @@
 
             slide.$slide.trigger( 'refresh' );
 
+            self.trigger( 'onUpdate', slide );
         },
 
         // Update cursor style depending if content can be zoomed
@@ -1774,7 +1782,6 @@
                     slide.$slide.remove();
 
                     delete self.slides[ key ];
-
                 }
 
             });
@@ -1805,6 +1812,7 @@
 
             self.hideLoading( slide );
 
+            // Resize content to fit inside slide
             // Do not update in case we have $ghost element - user might have already zoomed/swiped
             if ( !slide.$ghost ) {
                 self.updateSlide( slide, true );
@@ -1845,6 +1853,8 @@
 
             curent.isComplete = true;
 
+            self.trigger( 'onComplete' );
+
             if ( !(self.allowZoomIn && self.zoomIn() ) ) {
 
                 self.isOpening = false;
@@ -1857,8 +1867,6 @@
             if ( self.opts.focus ) {
                 self.focus();
             }
-
-            self.trigger( 'onComplete' );
 
         },
 
@@ -2160,7 +2168,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.17",
+        version  : "3.0.18",
         defaults : defaults,
 
 
