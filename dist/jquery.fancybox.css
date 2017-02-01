@@ -41,7 +41,7 @@
   text-align: center;
   opacity: 0;
   z-index: 99994;
-  transition: opacity 100ms;
+  transition: opacity .2s;
   pointer-events: none;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden; }
@@ -269,7 +269,7 @@
   border-width: 0;
   cursor: pointer;
   background: #fff;
-  transition: background 0.2s;
+  transition: background .2s;
   box-sizing: border-box;
   z-index: 2; }
 
@@ -331,6 +331,7 @@
   margin: 0;
   padding: 0;
   border: 0;
+  border-radius: 0;
   cursor: pointer;
   background: transparent;
   color: #fff;
@@ -339,7 +340,8 @@
   outline: none; }
 
 .fancybox-button--disabled {
-  cursor: default; }
+  cursor: default;
+  pointer-events: none; }
 
 .fancybox-infobar__body, .fancybox-button {
   background: rgba(30, 30, 30, 0.6); }
@@ -358,6 +360,10 @@
   opacity: 0.9;
   box-sizing: border-box;
   display: inline-block; }
+
+.fancybox-button--disabled::before,
+.fancybox-button--disabled::after {
+  opacity: 0.5; }
 
 .fancybox-button--left::after {
   left: 20px;
@@ -418,8 +424,8 @@
   border-radius: 100%;
   height: 50px;
   width: 50px;
-  -webkit-animation: fancybox-rotate .6s infinite linear;
-  animation: fancybox-rotate .6s infinite linear;
+  -webkit-animation: fancybox-rotate .8s infinite linear;
+  animation: fancybox-rotate .8s infinite linear;
   background: transparent;
   position: absolute;
   top: 50%;

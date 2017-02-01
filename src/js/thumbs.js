@@ -147,9 +147,7 @@
 				this.$grid.hide();
 			}
 
-			if ( !this.instance.allowZoomIn ) {
-				this.instance.update();
-			}
+			this.instance.update();
 
 		},
 
@@ -210,12 +208,14 @@
 
 		} else {
 
-			self.$button.show();
-
-			if ( instance.opts.thumbs.showOnStart === true && instance.allowZoomIn ) {
+			if ( instance.opts.thumbs.showOnStart === true && instance.firstRun ) {
 				self.show();
 
-			} else if ( self.isVisible ) {
+			}
+
+			self.$button.show();
+
+			if ( self.isVisible ) {
 				self.focus();
 			}
 
