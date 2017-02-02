@@ -46,6 +46,7 @@
 	transition: opacity .2s;
 	pointer-events: none;
 	backface-visibility: hidden;
+	direction: ltr;
 }
 
 .fancybox-show-controls .fancybox-controls {
@@ -91,6 +92,7 @@
 
 .fancybox-slider-wrap {
 	overflow: hidden;
+	direction: ltr;
 }
 
 .fancybox-slider-wrap,

@@ -44,7 +44,8 @@
   transition: opacity .2s;
   pointer-events: none;
   -webkit-backface-visibility: hidden;
-  backface-visibility: hidden; }
+  backface-visibility: hidden;
+  direction: ltr; }
 
 .fancybox-show-controls .fancybox-controls {
   opacity: 1; }
@@ -85,7 +86,8 @@
   display: block; }
 
 .fancybox-slider-wrap {
-  overflow: hidden; }
+  overflow: hidden;
+  direction: ltr; }
 
 .fancybox-slider-wrap,
 .fancybox-slider {

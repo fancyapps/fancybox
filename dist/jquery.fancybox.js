@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.20
+// fancyBox v3.0.21
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -2148,7 +2148,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.20",
+        version  : "3.0.21",
         defaults : defaults,
 
 
