@@ -1,5 +1,9 @@
 .fancybox-enabled {
 	overflow: hidden;
+}
+
+.fancybox-enabled body {
+	overflow: visible;
 	touch-action: none;
 }
 

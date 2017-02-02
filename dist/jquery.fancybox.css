@@ -1,5 +1,8 @@
 .fancybox-enabled {
-  overflow: hidden;
+  overflow: hidden; }
+
+.fancybox-enabled body {
+  overflow: visible;
   -ms-touch-action: none;
   touch-action: none; }
 

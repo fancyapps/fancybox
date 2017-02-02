@@ -249,14 +249,16 @@
 
             // Disable compensating on touch-enabled devices as they probably do not have scrollbars anyway
             // and therefore we avoid of unnecessary layout reflow
-            if ( !$.fancybox.isTouch && !$( 'body' ).hasClass( 'fancybox-enabled' ) ) {
-
+            if ( !$.fancybox.isTouch && !$( 'html' ).hasClass( 'fancybox-enabled' ) ) {
                 testWidth = $( 'body' ).width();
-                testWidth = $( 'body' ).addClass( 'fancybox-enabled' ).width() - testWidth;
+
+                $( 'html' ).addClass( 'fancybox-enabled' );
+
+                testWidth = $( 'body' ).width() - testWidth;
 
                 // Body width has increased - compensate missing scrollbars
                 if ( testWidth > 1 ) {
-                    $( '<style id="fancybox-noscroll" type="text/css">' ).html( '.compensate-for-scrollbar, .fancybox-enabled { margin-right: ' + testWidth + 'px; }' ).appendTo( 'head' );
+                    $( '<style id="fancybox-noscroll" type="text/css">' ).html( '.compensate-for-scrollbar, .fancybox-enabled body { margin-right: ' + testWidth + 'px; }' ).appendTo( 'head' );
                 }
 
             }
@@ -1998,7 +2000,7 @@
 
             } else {
 
-                $( 'body' ).removeClass( 'fancybox-enabled' );
+                $( 'html' ).removeClass( 'fancybox-enabled' );
 
                 $( '#fancybox-noscroll' ).remove();
 
