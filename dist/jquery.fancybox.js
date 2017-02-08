@@ -1270,7 +1270,7 @@
             $slide = slide.$slide;
 
             $slide
-                .unbind( 'refresh' )
+                .off( 'refresh' )
                 .trigger( 'onReset' )
                 .addClass( 'fancybox-slide--' + ( type || 'unknown' ) )
                 .addClass( slide.opts.slideClass );
