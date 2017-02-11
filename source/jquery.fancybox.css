@@ -111,9 +111,9 @@
 
 .fancybox-nav {
 	position: absolute;
-	top: 0;
-	width: 40%;
-	height: 100%;
+	top: 25%;
+	width: 10%;
+	height: 50%;
 	cursor: pointer;
 	text-decoration: none;
 	background: transparent url(blank.gif); /* helps IE */
