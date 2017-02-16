@@ -180,10 +180,12 @@
 	});
 
 	$(document).on('onInit.fb', function(e, instance) {
+		var first  = instance.group[0],
+			second = instance.group[1];
 
 		if ( !!instance.opts.thumbs && !instance.Thumbs && instance.group.length > 1 && (
-		    		( instance.group[0].type == 'image' || instance.group[0].opts.thumb ) &&
-		    		( instance.group[1].type == 'image' || instance.group[1].opts.thumb )
+		    		( first.type == 'image'  || first.opts.thumb  || first.opts.$thumb ) &&
+		    		( second.type == 'image' || second.opts.thumb || second.opts.$thumb )
 			 	)
 		   ) {
 
