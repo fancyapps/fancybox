@@ -88,7 +88,6 @@
 			margin: 3em 0 1em 0;
 			padding-bottom: 0.25em;
 			font-size: 2em;
-			letter-spacing: -1pt;
 			border-bottom: 1px solid #eee;
 		}
 
@@ -409,31 +408,10 @@
 				Example of displaying a simple message:
 			</p>
 
-			<pre><code>$.fancybox.open('&lt;div style=&quot;padding:50px;&quot;&gt;&lt;h3&gt;You are awesome!&lt;/h3&gt;&lt;/div&gt;');</code></pre>
+			<pre><code>$.fancybox.open('&lt;div class=&quot;message&quot;&gt;&lt;h2&gt;Hello!&lt;/h2&gt;&lt;p&gt;You are awesome!&lt;/p&gt;&lt;/div&gt;');</code></pre>
 
 			<p>
-				It is also possible to pass a list of objects and group options:
-			</p>
-
-			<pre><code>$.fancybox.open([
-	{
-		src  : '1_b.jpg',
-		opts : {
-			caption : 'First caption'
-		}
-	},
-	{
-		src  : '2_b.jpg',
-		opts : {
-			caption : 'Second caption'
-		}
-	}
-], {
-	loop : false
-});</code></pre>
-
-			<p>
-				The object returned is a new instance of the fancyBox and allows to access the public API methods provided by the fancyBox.
+				See <a href="#api">API section</a> for more information.
 			</p>
 
 <!--
@@ -858,7 +836,88 @@ API
 					This gives you the ability to extend the plugin and to integrate it with other web application components.
 				</p>
 
-				<h3>Instance methods</h3>
+				<h3 id="core_methods">Core methods</h3>
+
+				<p>
+					Core methods are methods which affect/handle instances:
+				</p>
+
+
+				<pre><code>// Close only the currently active or all fancyBox instances
+$.fancybox.close( all );
+
+// Open the fancyBox right away
+$.fancybox.open( items, opts, index );
+</code></pre>
+
+
+				<p>
+					When calling fancyBox manually, each group item should follow this pattern:
+				</p>
+
+				<pre><code>{
+	src  : '' // Source of the content
+	type : '' // Content type: image|inline|ajax|iframe|html (optional)
+	opts : {} // Object containing item options (optional)
+}
+</code></pre>
+
+
+				<p>
+					Example of opening image gallery:
+				</p>
+
+				<pre><code>$.fancybox.open([
+	{
+		src  : '1_b.jpg',
+		opts : {
+			caption : 'First caption'
+		}
+	},
+	{
+		src  : '2_b.jpg',
+		opts : {
+			caption : 'Second caption'
+		}
+	}
+], {
+	loop : false
+});</code></pre>
+				<p class="demo">
+					<a href="http://codepen.io/fancyapps/pen/wgZXzz?editors=1010" target="_blank">View demo on CodePen</a>
+				</p>
+
+				<p>
+					It is also possible to pass only one object. Example of opening inline content:
+				</p>
+
+				<pre><code>$.fancybox.open({
+	src  : '#hidden-content',
+	type : 'inline',
+	opts : {
+		onComplete : function() {
+			console.info('done!');
+		}
+	}
+});
+</code></pre>
+				<p class="demo">
+					<a href="http://codepen.io/fancyapps/pen/JEVLgN?editors=1010" target="_blank">View demo on CodePen</a>
+				</p>
+
+				<p>
+					If you wish to display some html content (for example, a message), then you can use a simpler syntax.
+					It is advised to use a wrapper around your content.
+				</p>
+
+				<pre><code>$.fancybox.open('&lt;div class=&quot;message&quot;&gt;&lt;h2&gt;Hello!&lt;/h2&gt;&lt;p&gt;You are awesome!&lt;/p&gt;&lt;/div&gt;');</code></pre>
+				<p class="demo">
+					<a href="http://codepen.io/fancyapps/pen/VPNBaK" target="_blank">View demo on CodePen</a>
+				</p>
+
+
+
+				<h3 id="instance_methods">Instance methods</h3>
 
 				<p>
 					In order to use these methods, you need an instance of the plugin's object:
@@ -919,7 +978,7 @@ $instance.activate();
 
 // Close instance
 $instance.close();
-				</code></pre>
+</code></pre>
 
 
 				<p>
@@ -936,23 +995,8 @@ $instance.close();
 
 
 
-				<h3>Core methods</h3>
 
-				<p>
-					Core methods are methods which affect/handle instances.
-				</p>
-
-
-				<pre><code>// Open the fancyBox right away
-$.fancybox.open( items, opts, index );
-
-// Close only active or all fancyBox instances
-$.fancybox.close( all );
-</code></pre>
-
-
-
-				<h3>Events</h3>
+				<h3 id="events">Events</h3>
 
 				<p>
 					fancyBox fires several events.

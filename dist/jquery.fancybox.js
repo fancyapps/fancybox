@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.22
+// fancyBox v3.0.24
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -317,8 +317,8 @@
             $.each(items, function( i, item ) {
                 var obj  = {},
                     opts = {},
+                    data = [],
                     $item,
-                    data,
                     type,
                     src,
                     srcParts;
@@ -345,7 +345,6 @@
                     opts.width   = 'width'   in data ? data.width   : opts.width;
                     opts.height  = 'height'  in data ? data.height  : opts.height;
                     opts.thumb   = 'thumb'   in data ? data.thumb   : opts.thumb;
-                    opts.caption = 'caption' in data ? data.caption : ( opts.caption || $item.attr( 'title' ) );
 
                     opts.selector = 'selector'  in data ? data.selector  : opts.selector;
 
@@ -404,13 +403,19 @@
                     delete obj.opts.$thumb;
                 }
 
-                // Make sure we have caption as a string
-                if ( $.type( self.opts.caption ) === 'function' ) {
-                    obj.opts.caption = self.opts.caption.apply( item, [ self, obj ] );
+                // Caption is a "special" option, it can be passed as a method
+                if ( $.type( obj.opts.caption ) === 'function' ) {
+                    obj.opts.caption = obj.opts.caption.apply( item, [ self, obj ] );
 
-                } else {
-                    obj.opts.caption = obj.opts.caption === undefined ? '' : obj.opts.caption + '';
+                } else if ( 'caption' in data ) {
+                    obj.opts.caption = data.caption;
+
+                } else if ( opts.$orig ) {
+                    obj.opts.caption = $item.attr( 'title' );
                 }
+
+                // Make sure we have caption as a string
+                obj.opts.caption = obj.opts.caption === undefined ? '' : obj.opts.caption + '';
 
                 // Check if url contains selector used to filter the content
                 // Example: "ajax.html #something"
@@ -2150,7 +2155,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.22",
+        version  : "3.0.24",
         defaults : defaults,
 
 
