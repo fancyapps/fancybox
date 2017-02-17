@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.25
+// fancyBox v3.0.26
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -2155,7 +2155,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.25",
+        version  : "3.0.26",
         defaults : defaults,
 
 
@@ -2864,7 +2864,6 @@
 
 	};
 
-
 	Guestures.prototype.ontouchstart = function( e ) {
 
 		var self = this;
@@ -2873,6 +2872,18 @@
 		var instance = self.instance;
 		var current  = instance.current;
 		var $content = current.$content || current.$placeholder;
+
+		self.startPoints = pointers( e );
+
+		self.$target  = $target;
+		self.$content = $content;
+
+		// If "touch" is disabled, then handle click event
+		if ( !current.opts.touch ) {
+			self.endPoints = self.startPoints;
+
+			return self.ontap();
+		}
 
 		// Ignore taping on links, buttons and scrollable items
 		if ( isClickable( $target ) || isClickable( $target.parent() ) || ( isScrollable( $target ) && !$target.hasClass('fancybox-slide') ) ) {
@@ -2886,8 +2897,6 @@
 			return;
 		}
 
-		self.startPoints = pointers( e );
-
 		// Prevent zooming if already swiping
 		if ( !self.startPoints || ( self.startPoints.length > 1 && !current.isMoved ) ) {
 			return;
@@ -2896,11 +2905,8 @@
 		self.$wrap.off('touchmove.fb mousemove.fb',  $.proxy(self, "ontouchmove"));
 		self.$wrap.off('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(self, "ontouchend"));
 
-		self.$wrap.on('touchmove.fb mousemove.fb',  $.proxy(self, "ontouchmove"));
 		self.$wrap.on('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(self, "ontouchend"));
-
-		self.$target  = $target;
-		self.$content = $content;
+		self.$wrap.on('touchmove.fb mousemove.fb',  $.proxy(self, "ontouchmove"));
 
 		self.startTime = new Date().getTime();
 		self.distanceX = self.distanceY = self.distance = 0;
@@ -3076,7 +3082,7 @@
 		newPos.scaleY = self.contentStartPos.scaleY;
 
 		self.contentLastPos = newPos;
-		
+
 		requestAFrame(function() {
 			$.fancybox.setTranslate( self.$content, self.contentLastPos );
 		});
@@ -3471,7 +3477,7 @@
 
 	$(document).on('onActivate.fb', function (e, instance) {
 
-		if ( instance.opts.touch && !instance.Guestures ) {
+		if ( !instance.Guestures ) {
 			instance.Guestures = new Guestures( instance );
 		}
 
