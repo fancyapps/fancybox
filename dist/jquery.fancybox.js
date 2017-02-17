@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.26
+// fancyBox v3.0.27
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -2155,7 +2155,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.26",
+        version  : "3.0.27",
         defaults : defaults,
 
 
@@ -3515,9 +3515,10 @@
 	};
 
 	$.extend( SlideShow.prototype, {
-		timer   : null,
-		speed   : 3000,
-		$button : null,
+		timer    : null,
+		isActive : false,
+		$button  : null,
+		speed    : 3000,
 
 		init : function() {
 			var self = this;
@@ -3535,12 +3536,12 @@
 			var self = this;
 
 			// Check if reached last element
-			if (self.instance && self.instance.current && self.instance.currIndex < self.instance.group.length - 1) {
+			if ( self.instance && self.instance.current && (self.instance.current.opts.loop || self.instance.currIndex < self.instance.group.length - 1 )) {
 
 				self.timer = setTimeout(function() {
 					self.instance.next();
 
-				}, self.speed);
+				}, self.instance.current.opts.slideShow.speed || self.speed);
 
 			} else {
 				self.stop();
@@ -3560,18 +3561,17 @@
 
 			self.stop();
 
-			if (self.instance && self.instance.current && self.instance.currIndex < self.instance.group.length - 1) {
+			if ( self.instance && self.instance.current && ( self.instance.current.opts.loop || self.instance.currIndex < self.instance.group.length - 1 )) {
 
 				self.instance.$refs.container.on({
 					'beforeLoad.fb.player'	: $.proxy(self, "clear"),
 					'onComplete.fb.player'	: $.proxy(self, "set"),
 				});
 
+				self.isActive = true;
+
 				if ( self.instance.current.isComplete ) {
 					self.set();
-
-				} else {
-					self.timer = true;
 				}
 
 				self.instance.$refs.container.trigger('onPlayStart');
@@ -3591,12 +3591,14 @@
 				.off('.player');
 
 			self.$button.removeClass('fancybox-button--pause');
+
+			self.isActive = false;
 		},
 
 		toggle : function() {
 			var self = this;
 
-			if ( self.timer ) {
+			if ( self.isActive ) {
 				self.stop();
 
 			} else {
