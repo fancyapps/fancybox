@@ -1018,39 +1018,43 @@ onDeactivate : When other instance has been activated
 
 
 				<p>
-					To prevent interfering with other scripts, all events have been namespaced to <code>.fb</code>.
-					Here is an example of binding to the <code>onComplete</code> event.
-				</p>
-
-				<pre><code>$(document).on('onComplete.fb', function( e, instance, slide ) {
-
-	// Tip: Each event passes useful information within the event object:
-
-	// Object containing references to interface elements
-	// console.info( instance.$refs );
-
-	// Current slide options
-	// console.info( slide.opts );
-
-	// Reference to DOM element of the slide
-	// console.info( slide.$slide );
-
-});</code></pre>
-
-
-
-				<p>
 					Event callbacks can be set as function properties of the options object passed to fancyBox initialization function:
 				</p>
 
 				<pre><code>&lt;script type=&quot;text/javascript&quot;&gt;
 	$(&quot;[data-fancybox]&quot;).fancybox({
-		onComplete: function( instance, slide ) { }
+		onComplete: function( instance, slide ) {
+
+			// Tip: Each event passes useful information within the event object:
+
+			// Object containing references to interface elements
+			// (background, buttons, caption, etc)
+			// console.info( instance.$refs );
+
+			// Current slide options
+			// console.info( slide.opts );
+
+			// Clicked element
+			// console.info( slide.opts.$orig );
+
+			// Reference to DOM element of the slide
+			// console.info( slide.$slide );
+
+		}
 	});
 &lt;/script&gt;</code></pre>
 
+				<p>
+					It is also possible to attach an event handler for all instances.
+					To prevent interfering with other scripts, these events have been namespaced to <code>.fb</code>.
+				</p>
+				<p>
+					Here is an example of binding to the <code>onComplete</code> event:
+				</p>
 
-
+				<pre><code>$(document).on('onComplete.fb', function( e, instance, slide ) {
+	// Your code goes here
+});</code></pre>
 <!--
 
 FAQ
