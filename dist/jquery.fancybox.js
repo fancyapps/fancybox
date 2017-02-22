@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.28
+// fancyBox v3.0.29
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -1369,12 +1369,73 @@
 
         setImage : function( slide ) {
 
-            var self = this;
+            var self   = this;
+            var srcset = slide.opts.image.srcset;
+
+            var found, temp, pxRatio, windowWidth;
 
             if ( slide.isLoaded && !slide.hasError ) {
                 self.afterLoad( slide );
 
                 return;
+            }
+
+            // If we have "srcset", then we need to find matching "src" value.
+            // This is necessary, because when you set an src attribute, the browser will preload the image
+            // before any javascript or even CSS is applied.
+            if ( srcset ) {
+                pxRatio     = window.devicePixelRatio || 1;
+                windowWidth = window.innerWidth  * pxRatio;
+
+                temp = srcset.split(',').map(function (el) {
+            		var ret = {};
+
+            		el.trim().split(/\s+/).forEach(function (el, i) {
+                        var value = parseInt(el.substring(0, el.length - 1), 10);
+
+            			if ( i === 0 ) {
+            				return (ret.url = el);
+            			}
+
+                        if ( value ) {
+                            ret.value   = value;
+                            ret.postfix = el[el.length - 1];
+                        }
+
+            		});
+
+            		return ret;
+            	});
+
+                // Sort by value
+                temp.sort(function (a, b) {
+                  return a.value - b.value;
+                });
+
+                // Ok, now we have an array of all srcset values
+                for ( var j = 0; j < temp.length; j++ ) {
+                    var el = temp[ j ];
+
+                    if ( ( el.postfix === 'w' && el.value >= windowWidth ) || ( el.postfix === 'x' && el.value >= pxRatio ) ) {
+                        found = el;
+                        break;
+                    }
+                }
+
+                // If not found, take the last one
+                if ( !found && temp.length ) {
+                    found = temp[ temp.length - 1 ];
+                }
+
+                if ( found ) {
+                    slide.src = found.url;
+
+                    // If we have default width/height values, we can calculate height for matching source
+                    if ( slide.width && slide.height && found.postfix == 'w' ) {
+                        slide.height = ( slide.width / slide.height ) * found.value;
+                        slide.width  = found.value;
+                    }
+                }
             }
 
             slide.$placeholder = $('<div class="fancybox-placeholder"></div>')
@@ -1425,64 +1486,8 @@
 
         setBigImage : function ( slide ) {
 
-            var self   = this;
-            var $img   = $('<img />');
-            var srcset = slide.opts.image.srcset;
-            var src;
-            var temp;
-
-            var pxRatio      = window.devicePixelRatio || 1;
-            var windowWidth  = window.innerWidth  * pxRatio;
-            var windowHeight = window.innerHeight * pxRatio;
-
-            // If we have "srcset", then we need to find suitable "src".
-            // This is necessary, because when you set a src attribute, the browser will preload the image
-            // before any javascript or even CSS is applied.
-            if ( srcset ) {
-                temp = srcset.split(',').map(function (el) {
-            		var ret = {};
-
-            		el.trim().split(/\s+/).forEach(function (el, i) {
-                        var value = parseInt(el.substring(0, el.length - 1), 10);
-
-            			if ( i === 0 ) {
-            				return (ret.url = el);
-            			}
-
-                        if ( value ) {
-                            ret.value   = value;
-                            ret.postfix = el[el.length - 1];
-                        }
-
-            		});
-
-            		return ret;
-            	});
-
-                // Sort by value
-                temp.sort(function (a, b) {
-                  return a.value - b.value;
-                });
-
-                // Ok, now we have an array of all srcset values
-                for ( var j = 0; j < temp.length; j++ ) {
-                    var el = temp[ j ];
-
-                    if (
-                        ( el.postfix === 'w' && el.value >= windowWidth ) ||
-                        ( el.postfix === 'h' && el.value >= windowHeight ) ||
-                        ( el.postfix === 'x' && el.value >= pxRatio )
-                    ) {
-                        src = el.url;
-                        break;
-                    }
-                }
-
-                // If not found, take the last one
-                if ( !src && temp.length ) {
-                    src = temp[ temp.length - 1 ].url;
-                }
-            }
+            var self = this;
+            var $img = $('<img />');
 
             slide.$image = $img
                 .one('error', function() {
@@ -1503,8 +1508,8 @@
                     slide.width  = this.naturalWidth;
                     slide.height = this.naturalHeight;
 
-                    if ( srcset ) {
-                        $img.attr('srcset', srcset);
+                    if ( slide.opts.image.srcset ) {
+                        $img.attr('sizes', '100vw').attr('srcset', slide.opts.image.srcset);
                     }
 
                     self.afterLoad( slide );
@@ -1518,7 +1523,7 @@
 
                 })
                 .addClass('fancybox-image')
-                .attr('src', src || slide.src)
+                .attr('src', slide.src)
                 .appendTo( slide.$placeholder );
 
             if ( $img[0].complete ) {
@@ -2221,7 +2226,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.28",
+        version  : "3.0.29",
         defaults : defaults,
 
 
