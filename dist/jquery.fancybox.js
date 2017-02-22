@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.27
+// fancyBox v3.0.28
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -347,6 +347,10 @@
                     opts.thumb   = 'thumb'   in data ? data.thumb   : opts.thumb;
 
                     opts.selector = 'selector'  in data ? data.selector  : opts.selector;
+
+                    if ( 'srcset' in data ) {
+                        opts.image = { srcset : data.srcset };
+                    }
 
                     opts.$orig = $item;
 
@@ -1421,11 +1425,63 @@
 
         setBigImage : function ( slide ) {
 
-            var self = this;
-            var $img = $('<img />');
+            var self   = this;
+            var $img   = $('<img />');
+            var srcset = slide.opts.image.srcset;
+            var src;
+            var temp;
 
-            if ( slide.opts.image.protect ) {
-                $('<div class="fancybox-spaceball"></div>').appendTo( slide.$placeholder );
+            var pxRatio      = window.devicePixelRatio || 1;
+            var windowWidth  = window.innerWidth  * pxRatio;
+            var windowHeight = window.innerHeight * pxRatio;
+
+            // If we have "srcset", then we need to find suitable "src".
+            // This is necessary, because when you set a src attribute, the browser will preload the image
+            // before any javascript or even CSS is applied.
+            if ( srcset ) {
+                temp = srcset.split(',').map(function (el) {
+            		var ret = {};
+
+            		el.trim().split(/\s+/).forEach(function (el, i) {
+                        var value = parseInt(el.substring(0, el.length - 1), 10);
+
+            			if ( i === 0 ) {
+            				return (ret.url = el);
+            			}
+
+                        if ( value ) {
+                            ret.value   = value;
+                            ret.postfix = el[el.length - 1];
+                        }
+
+            		});
+
+            		return ret;
+            	});
+
+                // Sort by value
+                temp.sort(function (a, b) {
+                  return a.value - b.value;
+                });
+
+                // Ok, now we have an array of all srcset values
+                for ( var j = 0; j < temp.length; j++ ) {
+                    var el = temp[ j ];
+
+                    if (
+                        ( el.postfix === 'w' && el.value >= windowWidth ) ||
+                        ( el.postfix === 'h' && el.value >= windowHeight ) ||
+                        ( el.postfix === 'x' && el.value >= pxRatio )
+                    ) {
+                        src = el.url;
+                        break;
+                    }
+                }
+
+                // If not found, take the last one
+                if ( !src && temp.length ) {
+                    src = temp[ temp.length - 1 ].url;
+                }
             }
 
             slide.$image = $img
@@ -1436,6 +1492,10 @@
                 })
                 .one('load', function() {
 
+                    // Clear timeout that checks if loading icon needs to be displayed
+                    clearTimeout( slide.timouts );
+                    slide.timouts = null;
+
                     if ( self.isClosing ) {
                         return;
                     }
@@ -1443,11 +1503,14 @@
                     slide.width  = this.naturalWidth;
                     slide.height = this.naturalHeight;
 
+                    if ( srcset ) {
+                        $img.attr('srcset', srcset);
+                    }
+
                     self.afterLoad( slide );
 
                     if ( slide.$ghost ) {
                         slide.timouts = setTimeout(function() {
-
                             slide.$ghost.hide();
 
                         }, 350);
@@ -1455,8 +1518,8 @@
 
                 })
                 .addClass('fancybox-image')
-                .appendTo( slide.$placeholder )
-                .attr('src', slide.src);
+                .attr('src', src || slide.src)
+                .appendTo( slide.$placeholder );
 
             if ( $img[0].complete ) {
                   $img.trigger('load');
@@ -1467,13 +1530,16 @@
             } else {
 
                 slide.timouts = setTimeout(function() {
-
                     if ( !$img[0].complete && !slide.hasError ) {
                         self.showLoading( slide );
                     }
 
                 }, 150);
 
+            }
+
+            if ( slide.opts.image.protect ) {
+                $('<div class="fancybox-spaceball"></div>').appendTo( slide.$placeholder );
             }
 
         },
@@ -2155,7 +2221,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.27",
+        version  : "3.0.28",
         defaults : defaults,
 
 
