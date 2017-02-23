@@ -288,6 +288,7 @@
 					<li><a href="#embedding">Embedding</a></li>
 					<li><a href="#options">Options</a></li>
 					<li><a href="#api">Api</a></li>
+					<li><a href="#modules">Modules</a></li>
 					<li><a href="#faq">FAQ</a></li>
 				</ul>
 			</aside>
@@ -821,7 +822,6 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 
 
 
-
 <!--
 
 API
@@ -1055,6 +1055,84 @@ onDeactivate : When other instance has been activated
 				<pre><code>$(document).on('onComplete.fb', function( e, instance, slide ) {
 	// Your code goes here
 });</code></pre>
+
+
+
+				<h2 id="modules">Modules</h2>
+
+				<p>
+					fancyBox code is split into several files (modules) that extend core functionality.
+					You can build your own fancyBox version by excluding unnecessary modules, if needed.
+					Each one has their own <code>js</code> and/or <code>css</code> files.
+				</p>
+
+				<p>
+					Some modules can be customized and controlled programmatically.
+					List of all possible options:
+				</p>
+
+				<pre><code>slideShow : {
+	speed : 3000 // Slideshow speed in ms
+},
+touch : {
+	vertical : true // Allow vertical swipe
+},
+thumbs : {
+	showOnStart   : false, // Display thumbnails on opening
+	hideOnClosing : true   // Hide thumbnail grid when closing animation starts
+}</code></pre>
+
+				<p>
+					Example (show thumbnails on start):
+				</p>
+
+				<pre><code>$('[data-fancybox="images"]').fancybox({
+  thumbs : {
+    showOnStart : true
+  }
+})</code></pre>
+				<p class="demo">
+					<a href="https://codepen.io/fancyapps/pen/RKKVVa?editors=1010" target="_blank">View demo on CodePen</a>
+				</p>
+
+				<p>
+					If you would inspect fancyBox instance object, you would find keys that names ar captialized - these are references for each module object.
+					Also, you would notice that fancyBox uses common naming convention to prefix jQuery objects with <code>$</code>.
+				</p>
+
+				<p>
+					This is how you, for example, can access thumbnail grid element:
+				</p>
+
+				<pre><code>$.fancybox.getInstance().Thumbs.$grid</code></pre>
+
+				<p>
+					This example shows how to call method that toggles thumbnails:
+				</p>
+
+				<pre><code>$.fancybox.getInstance().Thumbs.toggle();</code></pre>
+
+				<p>
+					List of available methods:
+				</p>
+
+				<pre><code>Thumbs.focus()
+Thumbs.close();
+Thumbs.update();
+Thumbs.hide();
+Thumbs.show();
+Thumbs.toggle();
+
+FullScreen.isAvailable();
+FullScreen.isActivated();
+FullScreen.launch();
+FullScreen.exit();
+FullScreen.toggle();
+
+SlideShow.start();
+SlideShow.stop();
+SlideShow.toggle();
+</code></pre>
 <!--
 
 FAQ
@@ -1063,7 +1141,7 @@ FAQ
 -->
 				<h2 id="faq">FAQ</h2>
 
-				<h3>Opening/closing causes fixed header to jump</h3>
+				<h3>Opening/closing causes fixed element to jump</h3>
 
 				<p>
 					Simply add <code>compensate-for-scrollbar</code> CSS class to your fixed positioned elements.
@@ -1076,11 +1154,23 @@ FAQ
 	&lt;/div&gt;
 &lt;/nav&gt;</code></pre>
 
+				<p>
+					The script measures width of the scrollbar and creates <code>compensate-for-scrollbar</code> CSS class
+					that uses this value for <code>margin-right</code> property.
+					Therefore, if your element has <code>width:100%</code>, you should positon it using <code>left</code> and <code>right</code> properties instead. Example:
+				</p>
+
+				<pre><code>.navbar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+}</code></pre>
 
 				<h3>How to customize caption</h3>
 
 				<p>
-					Example of appending image download link:
+					You can use <code>caption</code> option that accepts a function and is called for each group element. Example of appending image download link:
 				</p>
 
 				<pre><code>$( '[data-fancybox]' ).fancybox({
@@ -1098,6 +1188,21 @@ FAQ
 				<p class="demo">
 					<a href="http://codepen.io/fancyapps/pen/ygeYGx?editors=1010" target="_blank">View demo on CodePen</a>
 				</p>
+
+
+				<p>
+					Example of using different source for caption:
+				</p>
+
+				<pre><code>$( '[data-fancybox]' ).fancybox({
+  caption : function( instance, item ) {
+      return $(this).find('figcaption').html();
+  }
+});</code></pre>
+				<p class="demo">
+					<a href="https://codepen.io/fancyapps/pen/bgEQXo?editors=1010" target="_blank">View demo on CodePen</a>
+				</p>
+
 
 				<h3>How to create custom button in the toolbar</h3>
 
