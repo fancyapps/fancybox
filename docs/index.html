@@ -458,6 +458,18 @@
 			</p>
 
 			<p>
+				fancyBox supports "scrset" so I can display different images based on viewport width. You can use this to improve download times for mobile users and over time save bandwidth.
+				Example:
+			</p>
+
+			<pre><code>&lt;a href=&quot;medium.jpg&quot; data-fancybox=&quot;images&quot; data-srcset=&quot;large.jpg 1600w, medium.jpg 1200w, small.jpg 640w&quot;&gt;
+	&lt;img src=&quot;thumbnail.jpg&quot; /&gt;
+&lt;/a&gt;</code></pre>
+			<p class="demo">
+				<a href="https://codepen.io/fancyapps/pen/bqbpbO?editors=1000" target="_blank">View demo on CodePen</a>
+			</p>
+
+			<p>
 				It is also possible to protect images from downloading by right-click.
 				While this does not protect from truly determined users, it should discourage the vast majority from ripping off your files.
 			</p>
@@ -470,6 +482,7 @@
 			<p class="demo">
 				<a href="http://codepen.io/fancyapps/pen/RKKqLx?editors=1010" target="_blank">View demo on CodePen</a>
 			</p>
+
 
 			<h3 id="inline">Inline</h3>
 
@@ -539,7 +552,7 @@
 
 
 			<p>
-				<b>Tip</b>: To control fancyBox in parent window from inside an iframe:
+				To access and control fancyBox in parent window from inside an iframe:
 			</p>
 
 			<pre><code>// Adjust iframe height according to the contents
@@ -549,6 +562,38 @@ parent.jQuery.fancybox.getInstance().update();
 parent.jQuery.fancybox.getInstance().close();</code></pre>
 
 
+			<p>
+				Iframe dimensions can be controlled by CSS:
+			</p>
+
+			<pre><code>.fancybox-slide--iframe .fancybox-content {
+	width  : 800px;
+	height : 600px;
+	max-width  : 80%;
+	max-height : 80%;
+	margin: 0;
+}</code></pre>
+
+
+			<p>
+				These CSS rules can be overridden by JS, if needed:
+			</p>
+
+			<pre><code>$(&quot;[data-fancybox]&quot;).fancybox({
+	iframe : {
+		css : {
+			width : '600px'
+		}
+	}
+});</code></pre>
+
+
+			<p>
+				If you have not disabled iframe preloading (using an "preload" option), then the script will atempt to
+				calculate content dimensions and will adjust width/height of iframe to fit with content in it.
+				Keep in mind, that due to <a href="https://en.wikipedia.org/wiki/Same-origin_policy" target="_blank">same origin policy</a>,
+				there are some limitations.
+			</p>
 
 <!--
 
@@ -599,7 +644,11 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 
 			<p>
 				Obviously, you can choose any size you like, any combination with <code>min</code>/<code>max</code> values.
+				<br />
+				Aspect ratio lock for videos is not implemented yet, but if you wish, <a href="http://codepen.io/fancyapps/pen/dNzaQq?editors=1010" target="_blank">you can use this snippet</a>.
 			</p>
+
+
 
 			<h3>Video parameters</h3>
 
@@ -1191,13 +1240,13 @@ FAQ
 
 
 				<p>
-					Example of using different source for caption:
+					Inside <code>caption</code> method, <code>this</code> refers to the clicked element. Example of using different source for caption:
 				</p>
 
 				<pre><code>$( '[data-fancybox]' ).fancybox({
-  caption : function( instance, item ) {
-      return $(this).find('figcaption').html();
-  }
+	caption : function( instance, item ) {
+		return $(this).find('figcaption').html();
+	}
 });</code></pre>
 				<p class="demo">
 					<a href="https://codepen.io/fancyapps/pen/bgEQXo?editors=1010" target="_blank">View demo on CodePen</a>
