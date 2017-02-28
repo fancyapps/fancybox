@@ -1,6 +1,7 @@
 {
   "name": "fancybox",
   "title": "fancyBox",
+  "version": "2.1.7",
   "description": "fancyBox offers an elegant way to present images, html content and multimedia for webpages",
   "keywords": [
     "lightbox",
@@ -10,13 +11,8 @@
     "window",
     "ui"
   ],
-  "licenses": [
-    {
-      "type": "fancyBox",
-      "url": "http://fancyapps.com/fancybox/#license"
-    }
-  ],
-  "version": "2.1.5",
+  "license": "GPLv3",
+  "homepage": "http://fancyapps.com/fancybox/",
   "repository": {
     "type": "git",
     "url": "https://github.com/fancyapps/fancyBox"
