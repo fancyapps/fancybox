@@ -138,7 +138,7 @@
 			// HTML templates
 			tpl: {
 				wrap     : '<div class="fancybox-wrap" tabIndex="-1"><div class="fancybox-skin"><div class="fancybox-outer"><div class="fancybox-inner"></div></div></div></div>',
-				image    : '<img class="fancybox-image" src="{href}" alt="" />',
+				image    : '<img class="fancybox-image" src="{href}" alt="" {srcset}/>',
 				iframe   : '<iframe id="fancybox-frame{rnd}" name="fancybox-frame{rnd}" class="fancybox-iframe" frameborder="0" vspace="0" hspace="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen' + (IE ? ' allowtransparency="true"' : '') + '></iframe>',
 				error    : '<p class="fancybox-error">The requested content cannot be loaded.<br/>Please try again later.</p>',
 				closeBtn : '<a title="Close" class="fancybox-item fancybox-close" href="javascript:;"></a>',
@@ -266,6 +266,10 @@
 							isDom   : true,
 							element : element
 						};
+
+						if(element.data('srcset')){
+							obj.srcset = element.data('srcset');
+						}
 
 						if ($.metadata) {
 							$.extend(true, obj, element.metadata());
@@ -1123,6 +1127,12 @@
 
 				case 'image':
 					content = current.tpl.image.replace(/\{href\}/g, href);
+					if(current.srcset){
+						content = content.replace('{srcset}', 'srcset="'+current.srcset+'" ');
+					}
+					else{
+						content = content.replace('{srcset}', '');
+					}
 				break;
 
 				case 'swf':
