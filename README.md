@@ -7,7 +7,7 @@ More information and examples: http://www.fancyapps.com/fancybox/
 
 License: http://www.fancyapps.com/fancybox/#license
 
-Copyright (c) 2012 Janis Skarnelis - janis@fancyapps.com
+Copyright (c) 2017 fancyapps.com
 
 
 How to use
