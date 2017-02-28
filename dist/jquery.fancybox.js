@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.29
+// fancyBox v3.0.30
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -231,7 +231,7 @@
         }
 
         // Save last active element and current scroll position
-        self.$lastFocus = $(document.activeElement);
+        self.$lastFocus = $(document.activeElement).blur();
 
         // Collection of interface DOM elements
         self.elems = {};
@@ -526,7 +526,7 @@
             $( window ).on('orientationchange.fb resize.fb', function(e) {
                 requestAFrame(function() {
 
-                    if ( e.type == "orientationchange" ) {
+                    if ( e && e.originalEvent && e.originalEvent.type == "orientationchange" ) {
                         self.$refs.slider_wrap.hide();
 
                         requestAFrame( runUpdate );
@@ -733,7 +733,7 @@
 
             // Create slides
 
-            self.createSlide( pos );
+            self.current = self.createSlide( pos );
 
             if ( self.group.length > 1 ) {
 
@@ -745,8 +745,6 @@
                     self.createSlide( pos + 1 );
                 }
             }
-
-            self.current = self.slides[ pos ];
 
             self.current.isMoved    = false;
             self.current.isComplete = false;
@@ -794,11 +792,31 @@
             var self = this;
             var $slide;
             var index;
+            var found;
 
             index = pos % self.group.length;
             index = index < 0 ? self.group.length + index : index;
 
             if ( !self.slides[ pos ] && self.group[ index ] ) {
+
+                // If we are looping and slide with that index already exists, then reuse it
+                if ( self.opts.loop && self.group.length > 2 ) {
+                    for (var key in self.slides) {
+                        if ( self.slides[ key ].index === index ) {
+                            found = self.slides[ key ];
+                            found.pos = pos;
+
+                            self.slides[ pos ] = found;
+
+                            delete self.slides[ key ];
+
+                            self.updateSlide( found );
+
+                            return found;
+                        }
+                    }
+                }
+
                 $slide = $('<div class="fancybox-slide"></div>').appendTo( self.$refs.slider );
 
                 self.slides[ pos ] = $.extend( true, {}, self.group[ index ], {
@@ -809,6 +827,8 @@
                 });
 
             }
+
+            return self.slides[ pos ];
 
         },
 
@@ -908,24 +928,25 @@
                 $.fancybox.setTranslate( $what, end );
 
                 setTimeout(function() {
-                    var reset;
+                    requestAFrame(function() {
+                        var reset;
 
-                    $what.css( 'transition', 'none' );
+                        $what.css( 'transition', 'none' );
 
-                    reset = $.fancybox.getTranslate( $what );
+                        reset = $.fancybox.getTranslate( $what );
 
-                    reset.scaleX = 1;
-                    reset.scaleY = 1;
+                        reset.scaleX = 1;
+                        reset.scaleY = 1;
 
-                    // Reset scalex/scaleY values; this helps for perfomance
-                    $.fancybox.setTranslate( $what, reset );
+                        // Reset scalex/scaleY values; this helps for perfomance
+                        $.fancybox.setTranslate( $what, reset );
 
-                    self.trigger( 'afterZoom' + type );
+                        self.trigger( 'afterZoom' + type );
 
-                    callback.apply( self );
+                        callback.apply( self );
 
-                    self.isAnimating = false;
-
+                        self.isAnimating = false;
+                    });
                 }, duration);
 
             });
@@ -1204,6 +1225,7 @@
 
             var self  = this;
             var $what = slide.$placeholder;
+            var leftPos;
 
             slide = slide || self.current;
 
@@ -1211,7 +1233,13 @@
                 return;
             }
 
-            $.fancybox.setTranslate( slide.$slide, { top: 0, left : ( slide.pos * Math.floor( slide.$slide.width() )  ) + ( slide.pos * slide.opts.gutter) } );
+            leftPos = ( slide.pos * Math.floor( slide.$slide.width() )  ) + ( slide.pos * slide.opts.gutter);
+
+            if ( leftPos !== slide.leftPos ) {
+                $.fancybox.setTranslate( slide.$slide, { top: 0, left : leftPos } );
+
+                slide.leftPos = leftPos;
+            }
 
             if ( andContent !== false && $what ) {
                 $.fancybox.setTranslate( $what, self.getFitPos( slide ) );
@@ -1485,7 +1513,6 @@
         // ======================
 
         setBigImage : function ( slide ) {
-
             var self = this;
             var $img = $('<img />');
 
@@ -1544,7 +1571,13 @@
             }
 
             if ( slide.opts.image.protect ) {
-                $('<div class="fancybox-spaceball"></div>').appendTo( slide.$placeholder );
+                $('<div class="fancybox-spaceball"></div>').appendTo( slide.$placeholder ).on('contextmenu.fb',function(e){
+                     if ( e.button == 2 ) {
+                         e.preventDefault();
+                     }
+
+                    return true;
+                });
             }
 
         },
@@ -1639,8 +1672,8 @@
                     // it will fail if frame is not with the same origin
 
                     try {
-                        $contents	= $iframe.contents();
-                        $body		= $contents.find('body');
+                        $contents = $iframe.contents();
+                        $body     = $contents.find('body');
 
                     } catch (ignore) {}
 
@@ -1895,7 +1928,8 @@
 
                 self.trigger( 'onComplete' );
 
-                if ( current.opts.focus ) {
+                // Try to focus on the first focusable element, skip for images and iframes
+                if ( current.opts.focus && ( current.type === 'image' || current.type === 'iframe' )  ) {
                     self.focus();
                 }
 
@@ -1934,7 +1968,10 @@
 
         focus : function() {
 
-            var $el = this.current && this.current.isComplete ? this.current.$slide.find('button,:input,[tabindex],a:not(".disabled")').filter(':visible:first') : null;
+            var current = this.current;
+            var $el;
+
+            $el = current && current.isComplete ? current.$slide.find('button,:input,[tabindex],a:not(".disabled")').filter(':visible:first') : null;
 
             if ( !$el || !$el.length ) {
                 $el = this.$refs.container;
@@ -1947,8 +1984,8 @@
             this.$refs.slider_wrap.scrollLeft(0);
 
             // And the same goes for slide element
-            if ( this.current ) {
-                this.current.$slide.scrollTop(0);
+            if ( current ) {
+                current.$slide.scrollTop(0);
             }
         },
 
@@ -2226,7 +2263,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.29",
+        version  : "3.0.30",
         defaults : defaults,
 
 
