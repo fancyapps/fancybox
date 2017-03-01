@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.31
+// fancyBox v3.0.32
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -2263,7 +2263,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.31",
+        version  : "3.0.32",
         defaults : defaults,
 
 
@@ -2992,6 +2992,11 @@
 
 		// Ignore taping on links, buttons and scrollable items
 		if ( isClickable( $target ) || isClickable( $target.parent() ) || ( isScrollable( $target ) && !$target.hasClass('fancybox-slide') ) ) {
+			return;
+		}
+
+		// Ignore right click
+		if ( e.originalEvent && e.originalEvent.button == 2 ) {
 			return;
 		}
 

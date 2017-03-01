@@ -140,6 +140,11 @@
 			return;
 		}
 
+		// Ignore right click
+		if ( e.originalEvent && e.originalEvent.button == 2 ) {
+			return;
+		}
+
 		e.stopPropagation();
 		e.preventDefault();
 
