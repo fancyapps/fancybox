@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.32
+// fancyBox v3.0.33
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -130,6 +130,7 @@
         // Error message template
         errorTpl : '<div class="fancybox-error"><p>The requested content cannot be loaded. <br /> Please try again later.<p></div>',
 
+        // This will be appended to html content, if "smallBtn" option is not set to false
         closeTpl : '<button data-fancybox-close class="fancybox-close-small">×</button>',
 
         // Container is injected into this element
@@ -2263,7 +2264,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.32",
+        version  : "3.0.33",
         defaults : defaults,
 
 
@@ -3516,6 +3517,11 @@
 
 		x = x - self.$wrap.offset().left;
 		y = y - self.$wrap.offset().top;
+
+		// Stop slideshow
+		if ( instance.SlideShow && instance.SlideShow.isActive ) {
+			instance.SlideShow.stop();
+		}
 
 		if ( !$.fancybox.isTouch ) {
 

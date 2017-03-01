@@ -662,6 +662,11 @@
 		x = x - self.$wrap.offset().left;
 		y = y - self.$wrap.offset().top;
 
+		// Stop slideshow
+		if ( instance.SlideShow && instance.SlideShow.isActive ) {
+			instance.SlideShow.stop();
+		}
+
 		if ( !$.fancybox.isTouch ) {
 
 			if ( current.opts.closeClickOutside && self.$target.is('.fancybox-slide') ) {

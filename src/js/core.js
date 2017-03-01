@@ -120,6 +120,7 @@
         // Error message template
         errorTpl : '<div class="fancybox-error"><p>The requested content cannot be loaded. <br /> Please try again later.<p></div>',
 
+        // This will be appended to html content, if "smallBtn" option is not set to false
         closeTpl : '<button data-fancybox-close class="fancybox-close-small">×</button>',
 
         // Container is injected into this element
