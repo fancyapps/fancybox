@@ -529,7 +529,7 @@
 		self.velocityX = self.distanceX / dMs * 0.5;
 		self.velocityY = self.distanceY / dMs * 0.5;
 
-		self.speed = current.opts.speed;
+		self.speed = current.opts.speed || 330;
 
 		self.speedX = Math.max( self.speed * 0.75, Math.min( self.speed * 1.5, ( 1 / Math.abs( self.velocityX ) ) * self.speed ) );
 		self.speedY = Math.max( self.speed * 0.75, Math.min( self.speed * 1.5, ( 1 / Math.abs( self.velocityY ) ) * self.speed ) );

@@ -2484,6 +2484,20 @@
             var diff;
             var id;
 
+            var finish = function() {
+                if ( to.scaleX !== undefined && to.scaleY !== undefined && from && from.width !== undefined && from.height !== undefined ) {
+                    to.width  = from.width  * to.scaleX;
+                    to.height = from.height * to.scaleY;
+
+                    to.scaleX = 1;
+                    to.scaleY = 1;
+                }
+
+                self.setTranslate( $el, to );
+
+                done();
+            }
+
             var frame = function ( timestamp ) {
                 curr = [];
                 diff = 0;
@@ -2505,17 +2519,7 @@
                 // Are we done?
                 if ( animTime >= duration ) {
 
-                    if ( to.scaleX !== undefined && to.scaleY !== undefined && from.width !== undefined && from.height !== undefined ) {
-                        to.width  = from.width  * to.scaleX;
-                        to.height = from.height * to.scaleY;
-
-                        to.scaleX = 1;
-                        to.scaleY = 1;
-                    }
-
-                    self.setTranslate( $el, to );
-
-                    done();
+                    finish();
 
                     return;
                 }
@@ -2554,14 +2558,6 @@
 
             done = done || $.noop;
 
-            if ( !duration ) {
-                this.setTranslate( $el, to );
-
-                done();
-
-                return;
-            }
-
             if ( from ) {
                 this.setTranslate( $el, from );
 
@@ -2571,9 +2567,15 @@
                 from = this.getTranslate( $el );
             }
 
-            $el.show();
+            if ( duration ) {
+                $el.show();
 
-            requestAFrame( frame );
+                requestAFrame( frame );
+
+            } else {
+                finish();
+            }
+
         }
 
     };
