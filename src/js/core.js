@@ -535,16 +535,15 @@
             // Trap focus
 
             $D.on('focusin.fb', function(e) {
-                var instance;
+                var instance = $.fancybox ? $.fancybox.getInstance() : null;
 
-                if ( $.fancybox ) {
-                    instance = $.fancybox.getInstance();
+                if ( instance && !$( e.target ).hasClass( 'fancybox-container' ) && !$.contains( instance.$refs.container[0], e.target ) ) {
+                    e.stopPropagation();
 
-                    if ( instance && !$( e.target ).hasClass( 'fancybox-container' ) && !$.contains( instance.$refs.container[0], e.target ) ) {
-                        e.stopPropagation();
+                    instance.focus();
 
-                        instance.focus();
-                    }
+                    // Sometimes page gets scrolled, set it back
+                    $W.scrollTop( self.scrollTop ).scrollLeft( self.scrollLeft );
                 }
 
             });
@@ -1920,7 +1919,7 @@
                 self.trigger( 'onComplete' );
 
                 // Try to focus on the first focusable element, skip for images and iframes
-                if ( current.opts.focus && ( current.type === 'image' || current.type === 'iframe' )  ) {
+                if ( current.opts.focus && !( current.type === 'image' || current.type === 'iframe' ) ) {
                     self.focus();
                 }
 
@@ -1978,6 +1977,7 @@
             if ( current ) {
                 current.$slide.scrollTop(0);
             }
+
         },
 
 
