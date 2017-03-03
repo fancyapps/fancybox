@@ -2125,8 +2125,6 @@
                 self.$lastFocus.focus();
             }
 
-            $W.scrollTop( self.scrollTop ).scrollLeft( self.scrollLeft );
-
         },
 
 

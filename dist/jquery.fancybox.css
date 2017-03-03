@@ -103,7 +103,8 @@
   margin: 0;
   z-index: 99993;
   -webkit-backface-visibility: hidden;
-  backface-visibility: hidden; }
+  backface-visibility: hidden;
+  -webkit-tap-highlight-color: transparent; }
 
 .fancybox-slide {
   position: absolute;
@@ -119,8 +120,7 @@
   box-sizing: border-box;
   text-align: center;
   z-index: 99994;
-  -webkit-overflow-scrolling: touch;
-  -webkit-tap-highlight-color: transparent; }
+  -webkit-overflow-scrolling: touch; }
 
 .fancybox-slide::before {
   content: '';

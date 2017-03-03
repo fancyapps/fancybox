@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.36
+// fancyBox v3.0.37
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -2135,8 +2135,6 @@
                 self.$lastFocus.focus();
             }
 
-            $W.scrollTop( self.scrollTop ).scrollLeft( self.scrollLeft );
-
         },
 
 
@@ -2264,7 +2262,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.36",
+        version  : "3.0.37",
         defaults : defaults,
 
 
