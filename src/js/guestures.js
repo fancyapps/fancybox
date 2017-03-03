@@ -128,6 +128,14 @@
 		self.$target  = $target;
 		self.$content = $content;
 
+		self.canvasWidth  = Math.round( current.$slide[0].clientWidth );
+		self.canvasHeight = Math.round( current.$slide[0].clientHeight );
+
+		// Skip if clicked on the scrollbar
+		if ( e.originalEvent.clientX > self.canvasWidth ) {
+			return true;
+		}
+
 		// If "touch" is disabled, then handle click event
 		if ( !current.opts.touch ) {
 			self.endPoints = self.startPoints;
@@ -165,9 +173,6 @@
 
 		self.startTime = new Date().getTime();
 		self.distanceX = self.distanceY = self.distance = 0;
-
-		self.canvasWidth  = Math.round( current.$slide.width() );
-		self.canvasHeight = Math.round( current.$slide.height() );
 
 		self.canTap    = false;
 		self.isPanning = false;
