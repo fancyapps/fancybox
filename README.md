@@ -3,7 +3,7 @@
 jQuery lightbox script for displaying images, videos and more.
 Touch enabled, responsive and fully customizable.
 
-See the [project page](http://fancyapps.com/fancybox/) for documentation and a demonstration.
+See the [project page](http://fancyapps.com/fancybox/3/) for documentation and a demonstration.
 
 Follow [@thefancyapps](//twitter.com/thefancyapps) for updates.
 
@@ -15,8 +15,8 @@ Follow [@thefancyapps](//twitter.com/thefancyapps) for updates.
 ```html
 <script src="//code.jquery.com/jquery-3.1.1.min.js"></script>
 
-<link  href="/path/to/fancybox.css" rel="stylesheet">
-<script src="/path/to/fancybox.js"></script>
+<link  href="/path/to/jquery.fancybox.min.css" rel="stylesheet">
+<script src="/path/to/jquery.fancybox.min.js"></script>
 ```
 
 
@@ -38,21 +38,11 @@ Follow [@thefancyapps](//twitter.com/thefancyapps) for updates.
 
 ## License
 
-fancyBox has two kinds of licenses: open-source and commercial.
-
-
-
-### Open source license
-
-The open source license is designed for you to use fancyBox to build open source and personal projects or in educational scenarios that are free for students to view or attend. fancyBox open source license is [GPLv3](http://choosealicense.com/licenses/gpl-3.0).
-
-
-### Commercial license
-
-If you want to use fancyBox to develop commercial sites, themes, projects, and applications without the provisions of the GPLv3, the commercial license is the appropriate license.
+fancyBox is licensed under the [GPLv3](http://choosealicense.com/licenses/gpl-3.0) license for all open source applications.
+A commercial license is required for all commercial applications (including sites, themes and apps you plan to sell).
 
 [Read more about fancyBox license](http://fancyapps.com/fancybox/#license).
 
 ## Bug tracker
 
-If you find a bug, please report it [here on Github](https://github.com/fancyapps/fancyBox/issues)!
+If you find a bug, please report it [here on Github](https://github.com/fancyapps/fancybox/issues)!

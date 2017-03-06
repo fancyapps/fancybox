@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.30
+// fancyBox v3.0.38
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -130,6 +130,7 @@
         // Error message template
         errorTpl : '<div class="fancybox-error"><p>The requested content cannot be loaded. <br /> Please try again later.<p></div>',
 
+        // This will be appended to html content, if "smallBtn" option is not set to false
         closeTpl : '<button data-fancybox-close class="fancybox-close-small">×</button>',
 
         // Container is injected into this element
@@ -232,9 +233,6 @@
 
         // Save last active element and current scroll position
         self.$lastFocus = $(document.activeElement).blur();
-
-        // Collection of interface DOM elements
-        self.elems = {};
 
         // Collection of gallery objects
         self.slides = {};
@@ -544,16 +542,15 @@
             // Trap focus
 
             $D.on('focusin.fb', function(e) {
-                var instance;
+                var instance = $.fancybox ? $.fancybox.getInstance() : null;
 
-                if ( $.fancybox ) {
-                    instance = $.fancybox.getInstance();
+                if ( instance && !$( e.target ).hasClass( 'fancybox-container' ) && !$.contains( instance.$refs.container[0], e.target ) ) {
+                    e.stopPropagation();
 
-                    if ( instance && !$( e.target ).hasClass( 'fancybox-container' ) && !$.contains( instance.$refs.container[0], e.target ) ) {
-                        e.stopPropagation();
+                    instance.focus();
 
-                        instance.focus();
-                    }
+                    // Sometimes page gets scrolled, set it back
+                    $W.scrollTop( self.scrollTop ).scrollLeft( self.scrollLeft );
                 }
 
             });
@@ -577,7 +574,7 @@
                 if ( keycode === 8 || keycode === 27 ) {
                     e.preventDefault();
 
-                    self.close();
+                    self.close( e );
 
                     return;
                 }
@@ -1929,7 +1926,7 @@
                 self.trigger( 'onComplete' );
 
                 // Try to focus on the first focusable element, skip for images and iframes
-                if ( current.opts.focus && ( current.type === 'image' || current.type === 'iframe' )  ) {
+                if ( current.opts.focus && !( current.type === 'image' || current.type === 'iframe' ) ) {
                     self.focus();
                 }
 
@@ -1987,6 +1984,7 @@
             if ( current ) {
                 current.$slide.scrollTop(0);
             }
+
         },
 
 
@@ -2046,6 +2044,10 @@
                 return false;
             }
 
+            if ( self.trigger( 'beforeClose', e ) === false ) {
+                return;
+            }
+
             self.isClosing = true;
 
             if ( current.timouts ) {
@@ -2083,8 +2085,6 @@
 
             self.updateCursor();
 
-            self.trigger( 'beforeClose', current, e );
-
             self.$refs.bg.css('transition-duration', duration + 'ms');
 
             this.$refs.container.removeClass( 'fancybox-container--ready' );
@@ -2110,12 +2110,11 @@
 
             self.$refs.container.empty().remove();
 
+            self.trigger( 'afterClose', e );
+
             self.current = null;
 
-            self.trigger( 'afterClose', e);
-
             // Check if there are other instances
-
             instance = $.fancybox.getInstance();
 
             if ( instance ) {
@@ -2134,8 +2133,6 @@
                 self.$lastFocus.focus();
             }
 
-            $W.scrollTop( self.scrollTop ).scrollLeft( self.scrollLeft );
-
         },
 
 
@@ -2145,7 +2142,8 @@
         trigger : function( name, slide ) {
             var args  = Array.prototype.slice.call(arguments, 1),
                 self  = this,
-                obj   = slide && slide.opts ? slide : self.current;
+                obj   = slide && slide.opts ? slide : self.current,
+                rez;
 
             if ( obj ) {
                 args.unshift( obj );
@@ -2157,10 +2155,14 @@
             args.unshift( self );
 
             if ( $.isFunction( obj.opts[ name ] ) ) {
-                obj.opts[ name ].apply( obj, args );
+                rez = obj.opts[ name ].apply( obj, args );
             }
 
-            self.$refs.container.trigger( name + '.fb', args);
+            if ( rez === false ) {
+                return rez;
+            }
+
+            self.$refs.container.trigger( name + '.fb', args );
 
         },
 
@@ -2263,7 +2265,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.30",
+        version  : "3.0.38",
         defaults : defaults,
 
 
@@ -2493,6 +2495,20 @@
             var diff;
             var id;
 
+            var finish = function() {
+                if ( to.scaleX !== undefined && to.scaleY !== undefined && from && from.width !== undefined && from.height !== undefined ) {
+                    to.width  = from.width  * to.scaleX;
+                    to.height = from.height * to.scaleY;
+
+                    to.scaleX = 1;
+                    to.scaleY = 1;
+                }
+
+                self.setTranslate( $el, to );
+
+                done();
+            }
+
             var frame = function ( timestamp ) {
                 curr = [];
                 diff = 0;
@@ -2514,17 +2530,7 @@
                 // Are we done?
                 if ( animTime >= duration ) {
 
-                    if ( to.scaleX !== undefined && to.scaleY !== undefined && from.width !== undefined && from.height !== undefined ) {
-                        to.width  = from.width  * to.scaleX;
-                        to.height = from.height * to.scaleY;
-
-                        to.scaleX = 1;
-                        to.scaleY = 1;
-                    }
-
-                    self.setTranslate( $el, to );
-
-                    done();
+                    finish();
 
                     return;
                 }
@@ -2563,14 +2569,6 @@
 
             done = done || $.noop;
 
-            if ( !duration ) {
-                this.setTranslate( $el, to );
-
-                done();
-
-                return;
-            }
-
             if ( from ) {
                 this.setTranslate( $el, from );
 
@@ -2580,9 +2578,15 @@
                 from = this.getTranslate( $el );
             }
 
-            $el.show();
+            if ( duration ) {
+                $el.show();
 
-            requestAFrame( frame );
+                requestAFrame( frame );
+
+            } else {
+                finish();
+            }
+
         }
 
     };
@@ -2654,12 +2658,13 @@
 	// Formats matching url to final form
 
 	var format = function (url, rez, params) {
-		if (!url) {
+		if ( !url ) {
 			return;
 		}
+
 		params = params || '';
 
-		if ($.type(params) === "object") {
+		if ( $.type(params) === "object" ) {
 			params = $.param(params, true);
 		}
 
@@ -2696,7 +2701,7 @@
 		},
 
 		vimeo: {
-			matcher: /((player\.)?vimeo(pro)?\.com)\/(video\/)?([\d]+)?(\?(.*))?/,
+			matcher: /^.+vimeo.com\/(.*\/)?([\d]+)(.*)?/,
 			params: {
 				autoplay: 1,
 				hd: 1,
@@ -2706,9 +2711,9 @@
 				fullscreen: 1,
 				api: 1
 			},
-			paramPlace : 7,
+			paramPlace : 3,
 			type: 'iframe',
-			url: '//player.vimeo.com/video/$5'
+			url: '//player.vimeo.com/video/$2'
 		},
 
 		metacafe: {
@@ -2787,7 +2792,7 @@
 				if ( el.paramPlace && rez[ el.paramPlace ] ) {
 					urlParams = rez[ el.paramPlace ];
 
-					if ( urlParams[ 0 ] == '?') {
+					if ( urlParams[ 0 ] == '?' ) {
 						urlParams = urlParams.substring(1);
 					}
 
@@ -2802,14 +2807,14 @@
 					}
 				}
 
-				if ( el.idPlace ) {
-					id = rez[ el.idPlace ];
-				}
-
 				params = $.extend( true, {}, el.params, item.opts[ n ], o );
 
 				url   = $.type(el.url) === "function" ? el.url.call(this, rez, params, item) : format(el.url, rez, params);
 				thumb = $.type(el.thumb) === "function" ? el.thumb.call(this, rez, params, item) : format(el.thumb, rez);
+
+				if ( provider === 'vimeo' ) {
+					url = url.replace('&%23', '#');
+				}
 
 				return false;
 			});
@@ -2822,10 +2827,6 @@
 
 				if ( !item.opts.thumb && !(item.opts.$thumb && item.opts.$thumb.length ) ) {
 					item.opts.thumb = thumb;
-				}
-
-				if ( id ) {
-					item.opts.id = provider + '-' + id;
 				}
 
 				if ( type === 'iframe' ) {
@@ -2986,6 +2987,16 @@
 		self.$target  = $target;
 		self.$content = $content;
 
+		self.canvasWidth  = Math.round( current.$slide[0].clientWidth );
+		self.canvasHeight = Math.round( current.$slide[0].clientHeight );
+
+		self.startEvent = e;
+
+		// Skip if clicked on the scrollbar
+		if ( e.originalEvent.clientX > self.canvasWidth ) {
+			return true;
+		}
+
 		// If "touch" is disabled, then handle click event
 		if ( !current.opts.touch ) {
 			self.endPoints = self.startPoints;
@@ -2995,6 +3006,11 @@
 
 		// Ignore taping on links, buttons and scrollable items
 		if ( isClickable( $target ) || isClickable( $target.parent() ) || ( isScrollable( $target ) && !$target.hasClass('fancybox-slide') ) ) {
+			return;
+		}
+
+		// Ignore right click
+		if ( e.originalEvent && e.originalEvent.button == 2 ) {
 			return;
 		}
 
@@ -3018,9 +3034,6 @@
 
 		self.startTime = new Date().getTime();
 		self.distanceX = self.distanceY = self.distance = 0;
-
-		self.canvasWidth  = Math.round( current.$slide.width() );
-		self.canvasHeight = Math.round( current.$slide.height() );
 
 		self.canTap    = false;
 		self.isPanning = false;
@@ -3382,7 +3395,7 @@
 		self.velocityX = self.distanceX / dMs * 0.5;
 		self.velocityY = self.distanceY / dMs * 0.5;
 
-		self.speed = current.opts.speed;
+		self.speed = current.opts.speed || 330;
 
 		self.speedX = Math.max( self.speed * 0.75, Math.min( self.speed * 1.5, ( 1 / Math.abs( self.velocityX ) ) * self.speed ) );
 		self.speedY = Math.max( self.speed * 0.75, Math.min( self.speed * 1.5, ( 1 / Math.abs( self.velocityY ) ) * self.speed ) );
@@ -3396,7 +3409,6 @@
 		} else {
 			self.endSwiping( swiping );
 		}
-
 
 		return;
 	};
@@ -3515,10 +3527,15 @@
 		x = x - self.$wrap.offset().left;
 		y = y - self.$wrap.offset().top;
 
+		// Stop slideshow
+		if ( instance.SlideShow && instance.SlideShow.isActive ) {
+			instance.SlideShow.stop();
+		}
+
 		if ( !$.fancybox.isTouch ) {
 
 			if ( current.opts.closeClickOutside && self.$target.is('.fancybox-slide') ) {
-				instance.close();
+				instance.close( self.startEvent );
 
 				return;
 			}
@@ -3532,8 +3549,7 @@
 					instance.scaleToActual( x, y );
 
 				} else if ( instance.group.length < 2 ) {
-					instance.close();
-
+					instance.close( self.startEvent );
 				}
 
 			}

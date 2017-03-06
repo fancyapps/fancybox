@@ -110,6 +110,7 @@
 	margin: 0;
 	z-index: 99993;
 	backface-visibility: hidden;
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 
 .fancybox-slide {
@@ -127,7 +128,6 @@
 	text-align: center;
 	z-index: 99994;
 	-webkit-overflow-scrolling: touch;
-	-webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 
 .fancybox-slide::before {

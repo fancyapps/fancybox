@@ -128,6 +128,16 @@
 		self.$target  = $target;
 		self.$content = $content;
 
+		self.canvasWidth  = Math.round( current.$slide[0].clientWidth );
+		self.canvasHeight = Math.round( current.$slide[0].clientHeight );
+
+		self.startEvent = e;
+
+		// Skip if clicked on the scrollbar
+		if ( e.originalEvent.clientX > self.canvasWidth ) {
+			return true;
+		}
+
 		// If "touch" is disabled, then handle click event
 		if ( !current.opts.touch ) {
 			self.endPoints = self.startPoints;
@@ -137,6 +147,11 @@
 
 		// Ignore taping on links, buttons and scrollable items
 		if ( isClickable( $target ) || isClickable( $target.parent() ) || ( isScrollable( $target ) && !$target.hasClass('fancybox-slide') ) ) {
+			return;
+		}
+
+		// Ignore right click
+		if ( e.originalEvent && e.originalEvent.button == 2 ) {
 			return;
 		}
 
@@ -160,9 +175,6 @@
 
 		self.startTime = new Date().getTime();
 		self.distanceX = self.distanceY = self.distance = 0;
-
-		self.canvasWidth  = Math.round( current.$slide.width() );
-		self.canvasHeight = Math.round( current.$slide.height() );
 
 		self.canTap    = false;
 		self.isPanning = false;
@@ -524,7 +536,7 @@
 		self.velocityX = self.distanceX / dMs * 0.5;
 		self.velocityY = self.distanceY / dMs * 0.5;
 
-		self.speed = current.opts.speed;
+		self.speed = current.opts.speed || 330;
 
 		self.speedX = Math.max( self.speed * 0.75, Math.min( self.speed * 1.5, ( 1 / Math.abs( self.velocityX ) ) * self.speed ) );
 		self.speedY = Math.max( self.speed * 0.75, Math.min( self.speed * 1.5, ( 1 / Math.abs( self.velocityY ) ) * self.speed ) );
@@ -538,7 +550,6 @@
 		} else {
 			self.endSwiping( swiping );
 		}
-
 
 		return;
 	};
@@ -657,10 +668,15 @@
 		x = x - self.$wrap.offset().left;
 		y = y - self.$wrap.offset().top;
 
+		// Stop slideshow
+		if ( instance.SlideShow && instance.SlideShow.isActive ) {
+			instance.SlideShow.stop();
+		}
+
 		if ( !$.fancybox.isTouch ) {
 
 			if ( current.opts.closeClickOutside && self.$target.is('.fancybox-slide') ) {
-				instance.close();
+				instance.close( self.startEvent );
 
 				return;
 			}
@@ -674,8 +690,7 @@
 					instance.scaleToActual( x, y );
 
 				} else if ( instance.group.length < 2 ) {
-					instance.close();
-
+					instance.close( self.startEvent );
 				}
 
 			}
