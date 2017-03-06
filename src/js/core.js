@@ -224,9 +224,6 @@
         // Save last active element and current scroll position
         self.$lastFocus = $(document.activeElement).blur();
 
-        // Collection of interface DOM elements
-        self.elems = {};
-
         // Collection of gallery objects
         self.slides = {};
 
@@ -567,7 +564,7 @@
                 if ( keycode === 8 || keycode === 27 ) {
                     e.preventDefault();
 
-                    self.close();
+                    self.close( e );
 
                     return;
                 }
@@ -2037,6 +2034,10 @@
                 return false;
             }
 
+            if ( self.trigger( 'beforeClose', e ) === false ) {
+                return;
+            }
+
             self.isClosing = true;
 
             if ( current.timouts ) {
@@ -2074,8 +2075,6 @@
 
             self.updateCursor();
 
-            self.trigger( 'beforeClose', current, e );
-
             self.$refs.bg.css('transition-duration', duration + 'ms');
 
             this.$refs.container.removeClass( 'fancybox-container--ready' );
@@ -2101,12 +2100,11 @@
 
             self.$refs.container.empty().remove();
 
+            self.trigger( 'afterClose', e );
+
             self.current = null;
 
-            self.trigger( 'afterClose', e);
-
             // Check if there are other instances
-
             instance = $.fancybox.getInstance();
 
             if ( instance ) {
@@ -2134,7 +2132,8 @@
         trigger : function( name, slide ) {
             var args  = Array.prototype.slice.call(arguments, 1),
                 self  = this,
-                obj   = slide && slide.opts ? slide : self.current;
+                obj   = slide && slide.opts ? slide : self.current,
+                rez;
 
             if ( obj ) {
                 args.unshift( obj );
@@ -2146,10 +2145,14 @@
             args.unshift( self );
 
             if ( $.isFunction( obj.opts[ name ] ) ) {
-                obj.opts[ name ].apply( obj, args );
+                rez = obj.opts[ name ].apply( obj, args );
             }
 
-            self.$refs.container.trigger( name + '.fb', args);
+            if ( rez === false ) {
+                return rez;
+            }
+
+            self.$refs.container.trigger( name + '.fb', args );
 
         },
 

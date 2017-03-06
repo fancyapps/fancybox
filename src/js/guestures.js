@@ -131,6 +131,8 @@
 		self.canvasWidth  = Math.round( current.$slide[0].clientWidth );
 		self.canvasHeight = Math.round( current.$slide[0].clientHeight );
 
+		self.startEvent = e;
+
 		// Skip if clicked on the scrollbar
 		if ( e.originalEvent.clientX > self.canvasWidth ) {
 			return true;
@@ -549,7 +551,6 @@
 			self.endSwiping( swiping );
 		}
 
-
 		return;
 	};
 
@@ -675,7 +676,7 @@
 		if ( !$.fancybox.isTouch ) {
 
 			if ( current.opts.closeClickOutside && self.$target.is('.fancybox-slide') ) {
-				instance.close();
+				instance.close( self.startEvent );
 
 				return;
 			}
@@ -689,8 +690,7 @@
 					instance.scaleToActual( x, y );
 
 				} else if ( instance.group.length < 2 ) {
-					instance.close();
-
+					instance.close( self.startEvent );
 				}
 
 			}
