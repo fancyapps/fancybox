@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.38
+// fancyBox v3.0.39
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -2265,7 +2265,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.38",
+        version  : "3.0.39",
         defaults : defaults,
 
 
@@ -3440,7 +3440,7 @@
 		} else {
 
 			// Move back to center
-			self.instance.update( false, true, ( ( Math.abs( self.distance ) ) * self.speed ) / 50 );
+			self.instance.update( false, true, 150 );
 
 		}
 
