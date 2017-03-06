@@ -3,9 +3,13 @@
   "description": "Touch enabled, responsive and fully customizable jQuery lightbox script",
   "version": "3.0.38",
   "homepage": "http://fancyapps.com/fancybox/",
-  "main": "./dist/jquery.fancybox.js",
+  "main": "./dist/jquery.fancybox.min.js",
   "author": "fancyApps",
   "license": "GPL-3.0",
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/fancyapps/fancybox.git"
+  },
   "peerDependencies": {
     "jquery": ">=1.8.3"
   },
