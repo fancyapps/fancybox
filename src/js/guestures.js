@@ -581,7 +581,7 @@
 		} else {
 
 			// Move back to center
-			self.instance.update( false, true, ( ( Math.abs( self.distance ) ) * self.speed ) / 50 );
+			self.instance.update( false, true, 150 );
 
 		}
 
