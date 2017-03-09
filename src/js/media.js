@@ -121,7 +121,6 @@
 				params,
 				urlParams,
 				o,
-				id,
 				provider;
 
 			// Skip items that already have content type

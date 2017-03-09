@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.39
+// fancyBox v3.0.40
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -104,7 +104,7 @@
         slideClass : '',
 
         // Base template for layout
-        baseTpl	: '<div class="fancybox-container" role="dialog" tabindex="-1">' +
+        baseTpl	: '<div class="fancybox-container fancybox-show-controls" role="dialog" tabindex="-1">' +
                 '<div class="fancybox-bg"></div>' +
                 '<div class="fancybox-controls">' +
                     '<div class="fancybox-infobar">' +
@@ -131,7 +131,7 @@
         errorTpl : '<div class="fancybox-error"><p>The requested content cannot be loaded. <br /> Please try again later.<p></div>',
 
         // This will be appended to html content, if "smallBtn" option is not set to false
-        closeTpl : '<button data-fancybox-close class="fancybox-close-small">×</button>',
+        closeTpl : '<button data-fancybox-close class="fancybox-close-small"></button>',
 
         // Container is injected into this element
         parentEl : 'body',
@@ -249,26 +249,49 @@
         init : function() {
             var self = this;
 
+            var galleryHasHtml = false;
+
             var testWidth;
             var $container;
 
-            self.scrollTop  = $W.scrollTop();
-            self.scrollLeft = $W.scrollLeft();
+            self.scrollTop  = $D.scrollTop();
+            self.scrollLeft = $D.scrollLeft();
 
-            // Disable compensating on touch-enabled devices as they probably do not have scrollbars anyway
-            // and therefore we avoid of unnecessary layout reflow
-            if ( !$.fancybox.isTouch && !$( 'html' ).hasClass( 'fancybox-enabled' ) ) {
+            if ( !$.fancybox.getInstance() ) {
                 testWidth = $( 'body' ).width();
 
                 $( 'html' ).addClass( 'fancybox-enabled' );
 
-                testWidth = $( 'body' ).width() - testWidth;
+                if ( $.fancybox.isTouch ) {
 
-                // Body width has increased - compensate missing scrollbars
-                if ( testWidth > 1 ) {
-                    $( '<style id="fancybox-noscroll" type="text/css">' ).html( '.compensate-for-scrollbar, .fancybox-enabled body { margin-right: ' + testWidth + 'px; }' ).appendTo( 'head' );
+                    // Ugly workaround for iOS page shifting issue (when inputs get focus)
+                    // Do not apply for images, otherwise top/bottom bars will appear
+                    $.each( self.group, function( key, item ) {
+                        if ( item.type !== 'image' && item.type !== 'iframe' ) {
+                            galleryHasHtml = true;
+                            return false;
+                        }
+                    });
+
+                    if ( galleryHasHtml ) {
+                        $('body').css({
+                            position : 'fixed',
+                            width    : testWidth,
+                            top      : self.scrollTop * -1
+                        });
+                    }
+
+                } else {
+
+                    // Compare page width after adding "overflow:hidden"
+                    testWidth = $( 'body' ).width() - testWidth;
+
+                    // Width has changed - compensate missing scrollbars
+                    if ( testWidth > 1 ) {
+                        $( '<style id="fancybox-noscroll" type="text/css">' ).html( '.compensate-for-scrollbar, .fancybox-enabled body { margin-right: ' + testWidth + 'px; }' ).appendTo( 'head' );
+                    }
+
                 }
-
             }
 
             $container = $( self.opts.baseTpl )
@@ -484,18 +507,7 @@
         addEvents : function() {
             var self = this;
 
-            var runUpdate = function () {
-
-                $W.scrollTop( self.scrollTop ).scrollLeft( self.scrollLeft );
-
-                self.$refs.slider_wrap.show();
-
-                self.update();
-
-            };
-
             self.removeEvents();
-
 
             // Make navigation elements clickable
 
@@ -527,15 +539,17 @@
                     if ( e && e.originalEvent && e.originalEvent.type == "orientationchange" ) {
                         self.$refs.slider_wrap.hide();
 
-                        requestAFrame( runUpdate );
+                        requestAFrame(function () {
+                            self.$refs.slider_wrap.show();
+
+                            self.update();
+                        });
 
                     } else {
-
-                        runUpdate();
+                        self.update();
                     }
 
                 });
-
             });
 
 
@@ -555,10 +569,9 @@
 
             });
 
-
             // Enable keyboard navigation
 
-            $( document ).on('keydown.fb', function (e) {
+            $D.on('keydown.fb', function (e) {
                 var current = self.current,
                     keycode = e.keyCode || e.which;
 
@@ -654,9 +667,7 @@
         // ==================
 
         previous : function( duration ) {
-
             this.jumpTo( this.currIndex - 1, duration );
-
         },
 
 
@@ -664,9 +675,7 @@
         // ===================
 
         next : function( duration ) {
-
             this.jumpTo( this.currIndex + 1, duration );
-
         },
 
 
@@ -1354,7 +1363,6 @@
 
                             if ( textStatus === 'success' ) {
                                 self.setContent( slide, data );
-
                             }
 
                         },
@@ -1363,7 +1371,6 @@
 
                             if ( jqXHR && textStatus !== 'abort' ) {
                                 self.setError( slide );
-
                             }
 
                         }
@@ -1523,6 +1530,7 @@
 
                     // Clear timeout that checks if loading icon needs to be displayed
                     clearTimeout( slide.timouts );
+
                     slide.timouts = null;
 
                     if ( self.isClosing ) {
@@ -1964,7 +1972,6 @@
         // ====================================================
 
         focus : function() {
-
             var current = this.current;
             var $el;
 
@@ -2044,7 +2051,14 @@
                 return false;
             }
 
+            // If beforeClose callback prevents closing, make sure content is centered
             if ( self.trigger( 'beforeClose', e ) === false ) {
+                $.fancybox.stop( self.$refs.slider );
+
+                requestAFrame(function() {
+                    self.update( true, true, 150 );
+                });
+
                 return;
             }
 
@@ -2123,6 +2137,9 @@
             } else {
 
                 $( 'html' ).removeClass( 'fancybox-enabled' );
+                $( 'body' ).removeAttr( 'style' );
+
+                $W.scrollTop( self.scrollTop ).scrollLeft( self.scrollLeft );
 
                 $( '#fancybox-noscroll' ).remove();
 
@@ -2162,7 +2179,12 @@
                 return rez;
             }
 
-            self.$refs.container.trigger( name + '.fb', args );
+            if ( name === 'afterClose' ) {
+                $( document ).trigger( name + '.fb', args );
+
+            } else {
+                self.$refs.container.trigger( name + '.fb', args );
+            }
 
         },
 
@@ -2220,8 +2242,6 @@
 
             this.isHiddenControls = false;
 
-            self.$refs.container.addClass('fancybox-show-controls');
-
             $container
                 .toggleClass('fancybox-show-infobar', !!opts.infobar && self.group.length > 1)
                 .toggleClass('fancybox-show-buttons', !!opts.buttons )
@@ -2255,7 +2275,6 @@
 
             } else {
                 this.$refs.container.removeClass( 'fancybox-show-caption' );
-
             }
 
         }
@@ -2265,7 +2284,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.39",
+        version  : "3.0.40",
         defaults : defaults,
 
 
@@ -2507,7 +2526,7 @@
                 self.setTranslate( $el, to );
 
                 done();
-            }
+            };
 
             var frame = function ( timestamp ) {
                 curr = [];
@@ -2768,7 +2787,6 @@
 				params,
 				urlParams,
 				o,
-				id,
 				provider;
 
 			// Skip items that already have content type
@@ -2993,8 +3011,13 @@
 		self.startEvent = e;
 
 		// Skip if clicked on the scrollbar
-		if ( e.originalEvent.clientX > self.canvasWidth ) {
+		if ( e.originalEvent.clientX > self.canvasWidth + current.$slide.offset().left ) {
 			return true;
+		}
+
+		// Ignore taping on links, buttons and scrollable items
+		if ( isClickable( $target ) || isClickable( $target.parent() ) || ( isScrollable( $target ) ) ) {
+			return;
 		}
 
 		// If "touch" is disabled, then handle click event
@@ -3002,11 +3025,6 @@
 			self.endPoints = self.startPoints;
 
 			return self.ontap();
-		}
-
-		// Ignore taping on links, buttons and scrollable items
-		if ( isClickable( $target ) || isClickable( $target.parent() ) || ( isScrollable( $target ) && !$target.hasClass('fancybox-slide') ) ) {
-			return;
 		}
 
 		// Ignore right click
@@ -4114,3 +4132,84 @@
 	});
 
 }(document, window.jQuery));
+
+// ==========================================================================
+//
+// Hash
+// Enables linking to each modal
+//
+// ==========================================================================
+;(function (document, window, $) {
+	'use strict';
+
+    var currentHash = null;
+
+    function parseUrl() {
+        var hash    = window.location.hash.substr( 1 );
+        var rez     = hash.split( '-' );
+        var index   = parseInt( rez.pop( -1 ), 10 ) - 1;
+        var gallery = rez.join( '-' );
+
+        return {
+            hash    : hash,
+            index   : index,
+            gallery : gallery
+        };
+    }
+
+    $(window).on('hashchange.fb', function() {
+        var url = parseUrl();
+
+		if ( currentHash && currentHash !== url.gallery + '-' + url.index )  {
+			currentHash = null;
+
+			$.fancybox.close();
+		}
+
+    });
+
+    // Check hash when DOM becomes ready
+    $(function() {
+        var url = parseUrl();
+
+        // Open new instance
+        if ( url.gallery !== '' ) {
+            $( "[data-fancybox='" + url.gallery + "']" ).eq( url.index ).trigger( 'click' );
+        }
+
+    });
+
+    $(document).on({
+        'beforeMove.fb' : function( e, instance, current ) {
+            var gallery = current.opts.$orig ? current.opts.$orig.data( 'fancybox' ) : "";
+
+            currentHash = gallery + '-' + ( current.index + 1 );
+
+            // Update window hash
+            if ( gallery !== "" ) {
+				if ( "pushState" in history ) {
+                    history.pushState( "", document.title, window.location.pathname + window.location.search + '#' +  currentHash );
+
+				} else {
+					window.location.hash = currentHash;
+				}
+            }
+
+        }, 'beforeClose.fb' : function( e, instance, current ) {
+
+            // Remove hash from location bar
+            if ( current.opts.$orig && current.opts.$orig.data( 'fancybox' ) !== "" ) {
+                if ( "pushState" in history ) {
+                    history.pushState( "", document.title, window.location.pathname + window.location.search );
+
+                } else {
+                    window.location.hash = "";
+                }
+            }
+
+			currentHash = null;
+
+        }
+    });
+
+}(document, window, window.jQuery));
