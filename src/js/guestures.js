@@ -134,8 +134,13 @@
 		self.startEvent = e;
 
 		// Skip if clicked on the scrollbar
-		if ( e.originalEvent.clientX > self.canvasWidth ) {
+		if ( e.originalEvent.clientX > self.canvasWidth + current.$slide.offset().left ) {
 			return true;
+		}
+
+		// Ignore taping on links, buttons and scrollable items
+		if ( isClickable( $target ) || isClickable( $target.parent() ) || ( isScrollable( $target ) ) ) {
+			return;
 		}
 
 		// If "touch" is disabled, then handle click event
@@ -143,11 +148,6 @@
 			self.endPoints = self.startPoints;
 
 			return self.ontap();
-		}
-
-		// Ignore taping on links, buttons and scrollable items
-		if ( isClickable( $target ) || isClickable( $target.parent() ) || ( isScrollable( $target ) && !$target.hasClass('fancybox-slide') ) ) {
-			return;
 		}
 
 		// Ignore right click

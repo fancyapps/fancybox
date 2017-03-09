@@ -26,7 +26,15 @@ var banner = ['// ==================================================',
 // Concatenate & Minify JS
 
 gulp.task('scripts', function() {
-    return gulp.src(['src/js/core.js', 'src/js/media.js', 'src/js/guestures.js', 'src/js/slideshow.js', 'src/js/fullscreen.js', 'src/js/thumbs.js'])
+    return gulp.src([
+            'src/js/core.js',
+            'src/js/media.js',
+            'src/js/guestures.js',
+            'src/js/slideshow.js',
+            'src/js/fullscreen.js',
+            'src/js/thumbs.js',
+            'src/js/hash.js',
+        ])
         .pipe(concat('jquery.fancybox.js'))
         .pipe(replace(/({fancybox-version})/g, pkg.version))
         .pipe(header(banner, { pkg : pkg } ))
