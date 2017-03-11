@@ -270,7 +270,8 @@
   border-radius: 0;
   outline: none;
   background: transparent;
-  z-index: 10; }
+  z-index: 10;
+  cursor: pointer; }
 
 .fancybox-close-small:after {
   content: '×';
@@ -285,7 +286,6 @@
   text-align: center;
   border-radius: 50%;
   border-width: 0;
-  cursor: pointer;
   background: #fff;
   transition: background .2s;
   box-sizing: border-box;

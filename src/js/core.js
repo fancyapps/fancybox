@@ -94,7 +94,7 @@
         slideClass : '',
 
         // Base template for layout
-        baseTpl	: '<div class="fancybox-container fancybox-show-controls" role="dialog" tabindex="-1">' +
+        baseTpl	: '<div class="fancybox-container" role="dialog" tabindex="-1">' +
                 '<div class="fancybox-bg"></div>' +
                 '<div class="fancybox-controls">' +
                     '<div class="fancybox-infobar">' +
@@ -1163,14 +1163,14 @@
         update : function( andSlides, andContent, duration, callback ) {
 
             var self = this;
+            var leftValue;
 
-            var leftValue = ( self.current.pos * Math.floor( self.current.$slide.width() ) * -1 ) - ( self.current.pos * self.current.opts.gutter ) ;
-
-            if ( self.isAnimating === true ) {
+            if ( self.isAnimating === true || !self.current ) {
                 return;
             }
 
-            duration = parseInt( duration, 10 ) || 0;
+            leftValue = ( self.current.pos * Math.floor( self.current.$slide.width() ) * -1 ) - ( self.current.pos * self.current.opts.gutter );
+            duration  = parseInt( duration, 10 ) || 0;
 
             $.fancybox.stop( self.$refs.slider );
 
@@ -1969,7 +1969,6 @@
 
             if ( !$el || !$el.length ) {
                 $el = this.$refs.container;
-
             }
 
             $el.focus();
@@ -2233,6 +2232,7 @@
             this.isHiddenControls = false;
 
             $container
+                .addClass('fancybox-show-controls')
                 .toggleClass('fancybox-show-infobar', !!opts.infobar && self.group.length > 1)
                 .toggleClass('fancybox-show-buttons', !!opts.buttons )
                 .toggleClass('fancybox-is-modal',     !!opts.modal );
