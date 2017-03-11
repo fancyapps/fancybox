@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.43
+// fancyBox v3.0.44
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -2284,7 +2284,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.43",
+        version  : "3.0.44",
         defaults : defaults,
 
 
@@ -4148,7 +4148,7 @@
     function parseUrl() {
         var hash    = window.location.hash.substr( 1 );
         var rez     = hash.split( '-' );
-        var index   = rez.length > 1 ? parseInt( rez.pop( -1 ), 10 ) || 1 : 1;
+        var index   = rez.length > 1 && /^\+?\d+$/.test( rez[ rez.length - 1 ] ) ? parseInt( rez.pop( -1 ), 10 ) || 1 : 1;
         var gallery = rez.join( '-' );
 
 		// Index is starting from 1
@@ -4170,7 +4170,7 @@
         if ( url.gallery !== '' ) {
 
 			// If we can find element matching 'data-fancybox' atribute, then trigger click event for that ..
-			$el = $( "[data-fancybox='" + url.gallery + "']" ).eq( url.index - 1 );
+			$el = $( "[data-fancybox='" + $.escapeSelector( url.gallery ) + "']" ).eq( url.index - 1 );
 
             if ( $el.length ) {
 				$el.trigger( 'click' );
@@ -4178,7 +4178,7 @@
 			} else {
 
 				// .. if not, try finding element by ID
-				$( "#" + url.gallery + "" ).trigger( 'click' );
+				$( "#" + $.escapeSelector( url.gallery ) + "" ).trigger( 'click' );
 
 			}
 
