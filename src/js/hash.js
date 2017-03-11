@@ -89,7 +89,7 @@
 			var url     = parseUrl();
 			var gallery = getGallery( instance );
 
-			if ( gallery == url.gallery ) {
+			if ( url.gallery && gallery == url.gallery ) {
 				instance.currIndex = url.index - 1;
 			}
 

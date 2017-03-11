@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.0.42
+// fancyBox v3.0.43
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -2284,7 +2284,7 @@
 
     $.fancybox = {
 
-        version  : "3.0.42",
+        version  : "3.0.43",
         defaults : defaults,
 
 
@@ -4224,7 +4224,7 @@
 			var url     = parseUrl();
 			var gallery = getGallery( instance );
 
-			if ( gallery == url.gallery ) {
+			if ( url.gallery && gallery == url.gallery ) {
 				instance.currIndex = url.index - 1;
 			}
 
