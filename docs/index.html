@@ -6,7 +6,7 @@
 	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
 	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 
-	<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Open+Sans:400,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Open+Sans:400,700" rel="stylesheet" />
 
 	<script src="//code.jquery.com/jquery-3.1.1.min.js"></script>
 
@@ -263,7 +263,9 @@
 
 			<ul>
 				<li><a href="http://fancyapps.com/fancybox/3/">Homepage</a></li>
-				<li><a href="https://github.com/fancyapps/fancyBox">Github</a></li>
+				<li><a href="http://fancyapps.com/fancybox/3/docs/">Documentation</a></li>
+				<li><a href="http://fancyapps.com/store/">Store</a></li>
+				<li><a href="https://github.com/fancyapps/fancybox">Github</a></li>
 			</ul>
 		</div>
 	</header>
@@ -806,7 +808,8 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 	// Error message template
 	errorTpl : '&lt;div class=&quot;fancybox-error&quot;&gt;&lt;p&gt;The requested content cannot be loaded. &lt;br /&gt; Please try again later.&lt;p&gt;&lt;/div&gt;',
 
-	closeTpl : '&lt;button data-fancybox-close class=&quot;fancybox-close-small&quot;&gt;×&lt;/button&gt;',
+	// This will be appended to html content, if &quot;smallBtn&quot; option is not set to false
+	closeTpl : '&lt;button data-fancybox-close class=&quot;fancybox-close-small&quot;&gt;&lt;/button&gt;',
 
 	// Container is injected into this element
 	parentEl : 'body',
@@ -823,7 +826,7 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 	// Close when clicked outside of the content
 	closeClickOutside : true,
 
-	// Callbacks
+	// Callbacks; See Documentation/API/Events for description and samples
 	beforeLoad	 : $.noop,
 	afterLoad    : $.noop,
 	beforeMove 	 : $.noop,
@@ -835,7 +838,6 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 	afterClose	 : $.noop,
 	onActivate   : $.noop,
 	onDeactivate : $.noop
-
 }
 </pre>
 
@@ -1049,7 +1051,6 @@ $instance.close();
 
 				<p>
 					fancyBox fires several events.
-
 				</p>
 
 				<pre><code>beforeLoad	 : Before the content of a slide is being loaded
@@ -1094,8 +1095,13 @@ onDeactivate : When other instance has been activated
 &lt;/script&gt;</code></pre>
 
 				<p>
-					It is also possible to attach an event handler for all instances.
+					Each callback receives two parameters - current fancyBox instance and current gallery object, if exists.
+				</p>
+
+				<p>
+					It is also possible to attach event handler for all instances.
 					To prevent interfering with other scripts, these events have been namespaced to <code>.fb</code>.
+					These handlers receive 3 parameters - event, current fancyBox instance and current gallery object.
 				</p>
 				<p>
 					Here is an example of binding to the <code>onComplete</code> event:
@@ -1106,6 +1112,17 @@ onDeactivate : When other instance has been activated
 });</code></pre>
 
 
+				<p>
+					If you wish to prevent closing of the modal, for example, if form is not validating, you can use <code>beforeClose</code>
+					callback. Simply return <code>false</code>:
+				</p>
+
+				<pre><code>beforeClose : function( instance, current, e ) {
+	if ( $('#my-field').val() == '' ) {
+		return false;
+	}
+}
+</code></pre>
 
 				<h2 id="modules">Modules</h2>
 
@@ -1129,7 +1146,11 @@ touch : {
 thumbs : {
 	showOnStart   : false, // Display thumbnails on opening
 	hideOnClosing : true   // Hide thumbnail grid when closing animation starts
-}</code></pre>
+},
+fullScreen : {
+	requestOnStart : false // Request fullscreen mode on opening
+},
+hash : false // Hash value</code></pre>
 
 				<p>
 					Example (show thumbnails on start):
@@ -1172,16 +1193,23 @@ Thumbs.hide();
 Thumbs.show();
 Thumbs.toggle();
 
-FullScreen.isAvailable();
-FullScreen.isActivated();
-FullScreen.launch();
+FullScreen.request( elem );
 FullScreen.exit();
-FullScreen.toggle();
+FullScreen.toggle( elem );
+FullScreen.isFullscreen();
+FullScreen.enabled();
 
 SlideShow.start();
 SlideShow.stop();
 SlideShow.toggle();
 </code></pre>
+
+				<p>
+					If you wish to disable hash module, use this snippet (after including JS file):
+				</p>
+
+				<pre><code>$.fancybox.defaults.hash = false;</code></pre>
+
 <!--
 
 FAQ
@@ -1298,7 +1326,6 @@ FAQ
 			</p>
 		</div>
 	</footer>
-
 	<script>
 
 		/* Sticky nvigation */
