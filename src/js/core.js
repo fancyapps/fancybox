@@ -189,8 +189,7 @@
 
         rect = el.getBoundingClientRect();
 
-        return rect.bottom > 0 &&
-                rect.right > 0 &&
+        return rect.bottom > 0 && rect.right > 0 &&
                 rect.left < (window.innerWidth || document.documentElement.clientWidth)  &&
                 rect.top < (window.innerHeight || document.documentElement.clientHeight);
     };
@@ -526,7 +525,10 @@
             $( window ).on('orientationchange.fb resize.fb', function(e) {
                 requestAFrame(function() {
 
-                    if ( e && e.originalEvent && e.originalEvent.type == "orientationchange" ) {
+                    if ( e && e.originalEvent && e.originalEvent.type === "resize" ) {
+                        self.update();
+
+                    } else {
                         self.$refs.slider_wrap.hide();
 
                         requestAFrame(function () {
@@ -535,8 +537,6 @@
                             self.update();
                         });
 
-                    } else {
-                        self.update();
                     }
 
                 });
@@ -917,35 +917,31 @@
 
             self.trigger( 'beforeZoom' + type );
 
-            requestAFrame(function() {
+            $what.css( 'transition', 'all ' + duration + 'ms' );
 
-                $what.css( 'transition', 'all ' + duration + 'ms' );
+            $.fancybox.setTranslate( $what, end );
 
-                $.fancybox.setTranslate( $what, end );
+            setTimeout(function() {
+                var reset;
 
-                setTimeout(function() {
-                    requestAFrame(function() {
-                        var reset;
+                $what.css( 'transition', 'none' );
 
-                        $what.css( 'transition', 'none' );
+                reset = $.fancybox.getTranslate( $what );
 
-                        reset = $.fancybox.getTranslate( $what );
+                reset.scaleX = 1;
+                reset.scaleY = 1;
 
-                        reset.scaleX = 1;
-                        reset.scaleY = 1;
+                // Reset scalex/scaleY values; this helps for perfomance
+                $.fancybox.setTranslate( $what, reset );
 
-                        // Reset scalex/scaleY values; this helps for perfomance
-                        $.fancybox.setTranslate( $what, reset );
+                self.trigger( 'afterZoom' + type );
 
-                        self.trigger( 'afterZoom' + type );
+                callback.apply( self );
 
-                        callback.apply( self );
+                self.isAnimating = false;
 
-                        self.isAnimating = false;
-                    });
-                }, duration);
+            }, duration);
 
-            });
 
             return true;
 

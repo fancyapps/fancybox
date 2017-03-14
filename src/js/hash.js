@@ -77,7 +77,13 @@
 
 	// Get gallery name from current instance
 	function getGallery( instance ) {
-		var opts = instance.current ? instance.current.opts : instance.opts;
+		var opts;
+
+		if ( !instance ) {
+			return false;
+		}
+
+		opts = instance.current ? instance.current.opts : instance.opts;
 
 		return opts.$orig ? opts.$orig.data( 'fancybox' ) : ( opts.hash || '' );
 	}
@@ -117,7 +123,7 @@
 					var gallery = getGallery( instance );
 
 					// Make sure gallery start index matches index from hash
-					if ( url.gallery && gallery == url.gallery ) {
+					if ( gallery && url.gallery && gallery == url.gallery ) {
 						instance.currIndex = url.index - 1;
 					}
 
@@ -125,7 +131,7 @@
 		            var gallery = getGallery( instance );
 
 		            // Update window hash
-		            if ( gallery !== '' ) {
+		            if ( gallery && gallery !== '' ) {
 
 						if ( window.location.hash.indexOf( gallery ) < 0 ) {
 			                instance.opts.origHash = window.location.hash;
@@ -144,10 +150,10 @@
 
 		        }, 'beforeClose.fb' : function( e, instance, current ) {
 					var gallery  = getGallery( instance );
-					var origHash = instance.opts.origHash ? instance.opts.origHash : '';
+					var origHash = instance && instance.opts.origHash ? instance.opts.origHash : '';
 
 		            // Remove hash from location bar
-		            if ( gallery !== '' ) {
+		            if ( gallery && gallery !== '' ) {
 		                if ( "pushState" in history ) {
 		                    history.pushState( '', document.title, window.location.pathname + window.location.search + origHash );
 
