@@ -114,7 +114,7 @@
 
 	$(document).on('onInit.fb', function(e, instance) {
 
-		if ( !!instance.opts.slideShow && !instance.SlideShow && instance.group.length > 1 ) {
+		if ( instance && instance.group.length > 1 && !!instance.opts.slideShow && !instance.SlideShow ) {
 			instance.SlideShow = new SlideShow( instance );
 		}
 
@@ -122,7 +122,7 @@
 
 	$(document).on('beforeClose.fb onDeactivate.fb', function(e, instance) {
 
-		if ( instance.SlideShow ) {
+		if ( instance && instance.SlideShow ) {
 			instance.SlideShow.stop();
 		}
 

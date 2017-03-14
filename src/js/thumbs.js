@@ -195,7 +195,7 @@
 	});
 
 	$(document).on('beforeMove.fb', function(e, instance, item) {
-		var self = instance.Thumbs;
+		var self = instance && instance.Thumbs;
 
 		if ( !self ) {
 			return;
@@ -206,7 +206,6 @@
 			self.$button.hide();
 
 			self.hide();
-
 
 		} else {
 
@@ -227,11 +226,13 @@
 
 	$(document).on('beforeClose.fb', function(e, instance) {
 
-		if ( instance.Thumbs && instance.Thumbs.isVisible && instance.opts.thumbs.hideOnClosing !== false ) {
-			instance.Thumbs.close();
-		}
+		if ( instance && instance.Thumbs) {
+			if ( instance.Thumbs.isVisible && instance.opts.thumbs.hideOnClosing !== false ) {
+				instance.Thumbs.close();
+			}
 
-		instance.Thumbs = null;
+			instance.Thumbs = null;
+		}
 
 	});
 

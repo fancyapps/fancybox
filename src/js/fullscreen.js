@@ -7,117 +7,155 @@
 ;(function (document, $) {
 	'use strict';
 
-	var FullScreen = function( instance ) {
+	// Collection of methods supported by user browser
+	var fn = (function () {
 
-		this.instance = instance;
+		var fnMap = [
+			[
+				'requestFullscreen',
+				'exitFullscreen',
+				'fullscreenElement',
+				'fullscreenEnabled',
+				'fullscreenchange',
+				'fullscreenerror'
+			],
+			// new WebKit
+			[
+				'webkitRequestFullscreen',
+				'webkitExitFullscreen',
+				'webkitFullscreenElement',
+				'webkitFullscreenEnabled',
+				'webkitfullscreenchange',
+				'webkitfullscreenerror'
 
-		this.init();
+			],
+			// old WebKit (Safari 5.1)
+			[
+				'webkitRequestFullScreen',
+				'webkitCancelFullScreen',
+				'webkitCurrentFullScreenElement',
+				'webkitCancelFullScreen',
+				'webkitfullscreenchange',
+				'webkitfullscreenerror'
 
+			],
+			[
+				'mozRequestFullScreen',
+				'mozCancelFullScreen',
+				'mozFullScreenElement',
+				'mozFullScreenEnabled',
+				'mozfullscreenchange',
+				'mozfullscreenerror'
+			],
+			[
+				'msRequestFullscreen',
+				'msExitFullscreen',
+				'msFullscreenElement',
+				'msFullscreenEnabled',
+				'MSFullscreenChange',
+				'MSFullscreenError'
+			]
+		];
+
+		var val;
+		var ret = {};
+		var i, j;
+
+		for ( i = 0; i < fnMap.length; i++ ) {
+			val = fnMap[ i ];
+
+			if ( val && val[ 1 ] in document ) {
+				for ( j = 0; j < val.length; j++ ) {
+					ret[ fnMap[ 0 ][ j ] ] = val[ j ];
+				}
+
+				return ret;
+			}
+		}
+
+		return false;
+	})();
+
+	if ( !fn ) {
+		return;
+	}
+
+	var FullScreen = {
+		request : function ( elem ) {
+
+			elem = elem || document.documentElement;
+
+			elem[ fn.requestFullscreen ]( elem.ALLOW_KEYBOARD_INPUT );
+
+		},
+		exit : function () {
+			document[ fn.exitFullscreen ]();
+		},
+		toggle : function ( elem ) {
+
+			if ( this.isFullscreen() ) {
+				this.exit();
+			} else {
+				this.request( elem );
+			}
+
+		},
+		isFullscreen : function()  {
+			return Boolean( document[ fn.fullscreenElement ] );
+		},
+		enabled : function()  {
+			return Boolean( document[ fn.fullscreenEnabled ] );
+		}
 	};
 
-	$.extend( FullScreen.prototype, {
+	$(document).on({
+		'onInit.fb' : function(e, instance) {
+			var $container;
 
-		$button : null,
+			if ( instance && !!instance.opts.fullScreen && !instance.FullScreen) {
+				$container = instance.$refs.container;
 
-		init : function() {
-			var self = this;
+				instance.$refs.button_fs = $('<button data-fancybox-fullscreen class="fancybox-button fancybox-button--fullscreen" title="Full screen (F)"></button>')
+					.appendTo( instance.$refs.buttons );
 
-			if ( !self.isAvailable() ) {
-				return;
+				$container.on('click.fb-fullscreen', '[data-fancybox-fullscreen]', function(e) {
+
+					e.stopPropagation();
+					e.preventDefault();
+
+					FullScreen.toggle( $container[ 0 ] );
+
+				});
+
+				if ( instance.opts.fullScreen.requestOnStart === true ) {
+					FullScreen.request( $container[ 0 ] );
+				}
+
 			}
 
-			self.$button = $('<button data-fancybox-fullscreen class="fancybox-button fancybox-button--fullscreen" title="Full screen (F)"></button>')
-				.appendTo( self.instance.$refs.buttons );
+		}, 'beforeMove.fb' : function(e, instance) {
 
-			self.instance.$refs.container.on('click.fb-fullscreen', '[data-fancybox-fullscreen]', function(e) {
-
-				e.stopPropagation();
-				e.preventDefault();
-
-				self.toggle();
-
-			});
-
-			$(document).on('onUpdate.fb', function(e, instance) {
-				self.$button.toggle( !!instance.current.opts.fullScreen );
-
-				self.$button.toggleClass('fancybox-button-shrink', self.isActivated() );
-
-			});
-
-			$(document).on('afterClose.fb', function() {
-				self.exit();
-			});
-
-		},
-
-		isAvailable : function() {
-			var element = this.instance.$refs.container.get(0);
-
-			return !!(element.requestFullscreen || element.msRequestFullscreen || element.mozRequestFullScreen || element.webkitRequestFullscreen);
-
-		},
-
-		isActivated : function() {
-			return !(!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement);
-
-		},
-
-		launch : function() {
-			var element = this.instance.$refs.container.get(0);
-
-			if ( !element || this.instance.isClosing ) {
-				return;
+			if ( instance && instance.$refs.button_fs ) {
+				instance.$refs.button_fs.toggle( !!instance.current.opts.fullScreen );
 			}
 
-			if (element.requestFullscreen) {
-				element.requestFullscreen();
-
-			} else if (element.msRequestFullscreen) {
-				element.msRequestFullscreen();
-
-			} else if (element.mozRequestFullScreen) {
-				element.mozRequestFullScreen();
-
-			} else if (element.webkitRequestFullscreen) {
-				element.webkitRequestFullscreen(element.ALLOW_KEYBOARD_INPUT);
-			}
-
-		},
-
-		exit : function() {
-
-			if (document.exitFullscreen) {
-				document.exitFullscreen();
-
-			} else if (document.msExitFullscreen) {
-				document.msExitFullscreen();
-
-			} else if (document.mozCancelFullScreen) {
-				document.mozCancelFullScreen();
-
-			} else if (document.webkitExitFullscreen) {
-				document.webkitExitFullscreen();
-			}
-
-		},
-
-		toggle : function() {
-
-			if ( this.isActivated() ) {
-				this.exit();
-
-			} else if ( this.isAvailable() ) {
-				this.launch();
-			}
-
+		}, 'beforeClose.fb':  function() {
+			FullScreen.exit();
 		}
 	});
 
-	$(document).on('onInit.fb', function(e, instance) {
+	$(document).on(fn.fullscreenchange, function() {
+		var instance = $.fancybox.getInstance();
+		var  $what   = instance ? instance.current.$placeholder : null;
 
-		if ( !!instance.opts.fullScreen && !instance.FullScreen) {
-			instance.FullScreen = new FullScreen( instance );
+		if ( $what ) {
+
+			// If image is zooming, then this will force it to stop and reposition properly
+			$what.css( 'transition', 'none' );
+
+			instance.isAnimating = false;
+
+			instance.update( true, true, 0 );
 		}
 
 	});

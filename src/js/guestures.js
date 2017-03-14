@@ -742,7 +742,7 @@
 
 	$(document).on('onActivate.fb', function (e, instance) {
 
-		if ( !instance.Guestures ) {
+		if ( instance && !instance.Guestures ) {
 			instance.Guestures = new Guestures( instance );
 		}
 
@@ -750,7 +750,7 @@
 
 	$(document).on('beforeClose.fb', function (e, instance) {
 
-		if ( instance.Guestures ) {
+		if ( instance && instance.Guestures ) {
 			instance.Guestures.destroy();
 		}
 
