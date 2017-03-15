@@ -43,6 +43,11 @@ A commercial license is required for all commercial applications (including site
 
 [Read more about fancyBox license](http://fancyapps.com/fancybox/#license).
 
-## Bug tracker
+## Bugs and feature requests
 
 If you find a bug, please report it [here on Github](https://github.com/fancyapps/fancybox/issues)!
+Try to be as detailed as possible in your report.
+
+Feature requests are welcome. Please look for existing ones and use GitHub's "reactions" feature to vote.
+
+Please do not use the issue tracker for personal support requests - use Stack Overflow ([fancybox-3](http://stackoverflow.com/questions/tagged/fancybox-3) tag) instead.
