@@ -43,6 +43,20 @@ A commercial license is required for all commercial applications (including site
 
 [Read more about fancyBox license](http://fancyapps.com/fancybox/#license).
 
-## Bug tracker
+## Bugs and feature requests
 
-If you find a bug, please report it [here on Github](https://github.com/fancyapps/fancybox/issues)!
+If you find a bug, please report it [here on Github](https://github.com/fancyapps/fancybox/issues).
+
+Guidelines for bug reports:
+
+1. Use the GitHub issue search — check if the issue has already been reported.
+2. Check if the issue has been fixed — try to reproduce it using the latest master or development branch in the repository.
+3. Isolate the problem — create a reduced test case and a live example. You can use CodePen to fork any demo found on documentation to use it as a template.
+
+A good bug report shouldn't leave others needing to chase you up for more information.
+Please try to be as detailed as possible in your report.
+
+
+Feature requests are welcome. Please look for existing ones and use GitHub's "reactions" feature to vote.
+
+Please do not use the issue tracker for personal support requests - use Stack Overflow ([fancybox-3](http://stackoverflow.com/questions/tagged/fancybox-3) tag) instead.
