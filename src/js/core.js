@@ -138,6 +138,83 @@
         // Close when clicked outside of the content
         closeClickOutside : true,
 
+        // porperties for media type, can be extended to support more video type
+        media : {
+            youtube: {
+                matcher: /(youtube\.com|youtu\.be|youtube\-nocookie\.com)\/(watch\?(.*&)?v=|v\/|u\/|embed\/?)?(videoseries\?list=(.*)|[\w-]{11}|\?listType=(.*)&list=(.*))(.*)/i,
+                params: {
+                    autoplay: 1,
+                    autohide: 1,
+                    fs: 1,
+                    rel: 0,
+                    hd: 1,
+                    wmode: 'transparent',
+                    enablejsapi: 1,
+                    html5: 1
+                },
+                paramPlace : 8,
+                type: 'iframe',
+                url: '//www.youtube.com/embed/$4',
+                thumb: '//img.youtube.com/vi/$4/hqdefault.jpg'
+            },
+
+            vimeo: {
+                matcher: /^.+vimeo.com\/(.*\/)?([\d]+)(.*)?/,
+                params: {
+                    autoplay: 1,
+                    hd: 1,
+                    show_title: 1,
+                    show_byline: 1,
+                    show_portrait: 0,
+                    fullscreen: 1,
+                    api: 1
+                },
+                paramPlace : 3,
+                type: 'iframe',
+                url: '//player.vimeo.com/video/$2'
+            },
+
+            metacafe: {
+                matcher: /metacafe.com\/watch\/(\d+)\/(.*)?/,
+                type: 'iframe',
+                url: '//www.metacafe.com/embed/$1/?ap=1'
+            },
+
+            dailymotion: {
+                matcher: /dailymotion.com\/video\/(.*)\/?(.*)/,
+                params: {
+                    additionalInfos: 0,
+                    autoStart: 1
+                },
+                type: 'iframe',
+                url: '//www.dailymotion.com/embed/video/$1'
+            },
+
+            vine: {
+                matcher: /vine.co\/v\/([a-zA-Z0-9\?\=\-]+)/,
+                type: 'iframe',
+                url: '//vine.co/v/$1/embed/simple'
+            },
+
+            instagram: {
+                matcher: /(instagr\.am|instagram\.com)\/p\/([a-zA-Z0-9_\-]+)\/?/i,
+                type: 'image',
+                url: '//$1/p/$2/media/?size=l'
+            },
+
+            // Examples:
+            // http://maps.google.com/?ll=48.857995,2.294297&spn=0.007666,0.021136&t=m&z=16
+            // http://maps.google.com/?ll=48.857995,2.294297&spn=0.007666,0.021136&t=m&z=16
+            // https://www.google.lv/maps/place/Googleplex/@37.4220041,-122.0833494,17z/data=!4m5!3m4!1s0x0:0x6c296c66619367e0!8m2!3d37.4219998!4d-122.0840572
+            google_maps: {
+                matcher: /(maps\.)?google\.([a-z]{2,3}(\.[a-z]{2})?)\/(((maps\/(place\/(.*)\/)?\@(.*),(\d+.?\d+?)z))|(\?ll=))(.*)?/i,
+                type: 'iframe',
+                url: function (rez) {
+                    return '//maps.google.' + rez[2] + '/?ll=' + ( rez[9] ? rez[9] + '&z=' + Math.floor(  rez[10]  ) + ( rez[12] ? rez[12].replace(/^\//, "&") : '' )  : rez[12] ) + '&output=' + ( rez[12] && rez[12].indexOf('layer=c') > 0 ? 'svembed' : 'embed' );
+                }
+            }
+        },
+
         // Callbacks
         beforeLoad	 : $.noop,
         afterLoad    : $.noop,
