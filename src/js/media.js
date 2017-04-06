@@ -32,11 +32,6 @@
 		return url;
 	};
 
-	// Object containing properties for each media type
-	// read from defaults
-
-	var media = $.fancybox.defaults.media
-
 	$(document).on('onInit.fb', function (e, instance) {
 
 		$.each(instance.group, function( i, item ) {
@@ -57,7 +52,7 @@
 
 			// Look for any matching media type
 
-			$.each(media, function ( n, el ) {
+			$.each($.fancybox.defaults.media, function ( n, el ) {
 				rez = url.match(el.matcher);
 				o   = {};
 				provider = n;
