@@ -377,7 +377,7 @@
 
                 // Step 2 - Make sure we have supported content type
 
-                type = obj.type;
+                type = obj.type || obj.opts.type;
                 src  = obj.src || '';
 
                 if ( !type ) {
@@ -396,9 +396,9 @@
 
                     }
 
-                    obj.type = type;
-
                 }
+                
+                obj.type = type;
 
                 // Step 3 - Some adjustments
 
