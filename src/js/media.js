@@ -184,22 +184,20 @@
 				if ( type === 'iframe' ) {
 					$.extend(true, item.opts, {
 						iframe : {
-							preload   : false,
-							scrolling : "no"
+							preload : false,
+							attr    : {
+								scrolling : "no"
+							}
 						},
 						smallBtn   : false,
 						closeBtn   : true,
-						fullScreen : false,
-						slideShow  : false
+						slideShow  : false,
+						//transitionEffect : false,
+						//animationEffect  : false,
 					});
 
 					item.opts.slideClass += ' fancybox-slide--video';
 				}
-
-			} else {
-
-				// If no content type is found, then set it to `iframe` as fallback
-				item.type = 'iframe';
 
 			}
 

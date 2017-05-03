@@ -25,14 +25,27 @@
 		init : function() {
 			var self = this;
 
-			self.$button = $('<button data-fancybox-thumbs class="fancybox-button fancybox-button--thumbs" title="Thumbnails (G)"></button>')
-				.appendTo( this.instance.$refs.buttons )
-				.on('touchend click', function(e) {
-					e.stopPropagation();
-					e.preventDefault();
+			var first  = self.instance.group[0],
+				second = self.instance.group[1];
 
+			self.$button = self.instance.$refs.toolbar.find( '[data-fancybox-thumbs]' );
+
+			if ( self.instance.group.length > 1 && self.instance.group[ self.instance.currIndex ].opts.thumbs && (
+		    		( first.type == 'image'  || first.opts.thumb  || first.opts.$thumb ) &&
+		    		( second.type == 'image' || second.opts.thumb || second.opts.$thumb )
+			)) {
+
+				self.$button.on('click', function() {
 					self.toggle();
 				});
+
+				self.isActive = true;
+
+			} else {
+				self.$button.hide();
+
+				self.isActive = false;
+			}
 
 		},
 
@@ -131,7 +144,7 @@
 
 		update : function() {
 
-			this.instance.$refs.container.toggleClass('fancybox-container--thumbs', this.isVisible);
+			this.instance.$refs.container.toggleClass( 'fancybox-show-thumbs', this.isVisible );
 
 			if ( this.isVisible ) {
 
@@ -147,6 +160,7 @@
 				this.$grid.hide();
 			}
 
+			// Update content position
 			this.instance.update();
 
 		},
@@ -169,69 +183,66 @@
 
 		toggle : function() {
 
-			if ( this.isVisible ) {
-				this.hide();
+			this.isVisible = !this.isVisible;
 
-			} else {
-				this.show();
+			this.update();
+
+		}
+
+	});
+
+	$(document).on({
+
+		'onInit.fb' : function(e, instance) {
+
+			if ( instance && !instance.Thumbs ) {
+				instance.Thumbs = new FancyThumbs( instance );
 			}
-		}
 
-	});
+		},
 
-	$(document).on('onInit.fb', function(e, instance) {
-		var first  = instance.group[0],
-			second = instance.group[1];
+		'beforeShow.fb' : function(e, instance, item, firstRun) {
+			var self = instance && instance.Thumbs;
 
-		if ( !!instance.opts.thumbs && !instance.Thumbs && instance.group.length > 1 && (
-		    		( first.type == 'image'  || first.opts.thumb  || first.opts.$thumb ) &&
-		    		( second.type == 'image' || second.opts.thumb || second.opts.$thumb )
-			 	)
-		   ) {
+			if ( !self || !self.isActive ) {
+				return;
+			}
 
-			instance.Thumbs = new FancyThumbs( instance );
-		}
+			if ( item.modal ) {
+				self.$button.hide();
 
-	});
+				self.hide();
 
-	$(document).on('beforeMove.fb', function(e, instance, item) {
-		var self = instance && instance.Thumbs;
+				return;
+			}
 
-		if ( !self ) {
-			return;
-		}
-
-		if ( item.modal ) {
-
-			self.$button.hide();
-
-			self.hide();
-
-		} else {
-
-			if ( instance.opts.thumbs.showOnStart === true && instance.firstRun ) {
+			if ( firstRun && instance.opts.thumbs.autoStart === true ) {
 				self.show();
-
 			}
-
-			self.$button.show();
 
 			if ( self.isVisible ) {
 				self.focus();
 			}
+		},
 
-		}
+		'afterKeydown.fb' : function(e, instance, current, keypress, keycode) {
+			var self = instance && instance.Thumbs;
 
-	});
+			// "G"
+			if ( self && self.isActive && keycode === 71 ) {
+				keypress.preventDefault();
 
-	$(document).on('beforeClose.fb', function(e, instance) {
+				instance.Thumbs.toggle();
+			}
 
-		if ( instance && instance.Thumbs) {
-			if ( instance.Thumbs.isVisible && instance.opts.thumbs.hideOnClosing !== false ) {
+		},
+
+		'beforeClose.fb' : function( e, instance ) {
+
+			if ( instance && instance.Thumbs && instance.Thumbs.isVisible && instance.opts.thumbs.hideOnClose !== false ) {
 				instance.Thumbs.close();
 			}
 
-			instance.Thumbs = null;
 		}
 
 	});

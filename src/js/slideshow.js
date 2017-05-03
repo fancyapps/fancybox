@@ -4,7 +4,7 @@
 // Enables slideshow functionality
 //
 // Example of usage:
-// $.fancybox.getInstance().slideShow.start()
+// $.fancybox.getInstance().SlideShow.start()
 //
 // ==========================================================================
 ;(function (document, $) {
@@ -27,12 +27,16 @@
 		init : function() {
 			var self = this;
 
-			self.$button = $('<button data-fancybox-play class="fancybox-button fancybox-button--play" title="Slideshow (P)"></button>')
-				.appendTo( self.instance.$refs.buttons );
+			self.$button = self.instance.$refs.toolbar.find('[data-fancybox-play]');
 
-			self.instance.$refs.container.on('click', '[data-fancybox-play]', function() {
-				self.toggle();
-			});
+			if ( self.instance.group.length > 1 && self.instance.group[ self.instance.currIndex ].opts.slideShow ) {
+				self.$button.on('click', function() {
+					self.toggle();
+				});
+
+			} else {
+				self.$button.hide();
+			}
 
 		},
 
@@ -41,7 +45,6 @@
 
 			// Check if reached last element
 			if ( self.instance && self.instance.current && (self.instance.current.opts.loop || self.instance.currIndex < self.instance.group.length - 1 )) {
-
 				self.timer = setTimeout(function() {
 					self.instance.next();
 
@@ -50,6 +53,7 @@
 			} else {
 				self.stop();
 			}
+
 		},
 
 		clear : function() {
@@ -62,39 +66,32 @@
 
 		start : function() {
 			var self = this;
+			var current = self.instance.current;
 
-			self.stop();
-
-			if ( self.instance && self.instance.current && ( self.instance.current.opts.loop || self.instance.currIndex < self.instance.group.length - 1 )) {
-
-				self.instance.$refs.container.on({
-					'beforeLoad.fb.player'	: $.proxy(self, "clear"),
-					'onComplete.fb.player'	: $.proxy(self, "set"),
-				});
+			if ( self.instance && current && ( current.opts.loop || current.index < self.instance.group.length - 1 )) {
 
 				self.isActive = true;
 
-				if ( self.instance.current.isComplete ) {
+				self.$button
+					.attr( 'title', current.opts.i18n[ current.opts.lang ].PLAY_STOP )
+					.addClass( 'fancybox-button--pause' );
+
+				if ( current.isComplete ) {
 					self.set();
 				}
-
-				self.instance.$refs.container.trigger('onPlayStart');
-
-				self.$button.addClass('fancybox-button--pause');
 			}
 
 		},
 
-		stop: function() {
+		stop : function() {
 			var self = this;
+			var current = self.instance.current;
 
 			self.clear();
 
-			self.instance.$refs.container
-				.trigger('onPlayEnd')
-				.off('.player');
-
-			self.$button.removeClass('fancybox-button--pause');
+			self.$button
+				.attr( 'title', current.opts.i18n[ current.opts.lang ].PLAY_START )
+				.removeClass( 'fancybox-button--pause' );
 
 			self.isActive = false;
 		},
@@ -112,20 +109,72 @@
 
 	});
 
-	$(document).on('onInit.fb', function(e, instance) {
+	$(document).on({
+		'onInit.fb' : function(e, instance, current) {
 
-		if ( instance && instance.group.length > 1 && !!instance.opts.slideShow && !instance.SlideShow ) {
-			instance.SlideShow = new SlideShow( instance );
+			if ( instance && !instance.SlideShow  ) {
+				instance.SlideShow = new SlideShow( instance );
+			}
+
+		},
+
+		'beforeShow.fb' : function(e, instance, current, firstRun) {
+			var slideShow = instance && instance.SlideShow;
+
+			if ( slideShow ) {
+
+				if ( firstRun && current.opts.slideShow.autoStart ) {
+					slideShow.start();
+
+				} else if ( slideShow.isActive )  {
+					slideShow.clear();
+				}
+
+			}
+
+		},
+
+		'afterShow.fb' : function(e, instance, current) {
+			var slideShow = instance && instance.SlideShow;
+
+			if ( slideShow && slideShow.isActive ) {
+				slideShow.set();
+			}
+
+		},
+
+		'afterKeydown.fb' : function(e, instance, current, keypress, keycode) {
+
+			// "P" or Spacebar
+			if ( instance && instance.SlideShow && ( keycode === 80 || keycode === 32 ) && !$(document.activeElement).is('button,a,input') ) {
+				instance.SlideShow.toggle();
+			}
+
+		},
+
+		'beforeClose.fb onDeactivate.fb' : function(e, instance) {
+
+			if ( instance && instance.SlideShow ) {
+				instance.SlideShow.stop();
+			}
+
 		}
 
 	});
 
-	$(document).on('beforeClose.fb onDeactivate.fb', function(e, instance) {
+	// Page Visibility API to pause slideshow when window is not active
+	$(document).on("visibilitychange", function() {
+		var instance  = $.fancybox.getInstance();
+		var slideShow = instance && instance.SlideShow;
 
-		if ( instance && instance.SlideShow ) {
-			instance.SlideShow.stop();
+		if ( slideShow && slideShow.isActive ) {
+			if ( document.hidden ) {
+				slideShow.clear();
+
+			} else {
+				slideShow.set();
+			}
 		}
-
 	});
 
 }(document, window.jQuery));

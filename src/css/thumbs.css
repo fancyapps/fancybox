@@ -13,9 +13,7 @@
 	box-shadow: 0 -4px 0, -4px -4px 0, 4px -4px 0, 0 0 0 32px inset, -4px 0 0, 4px 0 0, 0 4px 0, -4px 4px 0, 4px 4px 0;
 }
 
-.fancybox-container--thumbs .fancybox-controls,
-.fancybox-container--thumbs .fancybox-slider-wrap,
-.fancybox-container--thumbs .fancybox-caption-wrap {
+.fancybox-show-thumbs .fancybox-inner {
 	right: 220px;
 }
 
@@ -29,11 +27,12 @@
 	margin: 0;
 	padding: 5px 5px 0 0;
 	background: #fff;
-	z-index: 99993;
+	z-index: 99996;
 	word-break: normal;
 	-webkit-overflow-scrolling: touch;
 	-webkit-tap-highlight-color: rgba(0,0,0,0);
 	box-sizing: border-box;
+	z-index: 99995;
 }
 
 .fancybox-thumbs > ul {
@@ -60,7 +59,7 @@
 	position: relative;
 	cursor: pointer;
 	outline: none;
-	border: 5px solid #fff;
+	border: 5px solid transparent;
 	border-top-width: 0;
 	border-right-width: 0;
 	-webkit-tap-highlight-color: transparent;
@@ -107,13 +106,22 @@ li.fancybox-thumbs-loading {
 @media all and (max-width: 800px) {
 
 	.fancybox-thumbs {
-		display: none !important;
+	    top: 0;
+	    right: 0;
+	    bottom: 0;
+	    left: 0;
+	    width: auto;
+		height: auto;
+		padding: 70px 0;
+		background: rgba(0,0,0,0.8);
 	}
 
-	.fancybox-container--thumbs .fancybox-controls,
-	.fancybox-container--thumbs .fancybox-slider-wrap,
-	.fancybox-container--thumbs .fancybox-caption-wrap {
+	.fancybox-show-thumbs .fancybox-inner {
 		right: 0;
+	}
+
+	.fancybox-show-thumbs .fancybox-toolbar button:not(.fancybox-button--thumbs) {
+		display: none !important;
 	}
 
 }

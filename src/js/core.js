@@ -5,7 +5,17 @@
     // =========================================
 
     if ( !$ ) {
-        return undefined;
+        return;
+    }
+
+    // Check if fancyBox is already initialized
+    // ========================================
+
+    if ( $.fn.fancybox ) {
+
+        $.error('fancyBox already initialized');
+
+        return;
     }
 
     // Private default settings
@@ -13,35 +23,47 @@
 
     var defaults = {
 
-        // Animation duration in ms
-        speed : 330,
-
         // Enable infinite gallery navigation
-        loop : true,
-
-        // Should zoom animation change opacity, too
-        // If opacity is 'auto', then fade-out if image and thumbnail have different aspect ratios
-        opacity : 'auto',
+        loop : false,
 
         // Space around image, ignored if zoomed-in or viewport smaller than 800px
         margin : [44, 0],
 
-        // Horizontal space between slides
-        gutter : 30,
+        // Enable keyboard navigation
+        keyboard : true,
 
-        // Should display toolbars
-        infobar : true,
-        buttons : true,
+        // Should display navigation arrows at the screen edges
+        arrows : true,
 
-        // What buttons should appear in the toolbar
-        slideShow  : true,
-        fullScreen : true,
-        thumbs     : true,
-        closeBtn   : true,
+        // Should display infobar (counter and arrows at the top)
+        infobar : false,
 
-        // Should apply small close button at top right corner of the content
+        // Should display toolbar (buttons at the top)
+        toolbar : true,
+
+        // What buttons should appear in the top right corner.
+        // Buttons will be created using templates from `btnTpl` option
+        // and they will be placed into toolbar (class="fancybox-toolbar"` element)
+        buttons : [
+            'slideShow',
+            'fullScreen',
+            'thumbs',
+            'close'
+        ],
+
+        // Detect "idle" time in seconds
+        idleTime : 3,
+
+        // Should apply buttons at top right corner of the content
         // If 'auto' - will be set for content having type 'html', 'inline' or 'ajax'
+        // By default, it only has small close button, but you can use it to place anything
         smallBtn : 'auto',
+
+        // Disable right-click and use simple image protection for images
+        protect : false,
+
+        // Shortcut to make content "modal" - disable keyboard navigtion, hide buttons, etc
+        modal : false,
 
         image : {
 
@@ -49,9 +71,6 @@
             // Requires predefined image dimensions
             // If 'auto' - will zoom in thumbnail if 'width' and 'height' attributes are found
             preload : "auto",
-
-            // Protect an image from downloading by right-click
-            protect : false
 
         },
 
@@ -79,77 +98,237 @@
             // (note: Due to "Same Origin Policy", you can't get cross domain data).
             preload : true,
 
-            // Scrolling attribute for iframe tag
-            scrolling : 'no',
-
             // Custom CSS styling for iframe wrapping element
-            css : {}
+            // You can use this to set custom iframe dimensions
+            css : {},
+
+            // Iframe tag attributes
+            attr : {
+                scrolling : 'auto'
+            }
 
         },
 
-        // Custom CSS class for layout
-        baseClass : '',
+        // Open/close animation type
+        // Possible values:
+        //   false            - disable
+        //   "zoom"           - zoom images from/to thumbnail
+        //   "fade"
+        //
+        animationEffect : "zoom",
+
+        // Duration in ms for open/close animation
+        animationDuration : 300,
+
+        // Should image change opacity while zooming
+        // If opacity is 'auto', then opacity will be changed if image and thumbnail have different aspect ratios
+        zoomOpacity : 'auto',
+
+        // Transition effect between slides
+        //
+        // Possible values:
+        //   false            - disable
+        //   "fade'
+        //   "slide'
+        //   "circular'
+        //   "tube'
+        //   "zoom-in-out'
+        //   "rotate'
+        //
+        transitionEffect : "fade",
+
+        // Duration in ms for transition animation
+        transitionDuration : 300,
 
         // Custom CSS class for slide element
         slideClass : '',
 
+        // Custom CSS class for layout
+        baseClass : '',
+
         // Base template for layout
-        baseTpl	: '<div class="fancybox-container" role="dialog" tabindex="-1">' +
+        baseTpl	:
+            '<div class="fancybox-container" role="dialog" tabindex="-1">' +
                 '<div class="fancybox-bg"></div>' +
-                '<div class="fancybox-controls">' +
+                '<div class="fancybox-inner">' +
                     '<div class="fancybox-infobar">' +
-                        '<button data-fancybox-previous class="fancybox-button fancybox-button--left" title="Previous"></button>' +
+                        '<button data-fancybox-prev title="{{PREV}}" class="fancybox-button fancybox-button--left"></button>' +
                         '<div class="fancybox-infobar__body">' +
-                            '<span class="js-fancybox-index"></span>&nbsp;/&nbsp;<span class="js-fancybox-count"></span>' +
+                            '<span data-fancybox-index></span>&nbsp;/&nbsp;<span data-fancybox-count></span>' +
                         '</div>' +
-                        '<button data-fancybox-next class="fancybox-button fancybox-button--right" title="Next"></button>' +
+                        '<button data-fancybox-next title="{{NEXT}}" class="fancybox-button fancybox-button--right"></button>' +
                     '</div>' +
-                    '<div class="fancybox-buttons">' +
-                        '<button data-fancybox-close class="fancybox-button fancybox-button--close" title="Close (Esc)"></button>' +
+                    '<div class="fancybox-toolbar">' +
+                        '{{BUTTONS}}' +
+                    '</div>' +
+                    '<div class="fancybox-navigation">' +
+                        '<button data-fancybox-prev title="{{PREV}}" class="fancybox-arrow fancybox-arrow--left" />' +
+                        '<button data-fancybox-next title="{{NEXT}}" class="fancybox-arrow fancybox-arrow--right" />' +
+                    '</div>' +
+                    '<div class="fancybox-stage"></div>' +
+                    '<div class="fancybox-caption-wrap">' +
+                        '<div class="fancybox-caption"></div>' +
                     '</div>' +
                 '</div>' +
-                '<div class="fancybox-slider-wrap">' +
-                    '<div class="fancybox-slider"></div>' +
-                '</div>' +
-                '<div class="fancybox-caption-wrap"><div class="fancybox-caption"></div></div>' +
             '</div>',
 
         // Loading indicator template
         spinnerTpl : '<div class="fancybox-loading"></div>',
 
         // Error message template
-        errorTpl : '<div class="fancybox-error"><p>The requested content cannot be loaded. <br /> Please try again later.<p></div>',
+        errorTpl : '<div class="fancybox-error"><p>{{ERROR}}<p></div>',
 
-        // This will be appended to html content, if "smallBtn" option is not set to false
-        closeTpl : '<button data-fancybox-close class="fancybox-close-small"></button>',
+        btnTpl : {
+            slideShow  : '<button data-fancybox-play class="fancybox-button fancybox-button--play" title="{{PLAY_START}}"></button>',
+            fullScreen : '<button data-fancybox-fullscreen class="fancybox-button fancybox-button--fullscreen" title="{{FULL_SCREEN}}"></button>',
+            thumbs     : '<button data-fancybox-thumbs class="fancybox-button fancybox-button--thumbs" title="{{THUMBS}}"></button>',
+            close      : '<button data-fancybox-close class="fancybox-button fancybox-button--close" title="{{CLOSE}}"></button>',
+
+            // This small close button will be appended to your html/inline/ajax content by default,
+            // if "smallBtn" option is not set to false
+            smallBtn   : '<button data-fancybox-close class="fancybox-close-small"></button>'
+        },
 
         // Container is injected into this element
         parentEl : 'body',
 
-        // Enable gestures (tap, zoom, pan and pinch)
-        touch : true,
 
-        // Enable keyboard navigation
-        keyboard : true,
+        // Focus handling
+        // ==============
 
-        // Try to focus on first focusable element after opening
-        focus : true,
+        // Try to focus on the first focusable element after opening
+        autoFocus : true,
 
-        // Close when clicked outside of the content
-        closeClickOutside : true,
+        // Put focus back to active element after closing
+        backFocus : true,
+
+        // Do not let user to focus on element outside modal content
+        trapFocus : true,
+
+
+        // Module specific options
+        // =======================
+
+        slideShow : {
+            autoStart : false,
+            speed     : 3000
+        },
+
+        fullScreen : {
+            autoStart : false,
+        },
+
+        thumbs : {
+            autoStart   : false,   // Display thumbnails on opening
+	        hideOnClose : true     // Hide thumbnail grid when closing animation starts
+        },
+
+        touch : {
+        	vertical : true  // Allow vertical swipe
+        },
+
+        // Hash value when initializing manually,
+        // set `false` to disable hash change
+        hash : null,
+
 
         // Callbacks
-        beforeLoad	 : $.noop,
-        afterLoad    : $.noop,
-        beforeMove 	 : $.noop,
-        afterMove    : $.noop,
-        onComplete	 : $.noop,
+        //==========
 
-        onInit       : $.noop,
-        beforeClose	 : $.noop,
-        afterClose	 : $.noop,
-        onActivate   : $.noop,
-        onDeactivate : $.noop
+        // See Documentation/API/Events for more information
+        // Example:
+        /*
+            afterShow: function( instance, current ) {
+                // Clicked element:
+                console.info( current.opts.$orig );
+            }
+        */
+
+        onInit       : $.noop,  // When instance has been initialized
+
+        beforeLoad	 : $.noop,  // Before the content of a slide is being loaded
+        afterLoad    : $.noop,  // When the content of a slide is done loading
+
+        beforeShow 	 : $.noop,  // Before open animation starts
+        afterShow	 : $.noop,  // When content is done loading and animating
+
+        beforeClose	 : $.noop,  // Before the instance attempts to close. Return false to cancel the close.
+        afterClose	 : $.noop,  // After instance has been closed
+
+        onActivate   : $.noop,  // When instance is brought to front
+        onDeactivate : $.noop,  // When other instance has been activated
+
+
+        // Interaction
+        // ===========
+
+        // Use options below to customize taken action when user clicks or double clicks on the fancyBox area,
+        // each option can be string or method that returns value.
+        //
+        // Possible values:
+        //   "close"           - close instance
+        //   "next"            - move to next gallery item
+        //   "nextOrClose"     - move to next gallery item or close if gallery has only one item
+        //   "toggleControls"  - show/hide controls
+        //   "zoom"            - zoom image (if loaded)
+        //   false             - do nothing
+
+        // Clicked on the content
+        clickContent : function( current, event ) {
+            return current.type === 'image' ? 'zoom' : false;
+        },
+
+        // Clicked outside of the content
+        clickOutside : 'close',
+
+        // Same as preivous two, but for double click
+        dblclickContent : false,
+        dblclickOutside : false,
+
+
+        // Custom options when mobile device is detected
+        // =============================================
+
+        mobile : {
+            clickContent : function( current, event ) {
+                return current.type === 'image' ? 'toggleControls' : false;
+            },
+            clickOutside : function( current, event ) {
+                return current.type === 'image' ? 'toggleControls' : 'close';
+            },
+            dblclickContent : function( current, event ) {
+                return current.type === 'image' ? 'zoom' : false;
+            },
+            idleTime : false
+        },
+
+
+        // Internationalization
+        // ============
+
+		lang : 'en',
+        i18n : {
+            'en' : {
+                CLOSE       : 'Close',
+                NEXT        : 'Next',
+                PREV        : 'Previous',
+                ERROR       : 'The requested content cannot be loaded. <br/> Please try again later.',
+                PLAY_START  : 'Start slideshow',
+                PLAY_STOP   : 'Pause slideshow',
+                FULL_SCREEN : 'Full screen',
+                THUMBS      : 'Thumbnails'
+            },
+            'de' : {
+                CLOSE       : 'Schliessen',
+                NEXT        : 'Weiter',
+                PREV        : 'Zurück',
+                ERROR       : 'Die angeforderten Daten konnten nicht geladen werden. <br/> Bitte versuchen Sie es später nochmal.',
+                PLAY_START  : 'Diaschau starten',
+                PLAY_STOP   : 'Diaschau beenden',
+                FULL_SCREEN : 'Vollbild',
+                THUMBS      : 'Vorschaubilder'
+            }
+        }
 
     };
 
@@ -158,41 +337,50 @@
 
     var called = 0;
 
+
     // Check if an object is a jQuery object and not a native JavaScript object
     // ========================================================================
 
-    var isQuery = function (obj) {
+    var isQuery = function ( obj ) {
         return obj && obj.hasOwnProperty && obj instanceof $;
     };
 
-    // Handle multiple browsers for requestAnimationFrame()
-    // ====================================================
 
-    var requestAFrame = (function() {
-        return  window.requestAnimationFrame ||
+    // Handle multiple browsers for "requestAnimationFrame" and "cancelAnimationFrame"
+    // ===============================================================================
+
+    var requestAFrame = (function () {
+        return window.requestAnimationFrame ||
                 window.webkitRequestAnimationFrame ||
                 window.mozRequestAnimationFrame ||
-                function( callback ) {
-                    window.setTimeout(callback, 1000 / 60); };
-                })();
+                window.oRequestAnimationFrame ||
+                // if all else fails, use setTimeout
+                function (callback) {
+                    return window.setTimeout(callback, 1000 / 60);
+                };
+    })();
 
 
-    // Check if element is inside the viewport by at least 1 pixel
-    // ===========================================================
+    // Detect the supported transition-end event property name
+    // =======================================================
 
-    var isElementInViewport = function( el ) {
-        var rect;
+    var transitionEnd = (function () {
+        var t, el = document.createElement("fakeelement");
 
-        if ( typeof $ === "function" && el instanceof $ ) {
-            el = el[0];
+        var transitions = {
+            "transition"      : "transitionend",
+            "OTransition"     : "oTransitionEnd",
+            "MozTransition"   : "transitionend",
+            "WebkitTransition": "webkitTransitionEnd"
+        };
+
+        for (t in transitions) {
+            if (el.style[t] !== undefined){
+                return transitions[t];
+            }
         }
 
-        rect = el.getBoundingClientRect();
-
-        return rect.bottom > 0 && rect.right > 0 &&
-                rect.left < (window.innerWidth || document.documentElement.clientWidth)  &&
-                rect.top < (window.innerHeight || document.documentElement.clientHeight);
-    };
+    })();
 
 
     // Class definition
@@ -202,6 +390,12 @@
         var self = this;
 
         self.opts  = $.extend( true, { index : index }, defaults, opts || {} );
+
+        // Exclude buttons option from deep merging
+        if ( opts && $.isArray( opts.buttons ) ) {
+            self.opts.buttons = opts.buttons;
+        }
+
         self.id    = self.opts.id || ++called;
         self.group = [];
 
@@ -238,83 +432,101 @@
         init : function() {
             var self = this;
 
-            var galleryHasHtml = false;
-
             var testWidth;
             var $container;
+
+            var baseTpl = self.opts.baseTpl;
+            var buttonStr;
 
             self.scrollTop  = $D.scrollTop();
             self.scrollLeft = $D.scrollLeft();
 
-            if ( !$.fancybox.getInstance() ) {
+
+            // Hide scrollbars
+            // ===============
+
+            if ( !$.fancybox.getInstance() && !$.fancybox.isMobile && $( 'body' ).css('overflow') !== 'hidden' ) {
                 testWidth = $( 'body' ).width();
 
                 $( 'html' ).addClass( 'fancybox-enabled' );
 
-                if ( $.fancybox.isTouch ) {
+                // Compare body width after applying "overflow: hidden"
+                testWidth = $( 'body' ).width() - testWidth;
 
-                    // Ugly workaround for iOS page shifting issue (when inputs get focus)
-                    // Do not apply for images, otherwise top/bottom bars will appear
-                    $.each( self.group, function( key, item ) {
-                        if ( item.type !== 'image' && item.type !== 'iframe' ) {
-                            galleryHasHtml = true;
-                            return false;
-                        }
-                    });
-
-                    if ( galleryHasHtml ) {
-                        $('body').css({
-                            position : 'fixed',
-                            width    : testWidth,
-                            top      : self.scrollTop * -1
-                        });
-                    }
-
-                } else {
-
-                    // Compare page width after adding "overflow:hidden"
-                    testWidth = $( 'body' ).width() - testWidth;
-
-                    // Width has changed - compensate missing scrollbars
-                    if ( testWidth > 1 ) {
-                        $( '<style id="fancybox-noscroll" type="text/css">' ).html( '.compensate-for-scrollbar, .fancybox-enabled body { margin-right: ' + testWidth + 'px; }' ).appendTo( 'head' );
-                    }
-
+                // If width has changed - compensate missing scrollbars by adding right margin
+                if ( testWidth > 1 ) {
+                    $( '<style id="fancybox-style-noscroll" type="text/css">' ).html( '.compensate-for-scrollbar, .fancybox-enabled body { margin-right: ' + testWidth + 'px; }' ).appendTo( 'head' );
                 }
             }
 
-            $container = $( self.opts.baseTpl )
+
+            // Build html markup and set references
+            // ====================================
+
+            // Build html code for buttons and insert into main template
+            buttonStr = '';
+
+            $.each( self.opts.buttons, function( index, value ) {
+                buttonStr += ( self.opts.btnTpl[ value ] || '' );
+            });
+
+            baseTpl = baseTpl.replace( '\{\{BUTTONS\}\}', buttonStr );
+
+
+            // Create markup from base template, it will be initially hidden to
+            // avoid unnecessary work like painting while initializing is not complete
+            $container = $( self.translate( self, baseTpl ) )
+                .addClass( 'fancybox-is-hidden' )
                 .attr('id', 'fancybox-container-' + self.id)
-                .data( 'FancyBox', self )
                 .addClass( self.opts.baseClass )
-                .hide()
+                .data( 'FancyBox', self )
                 .prependTo( self.opts.parentEl );
 
             // Create object holding references to jQuery wrapped nodes
             self.$refs = {
                 container   : $container,
                 bg          : $container.find('.fancybox-bg'),
-                controls    : $container.find('.fancybox-controls'),
-                buttons     : $container.find('.fancybox-buttons'),
-                slider_wrap : $container.find('.fancybox-slider-wrap'),
-                slider      : $container.find('.fancybox-slider'),
-                caption     : $container.find('.fancybox-caption')
+                inner       : $container.find('.fancybox-inner'),
+                infobar     : $container.find('.fancybox-infobar'),
+                toolbar     : $container.find('.fancybox-toolbar'),
+                stage       : $container.find('.fancybox-stage'),
+                caption     : $container.find('.fancybox-caption'),
+                arrow_left  : $container.find('.fancybox-arrow--left'),
+                arrow_right : $container.find('.fancybox-arrow--right'),
             };
+
+            // Hide arrows if they are not needed
+            if ( !self.opts.arrows || self.group.length < 2 ) {
+                self.$refs.arrow_left.add( self.$refs.arrow_right ).hide();
+            }
 
             self.trigger( 'onInit' );
 
             // Bring to front and enable events
             self.activate();
 
-            // Try to avoid running multiple times
-            if ( self.current ) {
-                return;
-            }
-
+            // Build slides, load and reveal content
             self.jumpTo( self.currIndex );
-
         },
 
+
+        // Simple i18n support - replaces object keys found in template
+        // with corresponding values
+        // ============================================================
+
+        translate : function( obj, str ) {
+            var arr = obj.opts.i18n[ obj.opts.lang ];
+
+            return str.replace(/\{\{(\w+)\}\}/g, function(match, n) {
+                var value = arr[n];
+
+                if ( value === undefined ) {
+                    return match;
+                }
+
+                return value;
+            });
+        },
 
         // Create array of gally item objects
         // Check if each object has valid type and content
@@ -334,13 +546,19 @@
                     srcParts;
 
                 // Step 1 - Make sure we have an object
+                // ====================================
 
                 if ( $.isPlainObject( item ) ) {
 
+                    // We probably have manual usage here, something like
+                    // $.fancybox.open( [ { src : "image.jpg", type : "image" } ] )
+
                     obj  = item;
-                    opts = item.opts || {};
+                    opts = item.opts || item;
 
                 } else if ( $.type( item ) === 'object' && $( item ).length ) {
+
+                    // Here we propbably have jQuery collection returned by some selector
 
                     $item = $( item );
                     data  = $item.data();
@@ -366,6 +584,9 @@
 
                 } else {
 
+                    // Assume we have a simple html code, for example:
+                    // $.fancybox.open( '<div><h1>Hi!</h1></div>' );
+
                     obj = {
                         type    : 'html',
                         content : item + ''
@@ -373,9 +594,15 @@
 
                 }
 
+                // Each gallery object has full collection of options
                 obj.opts = $.extend( true, {}, self.opts, opts );
 
+                if ( $.fancybox.isMobile ) {
+                    obj.opts = $.extend( true, {}, obj.opts, obj.opts.mobile );
+                }
+
                 // Step 2 - Make sure we have supported content type
+                // =================================================
 
                 type = obj.type;
                 src  = obj.src || '';
@@ -394,6 +621,11 @@
                     } else if ( src.charAt(0) === '#' ) {
                         type = 'inline';
 
+                    } else {
+
+                        // If no content type is found, then set it to `image` as fallback
+        				item.type = 'image';
+
                     }
 
                     obj.type = type;
@@ -401,6 +633,7 @@
                 }
 
                 // Step 3 - Some adjustments
+                // =========================
 
                 obj.index = self.group.length;
 
@@ -423,9 +656,6 @@
 
                 } else if ( 'caption' in data ) {
                     obj.opts.caption = data.caption;
-
-                } else if ( opts.$orig ) {
-                    obj.opts.caption = $item.attr( 'title' );
                 }
 
                 // Make sure we have caption as a string
@@ -446,7 +676,7 @@
                 if ( obj.opts.smallBtn == 'auto' ) {
 
                     if ( $.inArray( type, ['html', 'inline', 'ajax'] ) > -1 ) {
-                        obj.opts.buttons  = false;
+                        obj.opts.toolbar  = false;
                         obj.opts.smallBtn = true;
 
                     } else {
@@ -455,6 +685,7 @@
 
                 }
 
+                // If the type is "pdf", then simply load file into iframe
                 if ( type === 'pdf' ) {
 
                     obj.type = 'iframe';
@@ -466,18 +697,36 @@
 
                 }
 
+                // Hide all buttons and disable interactivity for modal items
                 if ( obj.opts.modal ) {
 
-                    $.extend(true, obj.opts, {
-                        infobar		: 0,
-                        buttons		: 0,
-                        keyboard	: 0,
-                        slideShow	: 0,
-                        fullScreen	: 0,
-                        closeClickOutside	: 0
+                    obj.opts = $.extend(true, obj.opts, {
+                        // Remove buttons
+                        infobar : 0,
+                        toolbar : 0,
+
+                        smallBtn : 0,
+
+                        // Disable keyboard navigation
+                        keyboard : 0,
+
+                        // Disable some modules
+                        slideShow  : 0,
+                        fullScreen : 0,
+                        thumbs     : 0,
+                        touch      : 0,
+
+                        // Disable click event handlers
+                        clickContent    : false,
+                        clickOutside    : false,
+                        dblclickContent : false,
+                        dblclickOutside : false,
                     });
 
                 }
+
+                // Step 4 - Add processed object to group
+                // ======================================
 
                 self.group.push( obj );
 
@@ -487,11 +736,12 @@
 
 
         // Attach an event handler functions for:
-        //   - navigation elements
+        //   - navigation buttons
         //   - browser scrolling, resizing;
         //   - focusing
         //   - keyboard
-        // =================
+        //   - detect idle
+        // ======================================
 
         addEvents : function() {
             var self = this;
@@ -499,56 +749,60 @@
             self.removeEvents();
 
             // Make navigation elements clickable
-
             self.$refs.container.on('click.fb-close', '[data-fancybox-close]', function(e) {
                 e.stopPropagation();
                 e.preventDefault();
 
                 self.close( e );
 
-            }).on('click.fb-previous', '[data-fancybox-previous]', function(e) {
+            }).on( 'click.fb-prev touchend.fb-prev', '[data-fancybox-prev]', function(e) {
                 e.stopPropagation();
                 e.preventDefault();
 
                 self.previous();
 
-            }).on('click.fb-next', '[data-fancybox-next]', function(e) {
+            }).on( 'click.fb-next touchend.fb-next', '[data-fancybox-next]', function(e) {
                 e.stopPropagation();
                 e.preventDefault();
 
                 self.next();
+
             });
 
 
             // Handle page scrolling and browser resizing
+            $W.on('orientationchange.fb resize.fb', function(e) {
 
-            $( window ).on('orientationchange.fb resize.fb', function(e) {
-                requestAFrame(function() {
+                if ( e && e.originalEvent && e.originalEvent.type === "resize" ) {
 
-                    if ( e && e.originalEvent && e.originalEvent.type === "resize" ) {
+                    requestAFrame(function() {
                         self.update();
+                    });
 
-                    } else {
-                        self.$refs.slider_wrap.hide();
+                } else {
 
-                        requestAFrame(function () {
-                            self.$refs.slider_wrap.show();
+                    self.$refs.stage.hide();
 
-                            self.update();
-                        });
+                    setTimeout(function() {
+                        self.$refs.stage.show();
 
-                    }
+                        self.update();
+                    }, 500);
 
-                });
+                }
+
             });
 
-
-            // Trap focus
-
+            // Trap keyboard focus inside of the modal, so the user does not accidentally tab outside of the modal
+            // (a.k.a. "escaping the modal")
             $D.on('focusin.fb', function(e) {
                 var instance = $.fancybox ? $.fancybox.getInstance() : null;
 
-                if ( instance && !$( e.target ).hasClass( 'fancybox-container' ) && !$.contains( instance.$refs.container[0], e.target ) ) {
+                if ( !instance.current || !instance.current.opts.trapFocus || $( e.target ).hasClass( 'fancybox-container' ) || $( e.target ).is( document ) ) {
+                    return;
+                }
+
+                if ( instance && $( e.target ).css( 'position' ) !== 'fixed' && !instance.$refs.container.has( e.target ).length ) {
                     e.stopPropagation();
 
                     instance.focus();
@@ -556,11 +810,10 @@
                     // Sometimes page gets scrolled, set it back
                     $W.scrollTop( self.scrollTop ).scrollLeft( self.scrollLeft );
                 }
-
             });
 
-            // Enable keyboard navigation
 
+            // Enable keyboard navigation
             $D.on('keydown.fb', function (e) {
                 var current = self.current,
                     keycode = e.keyCode || e.which;
@@ -582,61 +835,56 @@
                     return;
                 }
 
-                switch ( keycode ) {
+                // Left arrow and Up arrow
+                if ( keycode === 37 || keycode === 38 ) {
+                    e.preventDefault();
 
-                    case 37: // Left arrow
-                    case 38: // Up arrow
+                    self.previous();
 
-                        e.preventDefault();
-
-                        self.previous();
-
-                    break;
-
-                    case 39: // Right arrow
-                    case 40: // Down arrow
-
-                        e.preventDefault();
-
-                        self.next();
-
-                    break;
-
-                    case 80: // "P"
-					case 32: // Spacebar
-
-						e.preventDefault();
-
-						if ( self.SlideShow ) {
-							e.preventDefault();
-
-							self.SlideShow.toggle();
-						}
-
-					break;
-
-                    case 70: // "F"
-
-						if ( self.FullScreen ) {
-							e.preventDefault();
-
-							self.FullScreen.toggle();
-						}
-
-					break;
-
-                    case 71: // "G"
-
-						if ( self.Thumbs ) {
-							e.preventDefault();
-
-							self.Thumbs.toggle();
-						}
-
-					break;
+                    return;
                 }
+
+                // Righ arrow and Down arrow
+                if ( keycode === 39 || keycode === 40 ) {
+                    e.preventDefault();
+
+                    self.next();
+
+                    return;
+                }
+
+                self.trigger('afterKeydown', e, keycode);
+
             });
 
+
+            // Hide controls after some inactivity period
+            if ( self.group[ self.currIndex ].opts.idleTime ) {
+                self.idleSecondsCounter = 0;
+
+                $(document).on('mousemove.fb-idle mouseenter.fb-idle mouseleave.fb-idle mousedown.fb-idle touchdown.fb-idle touchmove.fb-idle scroll.fb-idle keydown.fb-idle', function() {
+                    self.idleSecondsCounter = 0;
+
+                    if ( self.isIdle ) {
+                        self.showControls();
+                    }
+
+                    self.isIdle = false;
+                });
+
+                self.idleInterval = window.setInterval(function() {
+
+                    self.idleSecondsCounter++;
+
+                    if ( self.idleSecondsCounter >= self.group[ self.currIndex ].opts.idleTime ) {
+                        self.isIdle = true;
+                        self.idleSecondsCounter = 0;
+
+                        self.hideControls();
+                    }
+
+                }, 1000);
+            }
 
         },
 
@@ -645,32 +893,39 @@
         // ===============================
 
         removeEvents : function () {
+            var self = this;
 
-            $W.off( 'scroll.fb resize.fb orientationchange.fb' );
-            $D.off( 'keydown.fb focusin.fb click.fb-close' );
+            $W.off( 'orientationchange.fb resize.fb' );
+            $D.off( 'focusin.fb keydown.fb .fb-idle' );
 
-            this.$refs.container.off('click.fb-close click.fb-previous click.fb-next');
+            this.$refs.container.off( '.fb-close .fb-prev .fb-next' );
+
+            if ( self.idleInterval ) {
+                window.clearInterval( self.idleInterval );
+
+                self.idleInterval = null;
+            }
         },
 
 
-        // Slide to left
-        // ==================
+        // Change to previous gallery item
+        // ===============================
 
         previous : function( duration ) {
-            this.jumpTo( this.currIndex - 1, duration );
+            return this.jumpTo( this.currIndex - 1, duration );
         },
 
 
-        // Slide to right
-        // ===================
+        // Change to next gallery item
+        // ===========================
 
         next : function( duration ) {
-            this.jumpTo( this.currIndex + 1, duration );
+            return this.jumpTo( this.currIndex + 1, duration );
         },
 
 
-        // Display current gallery item, move slider to current position
-        // =============================================================
+        // Display selected gallery item
+        // =============================
 
         jumpTo : function ( to, duration ) {
             var self = this,
@@ -679,46 +934,43 @@
                 pos,
                 loop;
 
-            firstRun = self.firstRun = ( self.firstRun === null );
+            var current;
+            var previous = self.current;
+            var groupLen = self.group.length;
+            var canvasWidth;
 
-            index = pos = to = parseInt( to, 10 );
-            loop  = self.current ? self.current.opts.loop : false;
-
-            if ( self.isAnimating || ( index == self.currIndex && !firstRun ) ) {
+            if ( self.isSliding  || ( self.isAnimating && self.firstRun ) ) {
                 return;
             }
 
-            if ( self.group.length > 1 && loop ) {
+            firstRun = self.firstRun = ( self.firstRun === null );
 
-                index = index % self.group.length;
-                index = index < 0 ? self.group.length + index : index;
+            index = pos = to = parseInt( to, 10 );
+            loop  = self.current ? self.current.opts.loop : self.opts.loop;
 
-                // Calculate closest position of upcoming item from the current one
-                if ( self.group.length == 2 ) {
+            // Find position based on the index
+            // Position can be negative or higher than group length if infinite looping is enabled
+            if ( groupLen > 1 && loop ) {
+
+                index = index % groupLen;
+                index = index < 0 ? groupLen + index : index;
+
+                if ( groupLen == 2 ) {
                     pos = to - self.currIndex + self.currPos;
 
                 } else {
                     pos = index - self.currIndex + self.currPos;
 
-                    if ( Math.abs( self.currPos - ( pos + self.group.length ) ) < Math.abs( self.currPos - pos ) ) {
-                        pos = pos + self.group.length;
+                    if ( Math.abs( self.currPos - ( pos + groupLen ) ) < Math.abs( self.currPos - pos ) ) {
+                        pos = pos + groupLen;
 
-                    } else if ( Math.abs( self.currPos - ( pos - self.group.length ) ) < Math.abs( self.currPos - pos ) ) {
-                        pos = pos - self.group.length;
-
+                    } else if ( Math.abs( self.currPos - ( pos - groupLen ) ) < Math.abs( self.currPos - pos ) ) {
+                        pos = pos - groupLen;
                     }
                 }
 
             } else if ( !self.group[ index ] ) {
-                self.update( false, false, duration );
-
-                return;
-            }
-
-            if ( self.current ) {
-                self.current.$slide.removeClass('fancybox-slide--current fancybox-slide--complete');
-
-                self.updateSlide( self.current, true );
+                return false;
             }
 
             self.prevIndex = self.currIndex;
@@ -728,53 +980,134 @@
             self.currPos   = pos;
 
             // Create slides
-
             self.current = self.createSlide( pos );
 
-            if ( self.group.length > 1 ) {
-
-                if ( self.opts.loop || pos - 1 >= 0 ) {
+            if ( groupLen > 1 ) {
+                if ( loop || pos - 1 >= 0 ) {
                     self.createSlide( pos - 1 );
                 }
 
-                if ( self.opts.loop || pos + 1 < self.group.length ) {
+                if ( loop || pos + 1 < groupLen ) {
                     self.createSlide( pos + 1 );
                 }
             }
 
-            self.current.isMoved    = false;
-            self.current.isComplete = false;
+            current = self.current;
 
-            duration = parseInt( duration === undefined ? self.current.opts.speed * 1.5 : duration, 10 );
-
-            // Move slider to the next position
-            // Note: the content might still be loading
-            self.trigger( 'beforeMove' );
+            self.trigger( 'beforeShow', firstRun );
 
             self.updateControls();
 
+            duration = parseInt( duration === undefined ? self.current.opts[ firstRun ? 'animationDuration' : 'transitionDuration' ] : duration, 10 );
+
+            current.inTransition = ( !firstRun && current.leftValue === undefined );
+
             if ( firstRun ) {
+
+                if ( current.opts.animationEffect && self.$refs.bg.length ) {
+                    self.$refs.bg.css('transition-duration', duration + 'ms');
+
+                    self.$refs.bg[0].offsetHeight;
+                }
+
                 self.current.$slide.addClass('fancybox-slide--current');
 
-                self.$refs.container.show();
+                self.$refs.container.removeClass( 'fancybox-is-hidden' );
 
-                requestAFrame(function() {
-                    self.$refs.bg.css('transition-duration', self.current.opts.speed + 'ms');
+                self.loadSlide( self.current );
 
-                    self.$refs.container.addClass( 'fancybox-container--ready' );
-                });
-            }
-
-            // Set position immediately on first opening
-            self.update( true, false, firstRun ? 0 : duration, function() {
-                self.afterMove();
-            });
-
-            self.loadSlide( self.current );
-
-            if ( !( firstRun && self.current.$ghost ) ) {
                 self.preload();
+
+                return;
+
             }
+
+            previous.isComplete = false;
+
+            previous.$slide.off( transitionEnd ).removeClass( 'fancybox-slide--complete fancybox-slide--current fancybox-slide--next fancybox-slide--previous fancybox-animated' );
+
+            if ( current.inTransition ) {
+
+                self.$refs.stage.css( 'transition-duration', duration + 'ms' );
+
+                // Clean up, in case it is currently in animation
+                self.$refs.container.find( '.fancybox-slide' ).removeAttr( 'style' );
+
+                // Start transition
+                if ( previous.opts.transitionEffect && previous.opts.transitionDuration ) {
+                    $.fancybox.animateCSS( previous.$slide, 'fancybox-animated fancybox-slide--' + ( previous.pos > current.pos ? 'next' : 'previous' ) + ' fancybox-fx-' + previous.opts.transitionEffect );
+                }
+
+                current.isRevealed = false;
+
+                if ( current.isLoaded ) {
+
+                    // This should start transition that reveals content
+                    self.revealContent( current );
+
+                } else {
+
+                    // Make current slide visible even if content is still loading,
+                    // in that case slide will appear without any transition and loading icon will be displayed
+                    current.$slide.addClass( 'fancybox-slide--' + ( previous.pos < current.pos ? 'next' : 'previous' ) );
+
+                    self.loadSlide( self.current );
+
+                }
+
+                current.$slide.addClass( 'fancybox-slide--current' );
+
+
+            } else {
+
+
+                self.$refs.stage.removeAttr('style');
+
+                canvasWidth = Math.round( current.$slide.width() );
+
+                //previous.$slide.removeClass( 'fancybox-slide--current' ); //
+                //previous.$slide.removeClass( 'fancybox-slide--next fancybox-slide--previous' );
+
+                $.each(self.slides, function( index, slide ) {
+
+                    // Skip newly created slides
+                    if ( slide.pos !== current.pos && slide.leftValue === undefined ) {
+                        return;
+                    }
+
+                    $.fancybox.stop( slide.$slide );
+
+                    var leftValue = ( (slide.pos - current.pos ) * canvasWidth );
+
+                    var x = $.fancybox.getTranslate( slide.$slide );
+
+                    var fromLeftValue = x.left;
+
+                    $.fancybox.animate( slide.$slide, { top : x.top, left : fromLeftValue }, { top : 0, left : leftValue }, duration, function() {
+
+                        slide.leftValue = undefined;
+
+                        slide.$slide.removeAttr('style');
+
+                        if ( slide.pos === current.pos ) {
+
+                            if ( slide.isLoaded ) {
+                                self.complete();
+                            }
+
+                        }
+
+                    });
+
+                });
+
+                current.$slide.addClass( 'fancybox-slide--current' );
+
+                self.loadSlide( self.current );
+
+            }
+
+            self.preload();
 
         },
 
@@ -813,181 +1146,19 @@
                     }
                 }
 
-                $slide = $('<div class="fancybox-slide"></div>').appendTo( self.$refs.slider );
+                $slide = $('<div class="fancybox-slide"></div>').appendTo( self.$refs.stage );
 
                 self.slides[ pos ] = $.extend( true, {}, self.group[ index ], {
                     pos      : pos,
                     $slide   : $slide,
-                    isMoved  : false,
-                    isLoaded : false
+                    isLoaded : false,
                 });
+
+                self.updateSlide( self.slides[ pos ] );
 
             }
 
             return self.slides[ pos ];
-
-        },
-
-        zoomInOut : function( type, duration, callback ) {
-
-            var self     = this;
-            var current  = self.current;
-            var $what    = current.$placeholder;
-            var opacity  = current.opts.opacity;
-            var $thumb   = current.opts.$thumb;
-            var thumbPos = $thumb ? $thumb.offset() : 0;
-            var slidePos = current.$slide.offset();
-            var props;
-            var start;
-            var end;
-
-            if ( !$what || !current.isMoved || !thumbPos || !isElementInViewport( $thumb ) ) {
-                return false;
-            }
-
-            if ( type === 'In' && !self.firstRun ) {
-                return false;
-            }
-
-            $.fancybox.stop( $what );
-
-            self.isAnimating = true;
-
-            props = {
-                top    : thumbPos.top  - slidePos.top  + parseFloat( $thumb.css( "border-top-width" ) || 0 ),
-                left   : thumbPos.left - slidePos.left + parseFloat( $thumb.css( "border-left-width" ) || 0 ),
-                width  : $thumb.width(),
-                height : $thumb.height(),
-                scaleX : 1,
-                scaleY : 1
-            };
-
-            // Check if we need to animate opacity
-            if ( opacity == 'auto' ) {
-                opacity = Math.abs( current.width / current.height - props.width / props.height ) > 0.1;
-            }
-
-            if ( type === 'In' ) {
-                start = props;
-                end   = self.getFitPos( current );
-
-                end.scaleX = end.width  / start.width;
-                end.scaleY = end.height / start.height;
-
-                if ( opacity ) {
-                    start.opacity = 0.1;
-                    end.opacity   = 1;
-                }
-
-            } else {
-
-                start = $.fancybox.getTranslate( $what );
-                end   = props;
-
-                // Switch to thumbnail image to improve animation performance
-                if ( current.$ghost ) {
-                    current.$ghost.show();
-
-                    if ( current.$image ) {
-                        current.$image.remove();
-                    }
-                }
-
-                start.scaleX = start.width  / end.width;
-                start.scaleY = start.height / end.height;
-
-                start.width  = end.width;
-                start.height = end.height;
-
-                if ( opacity ) {
-                    end.opacity = 0;
-                }
-
-            }
-
-            self.updateCursor( end.width, end.height );
-
-            // There is no need to animate width/height properties
-            delete end.width;
-            delete end.height;
-
-            $.fancybox.setTranslate( $what, start );
-
-            $what.show();
-
-            self.trigger( 'beforeZoom' + type );
-
-            $what.css( 'transition', 'all ' + duration + 'ms' );
-
-            $.fancybox.setTranslate( $what, end );
-
-            setTimeout(function() {
-                var reset;
-
-                $what.css( 'transition', 'none' );
-
-                reset = $.fancybox.getTranslate( $what );
-
-                reset.scaleX = 1;
-                reset.scaleY = 1;
-
-                // Reset scalex/scaleY values; this helps for perfomance
-                $.fancybox.setTranslate( $what, reset );
-
-                self.trigger( 'afterZoom' + type );
-
-                callback.apply( self );
-
-                self.isAnimating = false;
-
-            }, duration);
-
-
-            return true;
-
-        },
-
-        // Check if image dimensions exceed parent element
-        // ===============================================
-
-        canPan : function() {
-
-            var self = this;
-
-            var current = self.current;
-            var $what   = current.$placeholder;
-
-            var rez = false;
-
-            if ( $what ) {
-                rez = self.getFitPos( current );
-                rez = Math.abs( $what.width() - rez.width ) > 1  || Math.abs( $what.height() - rez.height ) > 1;
-
-            }
-
-            return rez;
-
-        },
-
-
-        // Check if current image dimensions are smaller than actual
-        // =========================================================
-
-        isScaledDown : function() {
-
-            var self = this;
-
-            var current = self.current;
-            var $what   = current.$placeholder;
-
-            var rez = false;
-
-            if ( $what ) {
-                rez = $.fancybox.getTranslate( $what );
-                rez = rez.width < current.width || rez.height < current.height;
-            }
-
-            return rez;
 
         },
 
@@ -1000,7 +1171,7 @@
             var self = this;
 
             var current = self.current;
-            var $what   = current.$placeholder;
+            var $what   = current.$content;
 
             var imgPos, posX, posY, scaleX, scaleY;
 
@@ -1010,7 +1181,7 @@
             var newImgWidth  = current.width;
             var newImgHeight = current.height;
 
-            if ( !$what ) {
+            if ( !( current.type == 'image' && !current.hasError) || !$what || self.isAnimating) {
                 return;
             }
 
@@ -1061,7 +1232,7 @@
                 left   : posX,
                 scaleX : scaleX,
                 scaleY : scaleY
-            }, duration || current.opts.speed, function() {
+            }, duration || 330, function() {
                 self.isAnimating = false;
             });
 
@@ -1076,10 +1247,10 @@
             var self = this;
 
             var current = self.current;
-            var $what   = current.$placeholder;
+            var $what   = current.$content;
             var end;
 
-            if ( !$what ) {
+            if ( !( current.type == 'image' && !current.hasError) || !$what || self.isAnimating ) {
                 return;
             }
 
@@ -1094,7 +1265,7 @@
                 left   : end.left,
                 scaleX : end.width  / $what.width(),
                 scaleY : end.height / $what.height()
-            }, duration || current.opts.speed, function() {
+            }, duration || 330, function() {
                 self.isAnimating = false;
             });
 
@@ -1104,14 +1275,15 @@
         // ===========================================
 
         getFitPos : function( slide ) {
-            var $what = slide.$placeholder || slide.$content;
+            var self  = this;
+            var $what = slide.$content;
 
             var imgWidth  = slide.width;
             var imgHeight = slide.height;
 
             var margin = slide.opts.margin;
 
-            var canvasWidth, canvasHeight, minRatio, top, left, width, height;
+            var canvasWidth, canvasHeight, minRatio, width, height;
 
             if ( !$what || !$what.length || ( !imgWidth && !imgHeight) ) {
                 return false;
@@ -1127,25 +1299,22 @@
             }
 
             if ( $W.width() < 800 ) {
-                margin = [0, 0, 0, 0];
+                margin = [ 0, 0, 0, 0 ];
             }
 
-            canvasWidth  = parseInt( slide.$slide.width(), 10 )  - ( margin[ 1 ] + margin[ 3 ] );
-            canvasHeight = parseInt( slide.$slide.height(), 10 ) - ( margin[ 0 ] + margin[ 2 ] );
+            // We can not use $slide width here, because it can have different diemensions while in transiton
+            canvasWidth  = parseInt( self.$refs.stage.width(), 10 )  - ( margin[ 1 ] + margin[ 3 ] );
+            canvasHeight = parseInt( self.$refs.stage.height(), 10 ) - ( margin[ 0 ] + margin[ 2 ] );
 
             minRatio = Math.min(1, canvasWidth / imgWidth, canvasHeight / imgHeight );
-
-            // Use floor rounding to make sure it really fits
 
             width  = Math.floor( minRatio * imgWidth );
             height = Math.floor( minRatio * imgHeight );
 
-            top  = Math.floor( ( canvasHeight - height ) * 0.5 ) + margin[ 0 ];
-            left = Math.floor( ( canvasWidth  - width )  * 0.5 ) + margin[ 3 ];
-
+            // Use floor rounding to make sure it really fits
             return {
-                top    : top,
-                left   : left,
+                top    : Math.floor( ( canvasHeight - height ) * 0.5 ) + margin[ 0 ],
+                left   : Math.floor( ( canvasWidth  - width )  * 0.5 ) + margin[ 3 ],
                 width  : width,
                 height : height
             };
@@ -1156,56 +1325,13 @@
         // Update all slides (and their content)
         // =====================================
 
-        update : function( andSlides, andContent, duration, callback ) {
+        update : function() {
 
             var self = this;
-            var leftValue;
 
-            if ( self.isAnimating === true || !self.current ) {
-                return;
-            }
-
-            leftValue = ( self.current.pos * Math.floor( self.current.$slide.width() ) * -1 ) - ( self.current.pos * self.current.opts.gutter );
-            duration  = parseInt( duration, 10 ) || 0;
-
-            $.fancybox.stop( self.$refs.slider );
-
-            if ( andSlides === false ) {
-                self.updateSlide( self.current, andContent );
-
-            } else {
-
-                $.each( self.slides, function( key, slide ) {
-                    self.updateSlide( slide, andContent );
-                });
-
-            }
-
-            if ( duration ) {
-
-                $.fancybox.animate( self.$refs.slider, null, {
-                    top  : 0,
-                    left : leftValue
-                }, duration, function() {
-                    self.current.isMoved = true;
-
-                    if ( $.type( callback ) === 'function' ) {
-                        callback.apply( self );
-                    }
-
-                });
-
-            } else {
-
-                $.fancybox.setTranslate( self.$refs.slider, { top : 0, left : leftValue } );
-
-                self.current.isMoved = true;
-
-                if ( $.type( callback ) === 'function' ) {
-                    callback.apply( self );
-                }
-
-            }
+            $.each( self.slides, function( key, slide ) {
+                self.updateSlide( slide );
+            });
 
         },
 
@@ -1213,27 +1339,14 @@
         // Update slide position and scale content to fit
         // ==============================================
 
-        updateSlide : function( slide, andContent ) {
+        updateSlide : function( slide ) {
 
             var self  = this;
-            var $what = slide.$placeholder;
-            var leftPos;
+            var $what = slide.$content;
 
-            slide = slide || self.current;
+            if ( $what && ( slide.width || slide.height ) ) {
+                $.fancybox.stop( $what );
 
-            if ( !slide || self.isClosing ) {
-                return;
-            }
-
-            leftPos = ( slide.pos * Math.floor( slide.$slide.width() )  ) + ( slide.pos * slide.opts.gutter);
-
-            if ( leftPos !== slide.leftPos ) {
-                $.fancybox.setTranslate( slide.$slide, { top: 0, left : leftPos } );
-
-                slide.leftPos = leftPos;
-            }
-
-            if ( andContent !== false && $what ) {
                 $.fancybox.setTranslate( $what, self.getFitPos( slide ) );
 
                 if ( slide.pos === self.currPos ) {
@@ -1244,6 +1357,7 @@
             slide.$slide.trigger( 'refresh' );
 
             self.trigger( 'onUpdate', slide );
+
         },
 
         // Update cursor style depending if content can be zoomed
@@ -1252,32 +1366,130 @@
         updateCursor : function( nextWidth, nextHeight ) {
 
             var self = this;
-            var canScale;
+            var isScaledDown;
 
-            var $container = self.$refs.container.removeClass('fancybox-controls--canzoomIn fancybox-controls--canzoomOut fancybox-controls--canGrab');
+            var $container = self.$refs.container.removeClass('fancybox-is-zoomable fancybox-can-zoomIn fancybox-can-drag fancybox-can-zoomOut');
 
-            if ( self.isClosing || !self.opts.touch ) {
+            if ( !self.current || self.isClosing ) {
                 return;
             }
 
-            if ( nextWidth !== undefined && nextHeight !== undefined ) {
-                canScale = nextWidth < self.current.width && nextHeight < self.current.height;
+            if ( self.isZoomable() ) {
 
-            } else {
-                canScale = self.isScaledDown();
-            }
+                $container.addClass( 'fancybox-is-zoomable' );
 
-            if ( canScale ) {
-                $container.addClass('fancybox-controls--canzoomIn');
+                if ( nextWidth !== undefined && nextHeight !== undefined ) {
+                    isScaledDown = nextWidth < self.current.width && nextHeight < self.current.height;
 
-            } else if ( self.group.length < 2 ) {
-                $container.addClass('fancybox-controls--canzoomOut');
+                } else {
+                    isScaledDown = self.isScaledDown();
+                }
 
-            } else {
-                $container.addClass('fancybox-controls--canGrab');
+                if ( isScaledDown ) {
+
+                    // If image is scaled down, then, obviously, it can be zoomed to full size
+                    $container.addClass('fancybox-can-zoomIn');
+
+                } else {
+
+                    if ( self.current.opts.touch ) {
+
+                        // If image size ir largen than available available and touch module is not disable,
+                        // then user can do panning
+                        $container.addClass('fancybox-can-drag');
+
+                    } else {
+                        $container.addClass('fancybox-can-zoomOut');
+                    }
+
+                }
+
+            } else if ( self.current.opts.touch ) {
+                $container.addClass('fancybox-can-drag');
             }
 
         },
+
+
+        // Check if current slide is zoomable
+        // ==================================
+
+        isZoomable : function() {
+
+            var self = this;
+
+            var current = self.current;
+            var fitPos;
+
+            if ( !current || self.isClosing ) {
+                return;
+            }
+
+            // Assume that slide is zoomable if
+            //   - image is loaded successfuly
+            //   - click action is "zoom"
+            //   - actual size of the image is smaller than available area
+            if ( current.type === 'image' && current.isLoaded && !current.hasError &&
+                ( current.opts.clickContent === 'zoom' || current.opts.clickContent( current ) ===  "zoom" )
+            ) {
+
+                fitPos = self.getFitPos( current );
+
+                if ( current.width > fitPos.width || current.height > fitPos.height ) {
+                    return true;
+                }
+
+            }
+
+            return false;
+
+        },
+
+
+        // Check if current image dimensions are smaller than actual
+        // =========================================================
+
+        isScaledDown : function() {
+
+            var self = this;
+
+            var current = self.current;
+            var $what   = current.$content;
+
+            var rez = false;
+
+            if ( $what ) {
+                rez = $.fancybox.getTranslate( $what );
+                rez = rez.width < current.width || rez.height < current.height;
+            }
+
+            return rez;
+
+        },
+
+
+        // Check if image dimensions exceed parent element
+        // ===============================================
+
+        canPan : function() {
+
+            var self = this;
+
+            var current = self.current;
+            var $what   = current.$content;
+
+            var rez = false;
+
+            if ( $what ) {
+                rez = self.getFitPos( current );
+                rez = Math.abs( $what.width() - rez.width ) > 1  || Math.abs( $what.height() - rez.height ) > 1;
+
+            }
+
+            return rez;
+
+        },
+
 
         // Load content into the slide
         // ===========================
@@ -1287,7 +1499,13 @@
             var self = this, type, $slide;
             var ajaxLoad;
 
-            if ( !slide || slide.isLoaded || slide.isLoading ) {
+            if ( slide.isLoading ) {
+                return;
+            }
+
+            if ( slide.isLoaded ) {
+                self.afterLoad( slide );
+
                 return;
             }
 
@@ -1343,9 +1561,9 @@
 
                     ajaxLoad = $.ajax( $.extend( {}, slide.opts.ajax.settings, {
 
-                        url: slide.src,
+                        url : slide.src,
 
-                        success: function ( data, textStatus ) {
+                        success : function ( data, textStatus ) {
 
                             if ( textStatus === 'success' ) {
                                 self.setContent( slide, data );
@@ -1353,7 +1571,7 @@
 
                         },
 
-                        error: function ( jqXHR, textStatus ) {
+                        error : function ( jqXHR, textStatus ) {
 
                             if ( jqXHR && textStatus !== 'abort' ) {
                                 self.setError( slide );
@@ -1392,12 +1610,6 @@
 
             var found, temp, pxRatio, windowWidth;
 
-            if ( slide.isLoaded && !slide.hasError ) {
-                self.afterLoad( slide );
-
-                return;
-            }
-
             // If we have "srcset", then we need to find matching "src" value.
             // This is necessary, because when you set an src attribute, the browser will preload the image
             // before any javascript or even CSS is applied.
@@ -1405,19 +1617,19 @@
                 pxRatio     = window.devicePixelRatio || 1;
                 windowWidth = window.innerWidth  * pxRatio;
 
-                temp = srcset.split(',').map(function (el) {
+                temp = srcset.split(',').map(function ( el ) {
             		var ret = {};
 
-            		el.trim().split(/\s+/).forEach(function (el, i) {
-                        var value = parseInt(el.substring(0, el.length - 1), 10);
+            		el.trim().split(/\s+/).forEach(function ( el, i ) {
+                        var value = parseInt( el.substring(0, el.length - 1), 10 );
 
             			if ( i === 0 ) {
-            				return (ret.url = el);
+            				return ( ret.url = el );
             			}
 
                         if ( value ) {
                             ret.value   = value;
-                            ret.postfix = el[el.length - 1];
+                            ret.postfix = el[ el.length - 1 ];
                         }
 
             		});
@@ -1456,38 +1668,38 @@
                 }
             }
 
-            slide.$placeholder = $('<div class="fancybox-placeholder"></div>')
-                .hide()
+            // This will be wrapper containing both ghost and actual image
+            slide.$content = $('<div class="fancybox-image-wrap"></div>')
+                .addClass( 'fancybox-is-hidden' )
                 .appendTo( slide.$slide );
 
+
+            // If we have a thumbnail, we can display it while actual image is loading
+            // Users will not stare at black screen and actual image will appear gradually
             if ( slide.opts.preload !== false && slide.opts.width && slide.opts.height && ( slide.opts.thumb || slide.opts.$thumb ) ) {
 
                 slide.width  = slide.opts.width;
                 slide.height = slide.opts.height;
 
                 slide.$ghost = $('<img />')
-                    .one('load error', function() {
+                    .one('error', function() {
 
-                        if ( self.isClosing ) {
-                            return;
-                        }
+                        $(this).remove();
 
-                        // Start preloading full size image
-                        $('<img/>')[0].src = slide.src;
+                        slide.$ghost = null;
 
-                        // zoomIn or just show
-                        self.revealImage( slide, function() {
+                        self.setBigImage( slide );
 
-                            self.setBigImage( slide );
+                    })
+                    .one('load', function() {
 
-                            if ( self.firstRun && slide.index === self.currIndex ) {
-                                self.preload();
-                            }
-                        });
+                        self.afterLoad( slide );
+
+                        self.setBigImage( slide );
 
                     })
                     .addClass( 'fancybox-image' )
-                    .appendTo( slide.$placeholder )
+                    .appendTo( slide.$content )
                     .attr( 'src', slide.opts.thumb || slide.opts.$thumb.attr( 'src' ) );
 
             } else {
@@ -1527,28 +1739,36 @@
                     slide.height = this.naturalHeight;
 
                     if ( slide.opts.image.srcset ) {
-                        $img.attr('sizes', '100vw').attr('srcset', slide.opts.image.srcset);
+                        $img.attr( 'sizes', '100vw' ).attr( 'srcset', slide.opts.image.srcset );
                     }
 
-                    self.afterLoad( slide );
+                    self.hideLoading( slide );
 
                     if ( slide.$ghost ) {
+
                         slide.timouts = setTimeout(function() {
+                            slide.timouts = null;
+
                             slide.$ghost.hide();
 
-                        }, 350);
+                        }, Math.min( 300, Math.max( 1000, slide.height / 1600 ) ) );
+
+                    } else {
+
+                        self.afterLoad( slide );
+
                     }
 
                 })
-                .addClass('fancybox-image')
+                .addClass( 'fancybox-image' )
                 .attr('src', slide.src)
-                .appendTo( slide.$placeholder );
+                .appendTo( slide.$content );
 
             if ( $img[0].complete ) {
-                  $img.trigger('load');
+                  $img.trigger( 'load' );
 
             } else if( $img[0].error ) {
-                 $img.trigger('error');
+                 $img.trigger( 'error' );
 
             } else {
 
@@ -1557,59 +1777,12 @@
                         self.showLoading( slide );
                     }
 
-                }, 150);
-
-            }
-
-            if ( slide.opts.image.protect ) {
-                $('<div class="fancybox-spaceball"></div>').appendTo( slide.$placeholder ).on('contextmenu.fb',function(e){
-                     if ( e.button == 2 ) {
-                         e.preventDefault();
-                     }
-
-                    return true;
-                });
-            }
-
-        },
-
-        // Simply show image holder without animation
-        // It has been hidden initially to avoid flickering
-        // ================================================
-
-        revealImage : function( slide, callback ) {
-
-            var self = this;
-
-            callback = callback || $.noop;
-
-            if ( slide.type !== 'image' || slide.hasError || slide.isRevealed === true ) {
-
-                callback.apply( self );
-
-                return;
-            }
-
-            slide.isRevealed = true;
-
-            if ( !( slide.pos === self.currPos && self.zoomInOut( 'In', slide.opts.speed, callback ) ) ) {
-
-                if ( slide.$ghost && !slide.isLoaded ) {
-                    self.updateSlide( slide, true );
-                }
-
-                if ( slide.pos === self.currPos ) {
-                    $.fancybox.animate( slide.$placeholder, { opacity: 0 }, { opacity: 1 }, 300, callback );
-
-                } else {
-                    slide.$placeholder.show();
-                }
-
-                callback.apply( self );
+                }, 100);
 
             }
 
         },
+
 
         // Create iframe wrapper, iframe and bindings
         // ==========================================
@@ -1620,22 +1793,21 @@
                 $slide	= slide.$slide,
                 $iframe;
 
-            slide.$content = $('<div class="fancybox-content"></div>')
+            slide.$content = $('<div class="fancybox-iframe-wrap"></div>')
                 .css( opts.css )
                 .appendTo( $slide );
 
             $iframe = $( opts.tpl.replace(/\{rnd\}/g, new Date().getTime()) )
-                .attr('scrolling', $.fancybox.isTouch ? 'auto' : opts.scrolling)
+                .attr( opts.attr )
                 .appendTo( slide.$content );
 
             if ( opts.preload ) {
-                slide.$content.addClass( 'fancybox-tmp' );
+                slide.$content.addClass( 'fancybox-is-hidden' );
 
                 self.showLoading( slide );
 
                 // Unfortunately, it is not always possible to determine if iframe is successfully loaded
                 // (due to browser security policy)
-
                 $iframe.on('load.fb error.fb', function(e) {
                     this.isReady = 1;
 
@@ -1669,7 +1841,6 @@
                     } catch (ignore) {}
 
                     // Calculate dimensions for the wrapper
-
                     if ( $body && $body.length && !( opts.css.width !== undefined && opts.css.height !== undefined ) ) {
 
                         scrollWidth = $iframe[0].contentWindow.document.documentElement.scrollWidth;
@@ -1678,7 +1849,6 @@
                         frameHeight	= Math.ceil( $body.outerHeight(true) );
 
                         // Resize wrapper to fit iframe content
-
                         $wrap.css({
                             'width'  : opts.css.width  === undefined ? frameWidth  + ( $wrap.outerWidth()  - $wrap.innerWidth() )  : opts.css.width,
                             'height' : opts.css.height === undefined ? frameHeight + ( $wrap.outerHeight() - $wrap.innerHeight() ) : opts.css.height
@@ -1686,7 +1856,7 @@
 
                     }
 
-                    $wrap.removeClass( 'fancybox-tmp' );
+                    $wrap.removeClass( 'fancybox-is-hidden' );
 
                 });
 
@@ -1699,22 +1869,20 @@
             $iframe.attr( 'src', slide.src );
 
             if ( slide.opts.smallBtn ) {
-                slide.$content.prepend( slide.opts.closeTpl );
+                slide.$content.prepend( slide.opts.btnTpl.smallBtn );
             }
 
             // Remove iframe if closing or changing gallery item
-
-            $slide.one('onReset', function () {
+            $slide.one( 'onReset', function () {
 
                 // This helps IE not to throw errors when closing
-
                 try {
 
-                    $(this).find('iframe').hide().attr('src', '//about:blank');
+                    $( this ).find( 'iframe' ).hide().attr( 'src', '//about:blank' );
 
-                } catch (ignore) {}
+                } catch ( ignore ) {}
 
-                $(this).empty();
+                $( this ).empty();
 
                 slide.isLoaded = false;
 
@@ -1743,19 +1911,21 @@
                 // If it is a jQuery object, then it will be moved to the box.
                 // The placeholder is created so we will know where to put it back.
                 // If user is navigating gallery fast, then the content might be already moved to the box
-
                 if ( content.data( 'placeholder' ) ) {
-                    content.parents('.fancybox-slide').trigger( 'onReset' );
+                    content.parents( '.fancybox-slide' ).trigger( 'onReset' );
                 }
 
-                content.data({'placeholder' : $('<div></div>' ).hide().insertAfter( content ) }).css('display', 'inline-block');
+                content.data({
+                    'placeholder' : $( '<div></div>' ).hide().insertAfter( content )
+                }).css('display', 'inline-block');
 
             } else {
 
                 if ( $.type( content ) === 'string' ) {
 
-                    content = $('<div>').append( content ).contents();
+                    content = $('<div>').append( $.trim( content ) ).contents();
 
+                    // If we have text node, then add wrapping element to make vertical alignment work
                     if ( content[0].nodeType === 3 ) {
                         content = $('<div>').html( content );
                     }
@@ -1769,7 +1939,7 @@
             }
 
             slide.$slide.one('onReset', function () {
-                var placeholder = isQuery( content ) ? content.data('placeholder') : 0;
+                var placeholder = isQuery( content ) ? content.data( 'placeholder' ) : 0;
 
                 if ( placeholder ) {
                     content.hide().replaceAll( placeholder );
@@ -1788,11 +1958,10 @@
             slide.$content = $( content ).appendTo( slide.$slide );
 
             if ( slide.opts.smallBtn === true ) {
-                slide.$content.find( '.fancybox-close-small' ).remove().end().eq(0).append( slide.opts.closeTpl );
+                slide.$content.find( '.fancybox-close-small' ).remove().end().eq(0).append( slide.opts.btnTpl.smallBtn );
             }
 
             this.afterLoad( slide );
-
         },
 
         // Display error message
@@ -1802,10 +1971,15 @@
 
             slide.hasError = true;
 
-            this.setContent( slide, slide.opts.errorTpl );
+            slide.$slide.removeClass( 'fancybox-slide--' + slide.type );
+
+            this.setContent( slide, this.translate( slide, slide.opts.errorTpl ) );
 
         },
 
+
+        // Show loading icon inside the slide
+        // ==================================
 
         showLoading : function( slide ) {
             var self = this;
@@ -1817,6 +1991,9 @@
             }
 
         },
+
+        // Remove loading icon from slide
+        // ==============================
 
         hideLoading : function( slide ) {
 
@@ -1832,42 +2009,9 @@
 
         },
 
-        afterMove : function() {
 
-            var self    = this;
-            var current = self.current;
-            var slides  = {};
-
-            if ( !current ) {
-                return;
-            }
-
-            current.$slide.siblings().trigger( 'onReset' );
-
-            // Remove unnecessary slides
-            $.each( self.slides, function( key, slide ) {
-
-                if (  slide.pos >= self.currPos - 1 && slide.pos <= self.currPos + 1 ) {
-                    slides[ slide.pos ] = slide;
-
-                } else if ( slide ) {
-                    slide.$slide.remove();
-                }
-
-            });
-
-            self.slides = slides;
-
-            self.trigger( 'afterMove' );
-
-            if ( current.isLoaded ) {
-                self.complete();
-            }
-
-        },
-
-        // Adjustments after slide has been loaded
-        // =======================================
+        // Adjustments after slide content has been loaded
+        // ===============================================
 
         afterLoad : function( slide ) {
 
@@ -1884,18 +2028,195 @@
 
             self.hideLoading( slide );
 
-            // Resize content to fit inside slide
-            // Skip if slide has an $ghost element, because then it has been already processed
-            if ( !slide.$ghost ) {
-                self.updateSlide( slide, true );
+            self.updateSlide( slide );
+
+            if ( slide.opts.protect && slide.$content ) {
+
+                // Disable right click
+                slide.$content.on( 'contextmenu.fb', function( e ) {
+                     if ( e.button == 2 ) {
+                         e.preventDefault();
+                     }
+
+                    return true;
+                });
+
+                // Add fake element on top of the image
+                // This makes a bit harder for user to select image
+                if ( slide.type === 'image' ) {
+                    $( '<div class="fancybox-spaceball"></div>' ).appendTo( slide.$content );
+                }
+
             }
 
-            if ( slide.index === self.currIndex && slide.isMoved ) {
+            self.revealContent( slide );
+
+        },
+
+        revealContent : function( slide ) {
+
+            var self = this;
+
+            var opacity;
+            var start;
+            var end;
+
+            if ( slide.isRevealed || !slide.isLoaded ) {
+                return;
+            }
+
+            // Animate only current slide
+            if ( slide.pos === self.currPos ) {
+
+                // Start zoom animation if this is first click on thumbnail
+                if ( self.firstRun && slide.opts.animationEffect === 'zoom' && slide.opts.animationDuration && !slide.leftValue && slide.type === 'image' && !slide.hasError && ( start = self.getThumbPos( slide ) ) ) {
+
+                    self.isAnimating = true;
+
+                    end = self.getFitPos( slide );
+
+                    end.scaleX = Math.round( (end.width  / start.width)  * 100 ) / 100;
+                    end.scaleY = Math.round( (end.height / start.height) * 100 ) / 100;
+
+                    delete end.width;
+                    delete end.height;
+
+                    // Check if we need to animate opacity
+                    opacity = slide.opts.zoomOpacity;
+
+                    if ( opacity == 'auto' ) {
+                        opacity = Math.abs( slide.width / slide.height - start.width / start.height ) > 0.1;
+                    }
+
+                    if ( opacity ) {
+                        start.opacity = 0.1;
+                        end.opacity   = 1;
+                    }
+
+                    slide.$content.removeClass( 'fancybox-is-hidden' );
+
+                    $.fancybox.animate( slide.$content, start, end, slide.opts.animationDuration, function() {
+                        self.isAnimating = false;
+                        slide.isRevealed = true;
+
+                        self.complete();
+                    });
+
+                    return;
+                }
+
+                if ( slide.inTransition && slide.opts.transitionEffect && slide.opts.transitionDuration ) {
+                    self.isAnimating = true;
+
+                    slide.$slide.removeClass( 'fancybox-slide--next fancybox-slide--previous fancybox-slide--current' );
+
+                    slide.$slide.addClass( 'fancybox-slide--' + ( self.prevPos < slide.pos ? 'next' : 'previous' ) );
+                    slide.$slide.addClass( 'fancybox-fx-' + slide.opts.transitionEffect );
+
+                    // Force reflow for CSS3 transitions
+                    slide.$slide[0].offsetHeight; // jshint ignore:line
+
+                    slide.$content.removeClass( 'fancybox-is-hidden' );
+
+                    $.fancybox.animateCSS( slide.$slide, 'fancybox-animated fancybox-slide--current', true, function() {
+
+                        self.isAnimating = false;
+                        slide.isRevealed = true;
+
+                        slide.$slide.removeClass( 'fancybox-slide--next fancybox-slide--previous' );
+                        slide.$slide.removeClass( 'fancybox-animated fancybox-fx-' + slide.opts.transitionEffect );
+
+                        self.complete();
+
+                    });
+
+                    return;
+                }
+
+                if ( ( self.firstRun && slide.opts.animationEffect === 'fade' ) || ( !self.firstRun && !slide.inTransition ) ) {
+
+                    slide.$slide.css('opacity', 0);
+
+                    slide.$content.removeClass( 'fancybox-is-hidden' );
+
+                    slide.$slide[0].offsetHeight;
+
+                    slide.$slide.addClass( 'fancybox-slide--current' );
+
+
+                    $.fancybox.animate( slide.$slide, { opacity : 0 }, { opacity : 1 }, slide.opts.transitionDuration, "easeOutSine", function() {
+                        slide.isRevealed = true;
+
+                        self.complete();
+                    });
+
+                    return;
+                }
+
+                // Simply show content of neighbour slides
+                slide.$content.removeClass( 'fancybox-is-hidden' );
+
+                self.isAnimating = false;
+                slide.isRevealed = true;
+
+                slide.$slide[0].offsetHeight;
+
                 self.complete();
 
-            } else if ( !slide.$ghost ) {
-                self.revealImage( slide );
+                return;
             }
+
+            // Simply show content of neighbour slides
+            slide.$content.removeClass( 'fancybox-is-hidden' );
+
+            slide.isRevealed = true;
+
+        },
+
+
+        // Check if we can and have to zoom from thumbnail
+        //================================================
+
+        getThumbPos : function( slide ) {
+
+            var self = this;
+
+            var $thumb   = slide.opts.$thumb;
+            var thumbPos = $thumb ? $thumb.offset() : 0;
+            var slidePos;
+            var rez;
+
+            // Check if element is inside the viewport by at least 1 pixel
+            var isElementInViewport = function( el ) {
+                var rect;
+
+                if ( typeof $ === "function" && el instanceof $ ) {
+                    el = el[0];
+                }
+
+                rect = el.getBoundingClientRect();
+
+                return rect.bottom > 0 && rect.right > 0 &&
+                        rect.left < (window.innerWidth || document.documentElement.clientWidth)  &&
+                        rect.top < (window.innerHeight || document.documentElement.clientHeight);
+            };
+
+            if ( thumbPos && isElementInViewport( $thumb ) ) {
+
+                slidePos = self.$refs.stage.offset();
+
+                rez = {
+                    top    : thumbPos.top  - slidePos.top  + parseFloat( $thumb.css( "border-top-width" ) || 0 ),
+                    left   : thumbPos.left - slidePos.left + parseFloat( $thumb.css( "border-left-width" ) || 0 ),
+                    width  : $thumb.width(),
+                    height : $thumb.height(),
+                    scaleX : 1,
+                    scaleY : 1
+                };
+
+            }
+
+            return rez;
 
         },
 
@@ -1909,22 +2230,43 @@
             var self = this;
 
             var current = self.current;
+            var slides  = {};
 
-            self.revealImage( current, function() {
-                current.isComplete = true;
+            if ( current.leftValue || !current.isLoaded || current.isComplete ) {
+                return;
+            }
 
-                current.$slide.addClass('fancybox-slide--complete');
+            current.isComplete = true;
 
-                self.updateCursor();
+            current.$slide.siblings().trigger( 'onReset' );
 
-                self.trigger( 'onComplete' );
+            current.$slide.addClass( 'fancybox-slide--complete' );
 
-                // Try to focus on the first focusable element, skip for images and iframes
-                if ( current.opts.focus && !( current.type === 'image' || current.type === 'iframe' ) ) {
-                    self.focus();
+            // Remove unnecessary slides
+            $.each( self.slides, function( key, slide ) {
+
+                if (  slide.pos >= self.currPos - 1 && slide.pos <= self.currPos + 1 ) {
+                    slides[ slide.pos ] = slide;
+
+                } else if ( slide ) {
+
+                    $.fancybox.stop( slide.$slide );
+
+                    slide.$slide.unbind().remove();
                 }
 
             });
+
+            self.slides = slides;
+
+            self.updateCursor();
+
+            self.trigger( 'afterShow' );
+
+            // Try to focus on the first focusable element
+            if ( current.opts.autoFocus ) {
+                self.focus();
+            }
 
         },
 
@@ -1961,18 +2303,24 @@
             var current = this.current;
             var $el;
 
-            $el = current && current.isComplete ? current.$slide.find('button,:input,[tabindex],a:not(".disabled")').filter(':visible:first') : null;
+            if ( this.isClosing ) {
+                return;
+            }
 
-            if ( !$el || !$el.length ) {
-                $el = this.$refs.container;
+            // Skip for images and iframes
+            if ( current && !( current.type == 'image' || current.type === 'iframe' ) ) {
+                $el = current && current.isComplete ? current.$slide.find('button,:input,[tabindex],a').filter(':not([disabled]):visible:first') : null;
+            }
+
+            $el = $el && $el.length ? $el : this.$refs.container || null;
+
+            if ( !$el ) {
+                return;
             }
 
             $el.focus();
 
-            // Scroll position of wrapper element sometimes changes after focusing (IE)
-            this.$refs.slider_wrap.scrollLeft(0);
-
-            // And the same goes for slide element
+            // Scroll position sometimes stucks after focusing
             if ( current ) {
                 current.$slide.scrollTop(0);
             }
@@ -1988,12 +2336,10 @@
             var self = this;
 
             // Deactivate all instances
-
             $( '.fancybox-container' ).each(function () {
                 var instance = $(this).data( 'FancyBox' );
 
                 // Skip self and closing instances
-
                 if (instance && instance.uid !== self.uid && !instance.isClosing) {
                     instance.trigger( 'onDeactivate' );
                 }
@@ -2001,7 +2347,6 @@
             });
 
             if ( self.current ) {
-
                 if ( self.$refs.container.index() > 0 ) {
                     self.$refs.container.prependTo( document.body );
                 }
@@ -2020,79 +2365,108 @@
         // This will start "zoom-out" animation if needed and clean everything up afterwards
         // =================================================================================
 
-        close : function( e ) {
+        close : function( e, d ) {
 
             var self     = this;
             var current  = self.current;
-            var duration = current.opts.speed;
+            var duration = d || ( current && current.opts.animationDuration );
 
-            var done = $.proxy(function() {
+            var $what, opacity, start, end;
 
-                self.cleanUp( e );  // Now "this" is again our instance
+            var done = function() {
+                self.cleanUp( e );
+            };
 
-            }, this);
-
-            if ( self.isAnimating || self.isClosing ) {
+            if ( self.isClosing ) {
                 return false;
             }
 
+            self.isClosing = true;
+
             // If beforeClose callback prevents closing, make sure content is centered
             if ( self.trigger( 'beforeClose', e ) === false ) {
-                $.fancybox.stop( self.$refs.slider );
+                self.isClosing = false;
 
                 requestAFrame(function() {
-                    self.update( true, true, 150 );
+                    self.update();
                 });
 
-                return;
+                return false;
             }
 
-            self.isClosing = true;
+            // Remove all events
+            // If there are multiple instances, they will be set again by "activate" method
+            self.removeEvents();
 
             if ( current.timouts ) {
                 clearTimeout( current.timouts );
             }
 
-            if ( e !== true) {
-                $.fancybox.stop( self.$refs.slider );
-            }
-
-            self.$refs.container
-                .removeClass('fancybox-container--active')
-                .addClass('fancybox-container--closing');
+            self.$refs.container.addClass( 'fancybox-is-closing' );
 
             current.$slide
-                .removeClass('fancybox-slide--complete')
+                .removeClass( 'fancybox-slide--complete' )
                 .siblings()
                 .remove();
 
-
-            if ( !current.isMoved ) {
-                current.$slide.css('overflow', 'visible');
-            }
-
-            // Remove all events
-            // If there are multiple instances, they will be set again by "activate" method
-
-            self.removeEvents();
-
             // Clean up
-
             self.hideLoading( current );
 
-            self.hideControls();
+            self.hideControls( true );
 
             self.updateCursor();
 
             self.$refs.bg.css('transition-duration', duration + 'ms');
 
-            this.$refs.container.removeClass( 'fancybox-container--ready' );
-
             if ( e === true ) {
                 setTimeout( done, duration );
 
-            } else if ( !self.zoomInOut( 'Out', duration, done ) ) {
-                $.fancybox.animate( self.$refs.container, null, { opacity : 0 }, duration, "easeInSine", done );
+                return;
+            }
+
+            if ( current.opts.animationEffect === 'zoom' && !current.leftValue && current.type === 'image' && !current.hasError ) {
+
+                $what = current.$content;
+
+                if ( $what && !current.leftValue && (end = self.getThumbPos( current ) ) ) {
+
+                    $.fancybox.stop( $what );
+
+                    start = $.fancybox.getTranslate( $what );
+
+                    start.width = start.width * start.scaleX;
+                    start.height = start.height * start.scaleY;
+
+                    opacity = current.opts.zoomOpacity;
+
+                    if ( opacity == 'auto' ) {
+                        opacity = Math.abs( current.width / current.height - end.width / end.height ) > 0.1;
+                    }
+
+                    if ( opacity ) {
+                        end.opacity = 0;
+                    }
+
+                    start.scaleX = start.width  / end.width;
+                    start.scaleY = start.height / end.height;
+
+                    start.width  = end.width;
+                    start.height = end.height;
+
+                    $.fancybox.animate( current.$content, start, end, duration, done);
+
+                    return;
+                }
+            }
+
+            if ( current.opts.animationEffect ) {
+
+                $.fancybox.animate( current.$slide, null, { opacity : 0 }, duration, "easeOutSine", done);
+
+            } else {
+
+                done();
+
             }
 
         },
@@ -2105,11 +2479,16 @@
             var self = this,
                 instance;
 
-            self.$refs.slider.children().trigger( 'onReset' );
+            self.$refs.stage.children().trigger( 'onReset' );
 
             self.$refs.container.empty().remove();
 
             self.trigger( 'afterClose', e );
+
+            // Place back focus
+            if ( self.$lastFocus && !!!self.current.focusBack ) {
+                self.$lastFocus.focus();
+            }
 
             self.current = null;
 
@@ -2121,18 +2500,11 @@
 
             } else {
 
-                $( 'html' ).removeClass( 'fancybox-enabled' );
-                $( 'body' ).removeAttr( 'style' );
-
                 $W.scrollTop( self.scrollTop ).scrollLeft( self.scrollLeft );
 
-                $( '#fancybox-noscroll' ).remove();
+                $( 'html' ).removeClass( 'fancybox-enabled' );
 
-            }
-
-            // Place back focus
-            if ( self.$lastFocus ) {
-                self.$lastFocus.focus();
+                $( '#fancybox-style-noscroll' ).remove();
             }
 
         },
@@ -2174,36 +2546,6 @@
         },
 
 
-        // Toggle toolbar and caption
-        // ==========================
-
-        toggleControls : function( force ) {
-
-            if ( this.isHiddenControls ) {
-                this.updateControls( force );
-
-            } else {
-                this.hideControls();
-            }
-
-
-        },
-
-
-        // Hide toolbar and caption
-        // ========================
-
-        hideControls : function () {
-
-            this.isHiddenControls = true;
-
-            this.$refs.container.removeClass('fancybox-show-controls');
-
-            this.$refs.container.removeClass('fancybox-show-caption');
-
-        },
-
-
         // Update infobar values, navigation button states and reveal caption
         // ==================================================================
 
@@ -2211,38 +2553,18 @@
 
             var self = this;
 
-            var $container = self.$refs.container;
-            var $caption   = self.$refs.caption;
-
-            // Toggle infobar and buttons
-
             var current  = self.current;
             var index    = current.index;
             var opts     = current.opts;
             var caption  = opts.caption;
+            var $caption = self.$refs.caption;
 
-            if ( this.isHiddenControls && force !== true ) {
-                return;
-            }
+            // Update infobar and navigation elements
+            $('[data-fancybox-count]').html( self.group.length );
+            $('[data-fancybox-index]').html( index + 1 );
 
-            this.isHiddenControls = false;
-
-            $container
-                .addClass('fancybox-show-controls')
-                .toggleClass('fancybox-show-infobar', !!opts.infobar && self.group.length > 1)
-                .toggleClass('fancybox-show-buttons', !!opts.buttons )
-                .toggleClass('fancybox-is-modal',     !!opts.modal );
-
-            $('.fancybox-button--left',  $container).toggleClass( 'fancybox-button--disabled', (!opts.loop && index <= 0 ) );
-            $('.fancybox-button--right', $container).toggleClass( 'fancybox-button--disabled', (!opts.loop && index >= self.group.length - 1) );
-
-            $('.fancybox-button--play',  $container).toggle( !!( opts.slideShow && self.group.length > 1) );
-            $('.fancybox-button--close', $container).toggle( !!opts.closeBtn );
-
-            // Update infobar values
-
-            $('.js-fancybox-count', $container).html( self.group.length );
-            $('.js-fancybox-index', $container).html( index + 1 );
+            $('[data-fancybox-prev]').prop('disabled', ( !opts.loop && index <= 0 ) );
+            $('[data-fancybox-next]').prop('disabled', ( !opts.loop && index >= self.group.length - 1 ) );
 
             // Recalculate content dimensions
             current.$slide.trigger( 'refresh' );
@@ -2252,18 +2574,63 @@
                 $caption.empty();
             }
 
-            if ( caption && caption.length ) {
-                $caption.html( caption );
+            self.$caption = caption && caption.length ? $caption.html( caption ) : null;
 
-                this.$refs.container.addClass( 'fancybox-show-caption ');
-
-                self.$caption = $caption;
-
-            } else {
-                this.$refs.container.removeClass( 'fancybox-show-caption' );
+            if ( !self.isHiddenControls ) {
+                self.showControls();
             }
 
-        }
+        },
+
+        // Hide toolbar and caption
+        // ========================
+
+        hideControls : function () {
+
+            this.isHiddenControls = true;
+
+            this.$refs.container.removeClass('fancybox-show-infobar fancybox-show-toolbar fancybox-show-caption fancybox-show-nav');
+
+        },
+
+        showControls : function() {
+
+            var self = this;
+            var opts = self.current ? self.current.opts : self.opts;
+            var $container = self.$refs.container;
+
+            self.isHiddenControls = false;
+
+            $container
+                .toggleClass('fancybox-show-toolbar', !!( opts.toolbar && opts.buttons ) )
+                .toggleClass('fancybox-show-infobar', !!( opts.infobar && self.group.length > 1 ) )
+                .toggleClass('fancybox-show-nav',     !!( opts.arrows && self.group.length > 1 ) )
+                .toggleClass('fancybox-is-modal',     !!opts.modal );
+
+            if ( self.$caption ) {
+                $container.addClass( 'fancybox-show-caption ');
+
+            } else {
+               $container.removeClass( 'fancybox-show-caption' );
+           }
+
+       },
+
+
+       // Toggle toolbar and caption
+       // ==========================
+
+       toggleControls : function() {
+
+           if ( this.isHiddenControls ) {
+               this.showControls();
+
+           } else {
+               this.hideControls();
+           }
+
+       },
+
 
     });
 
@@ -2287,7 +2654,7 @@
         // ======================================================
 
         getInstance : function ( command ) {
-            var instance = $('.fancybox-container:not(".fancybox-container--closing"):first').data( 'FancyBox' );
+            var instance = $('.fancybox-container:not(".fancybox-is-closing"):first').data( 'FancyBox' );
             var args     = Array.prototype.slice.call(arguments, 1);
 
             if ( instance instanceof FancyBox ) {
@@ -2334,12 +2701,22 @@
 
         },
 
+        // Close instances and unbind all events
+        // ==============================
 
-        // Test for the existence of touch events in the browser
-        // Limit to mobile devices
-        // ====================================================
+        destroy : function() {
 
-        isTouch : document.createTouch !== undefined && /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent),
+            this.close( true );
+
+            $( document ).off( 'click.fb-start' );
+
+        },
+
+
+        // Try to detect mobile devices
+        // ============================
+
+        isMobile : document.createTouch !== undefined && /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent),
 
 
         // Detect if 'translate3d' support is available
@@ -2348,7 +2725,7 @@
         use3d : (function() {
             var div = document.createElement('div');
 
-            return window.getComputedStyle( div ).getPropertyValue('transform') && !(document.documentMode && document.documentMode <= 11);
+            return window.getComputedStyle && window.getComputedStyle( div ).getPropertyValue('transform') && !(document.documentMode && document.documentMode <= 11);
         }()),
 
 
@@ -2357,14 +2734,13 @@
         // =====================================================================
 
         getTranslate : function( $el ) {
-            var position, matrix;
+            var matrix;
 
             if ( !$el || !$el.length ) {
                 return false;
             }
 
-            position = $el.get( 0 ).getBoundingClientRect();
-            matrix   = $el.eq( 0 ).css('transform');
+            matrix  = $el.eq( 0 ).css('transform');
 
             if ( matrix && matrix.indexOf( 'matrix' ) !== -1 ) {
                 matrix = matrix.split('(')[1];
@@ -2388,6 +2764,14 @@
 
             } else {
                 matrix = [ 0, 0, 1, 1 ];
+
+                var transRegex = /\.*translate\((.*)px,(.*)px\)/i;
+                var transRez = transRegex.exec( $el.eq( 0 ).attr('style') );
+
+                if ( transRez ) {
+                    matrix[ 0 ] = parseFloat( transRez[2] );
+                    matrix[ 1 ] = parseFloat( transRez[1] );
+                }
             }
 
             return {
@@ -2396,8 +2780,8 @@
                 scaleX  : matrix[ 2 ],
                 scaleY  : matrix[ 3 ],
                 opacity : parseFloat( $el.css('opacity') ),
-                width   : position.width,
-                height  : position.height
+                width   : $el.width(),
+                height  : $el.height()
             };
 
         },
@@ -2559,6 +2943,10 @@
                 requestAFrame( frame );
             };
 
+            if ( !$el ) {
+                return;
+            }
+
             self.animateID = id = self.animateID === undefined ? 1 : self.animateID + 1;
 
             $el.data( 'animateID', id );
@@ -2592,32 +2980,57 @@
                 finish();
             }
 
+        },
+
+
+        // Simple CSS transition handler
+        // =============================
+
+        animateCSS : function ( $el, animationName, leaveAnimationName, callback ) {
+            var event = transitionEnd || 'fbTransition';
+
+            if ( $.isFunction( leaveAnimationName ) ) {
+                callback = leaveAnimationName;
+            }
+
+            $el.off( event ).one( event, function(e) {
+
+                if ( leaveAnimationName !== true ) {
+                    $(this).removeClass( animationName );
+                }
+
+                if ( $.isFunction( callback ) ) {
+                    callback();
+                }
+
+            }).addClass( animationName );
+
+            // Take care of broswers not supporting CSS transitions
+            if ( !transitionEnd ) {
+                $el.trigger( event );
+            }
+
         }
 
     };
 
 
-    // Event handler for click event to "fancyboxed" links
-    // ===================================================
+    // Default click handler for "fancyboxed" links
+    // ============================================
 
     function _run( e ) {
         var target	= e.currentTarget,
             opts	= e.data ? e.data.options : {},
             items	= e.data ? e.data.items : [],
-            value	= '',
+            value	= $(target).attr( 'data-fancybox' ) || '',
             index	= 0;
 
         e.preventDefault();
         e.stopPropagation();
 
         // Get all related items and find index for clicked one
-
-        if ( $(target).attr( 'data-fancybox' ) ) {
-            value = $(target).data( 'fancybox' );
-        }
-
         if ( value ) {
-            items = items.length ? items.filter( '[data-fancybox="' + value + '"]' ) : $( '[data-fancybox=' + value + ']' );
+            items = items.length ? items.filter( '[data-fancybox="' + value + '"]' ) : $( '[data-fancybox="' + value + '"]' );
             index = items.index( target );
 
         } else {
@@ -2633,7 +3046,7 @@
 
     $.fn.fancybox = function (options) {
 
-        this.off('click.fb-start').on('click.fb-start', {
+        this.off( 'click.fb-start' ).on( 'click.fb-start', {
             items   : this,
             options : options || {}
         }, _run);
@@ -2646,6 +3059,6 @@
     // Self initializing plugin
     // ========================
 
-    $(document).on('click.fb-start', '[data-fancybox]', _run);
+    $( document ).on( 'click.fb-start', '[data-fancybox]', _run );
 
-}(window, document, window.jQuery));
+}( window, document, window.jQuery ));

@@ -34,6 +34,9 @@
 	// It will be used to determine if fancyBox needs to close after hash change is detected
     var currentHash = null;
 
+	// Throtlling the history change
+	var timerID = null;
+
 	// Get info about gallery name and current index from url
     function parseUrl() {
         var hash    = window.location.hash.substr( 1 );
@@ -99,36 +102,33 @@
 				return;
 			}
 
-			// Check if need to close after url has changed
-		    $(window).on('hashchange.fb', function() {
-		        var url = parseUrl();
-
-				if ( $.fancybox.getInstance() ) {
-					if ( currentHash && currentHash !== url.gallery + '-' + url.index )  {
-						currentHash = null;
-
-						$.fancybox.close();
-					}
-
-				} else if ( url.gallery !== '' ) {
-		            triggerFromUrl( url );
-		        }
-
-		    });
-
 			// Update hash when opening/closing fancyBox
 		    $(document).on({
 				'onInit.fb' : function( e, instance ) {
-					var url     = parseUrl();
-					var gallery = getGallery( instance );
+					var url, gallery;
+
+					if ( instance.group[ instance.currIndex ].opts.hash === false ) {
+						return;
+					}
+
+					url     = parseUrl();
+					gallery = getGallery( instance );
 
 					// Make sure gallery start index matches index from hash
 					if ( gallery && url.gallery && gallery == url.gallery ) {
 						instance.currIndex = url.index - 1;
 					}
 
-				}, 'beforeMove.fb' : function( e, instance, current ) {
-		            var gallery = getGallery( instance );
+				},
+
+				'beforeShow.fb' : function( e, instance, current, firstRun ) {
+					var gallery;
+
+					if ( current.opts.hash === false ) {
+						return;
+					}
+
+		            gallery = getGallery( instance );
 
 		            // Update window hash
 		            if ( gallery && gallery !== '' ) {
@@ -139,8 +139,19 @@
 
 						currentHash = gallery + ( instance.group.length > 1 ? '-' + ( current.index + 1 ) : '' );
 
-						if ( "pushState" in history ) {
-		                    history.pushState( '', document.title, window.location.pathname + window.location.search + '#' +  currentHash );
+						if ( 'replaceState' in window.history ) {
+
+							if ( timerID ) {
+								clearTimeout( timerID );
+							}
+
+							timerID = setTimeout(function() {
+
+								window.history[ 'replaceState' ]( {} , document.title, window.location.pathname + window.location.search + '#' +  currentHash );
+
+								timerID = null;
+
+							}, 300);
 
 						} else {
 							window.location.hash = currentHash;
@@ -148,17 +159,34 @@
 
 		            }
 
-		        }, 'beforeClose.fb' : function( e, instance, current ) {
-					var gallery  = getGallery( instance );
-					var origHash = instance && instance.opts.origHash ? instance.opts.origHash : '';
+		        },
+
+				'beforeClose.fb' : function( e, instance, current ) {
+					var gallery, origHash;
+
+					if ( timerID ) {
+						clearTimeout( timerID );
+					}
+
+					if ( current.opts.hash === false ) {
+						return;
+					}
+
+					gallery  = getGallery( instance );
+					origHash = instance && instance.opts.origHash ? instance.opts.origHash : '';
 
 		            // Remove hash from location bar
 		            if ( gallery && gallery !== '' ) {
-		                if ( "pushState" in history ) {
-		                    history.pushState( '', document.title, window.location.pathname + window.location.search + origHash );
+		                if ( 'replaceState' in history ) {
+							window.history.replaceState( {} , document.title, window.location.pathname + window.location.search + origHash );
 
 		                } else {
-		                    window.location.hash = origHash;
+
+							window.location.hash = origHash;
+
+							// Keep original scroll position
+							$( window ).scrollTop( instance.scrollTop ).scrollLeft( instance.scrollLeft );
+
 		                }
 		            }
 
@@ -166,10 +194,29 @@
 		        }
 		    });
 
+			// Check if need to close after url has changed
+			$(window).on('hashchange.fb', function() {
+				var url = parseUrl();
+
+				if ( $.fancybox.getInstance() ) {
+
+					if ( currentHash && currentHash !== url.gallery + '-' + url.index && !( url.index === 1 && currentHash == url.gallery ) ) {
+						currentHash = null;
+
+						$.fancybox.close();
+					}
+
+				} else if ( url.gallery !== '' ) {
+					triggerFromUrl( url );
+				}
+
+			});
+
 			// Check current hash and trigger click event on matching element to start fancyBox, if needed
 			triggerFromUrl( parseUrl() );
 
 		}, 50);
+
     });
 
 
