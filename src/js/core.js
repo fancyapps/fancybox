@@ -54,8 +54,8 @@
         // Detect "idle" time in seconds
         idleTime : 3,
 
-        // Should apply buttons at top right corner of the content
-        // If 'auto' - will be set for content having type 'html', 'inline' or 'ajax'
+        // Should display buttons at top right corner of the content
+        // If 'auto' - they will be created for content having type 'html', 'inline' or 'ajax'
         // By default, it only has small close button, but you can use it to place anything
         smallBtn : 'auto',
 
@@ -186,7 +186,7 @@
 
             // This small close button will be appended to your html/inline/ajax content by default,
             // if "smallBtn" option is not set to false
-            smallBtn   : '<button data-fancybox-close class="fancybox-close-small"></button>'
+            smallBtn   : '<button data-fancybox-close class="fancybox-close-small" title="{{CLOSE}}"></button>'
         },
 
         // Container is injected into this element
@@ -380,6 +380,15 @@
         }
 
     })();
+    
+
+    // Force redraw on an element.
+    // This helps in cases where the browser doesn't redraw an updated element properly.
+    // =================================================================================
+
+    var forceRedraw = function( $el ) {
+        return $el[0].offsetHeight;  // jshint ignore:line
+    };
 
 
     // Class definition
@@ -1006,7 +1015,7 @@
                 if ( current.opts.animationEffect && self.$refs.bg.length ) {
                     self.$refs.bg.css('transition-duration', duration + 'ms');
 
-                    self.$refs.bg[0].offsetHeight;
+                    forceRedraw( self.$refs.bg );
                 }
 
                 self.current.$slide.addClass('fancybox-slide--current');
@@ -1868,7 +1877,7 @@
             $iframe.attr( 'src', slide.src );
 
             if ( slide.opts.smallBtn ) {
-                slide.$content.prepend( slide.opts.btnTpl.smallBtn );
+                slide.$content.prepend( self.translate( slide, slide.opts.btnTpl.smallBtn ) );
             }
 
             // Remove iframe if closing or changing gallery item
@@ -1907,30 +1916,33 @@
 
             if ( isQuery( content ) && content.parent().length ) {
 
-                // If it is a jQuery object, then it will be moved to the box.
+                // If content is a jQuery object, then it will be moved to the slide.
                 // The placeholder is created so we will know where to put it back.
-                // If user is navigating gallery fast, then the content might be already moved to the box
-                if ( content.data( 'placeholder' ) ) {
-                    content.parents( '.fancybox-slide' ).trigger( 'onReset' );
-                }
+                // If user is navigating gallery fast, then the content might be already inside fancyBox
+                // =====================================================================================
 
-                content.data({
-                    'placeholder' : $( '<div></div>' ).hide().insertAfter( content )
-                }).css('display', 'inline-block');
+                // Make sure content is not already moved to fancyBox
+                content.parent( '.fancybox-slide--inline' ).trigger( 'onReset' );
+
+                // Create temporary element marking original place of the content
+                slide.$placeholder = $( '<div></div>' ).hide().insertAfter( content );
+
+                // Make sure content is visible
+                content.css('display', 'inline-block');
 
             } else {
 
+                // If content is just a plain text, try to convert it to html
                 if ( $.type( content ) === 'string' ) {
-
                     content = $('<div>').append( $.trim( content ) ).contents();
 
                     // If we have text node, then add wrapping element to make vertical alignment work
                     if ( content[0].nodeType === 3 ) {
                         content = $('<div>').html( content );
                     }
-
                 }
 
+                // If "selector" option is provided, then filter content
                 if ( slide.opts.selector ) {
                     content = $('<div>').html( content ).find( slide.opts.selector );
                 }
@@ -1938,14 +1950,22 @@
             }
 
             slide.$slide.one('onReset', function () {
-                var placeholder = isQuery( content ) ? content.data( 'placeholder' ) : 0;
 
-                if ( placeholder ) {
-                    content.hide().replaceAll( placeholder );
+                // Put content back
+                if ( slide.$placeholder ) {
+                    slide.$placeholder.after( content.hide() ).remove();
 
-                    content.data( 'placeholder', null );
+                    slide.$placeholder = null;
                 }
 
+                // Remove custom close button
+                if ( slide.$smallBtn ) {
+                    slide.$smallBtn.remove();
+
+                    slide.$smallBtn = null;
+                }
+
+                // Remove content and mark slide as not loaded
                 if ( !slide.hasError ) {
                     $(this).empty();
 
@@ -1956,8 +1976,8 @@
 
             slide.$content = $( content ).appendTo( slide.$slide );
 
-            if ( slide.opts.smallBtn === true ) {
-                slide.$content.find( '.fancybox-close-small' ).remove().end().eq(0).append( slide.opts.btnTpl.smallBtn );
+            if ( slide.opts.smallBtn && !slide.$smallBtn ) {
+                slide.$smallBtn = $( self.translate( slide, slide.opts.btnTpl.smallBtn ) ).appendTo( slide.$content );
             }
 
             this.afterLoad( slide );
@@ -2113,7 +2133,7 @@
                     slide.$slide.addClass( 'fancybox-fx-' + slide.opts.transitionEffect );
 
                     // Force reflow for CSS3 transitions
-                    slide.$slide[0].offsetHeight; // jshint ignore:line
+                    forceRedraw( slide.$slide );
 
                     slide.$content.removeClass( 'fancybox-is-hidden' );
 
@@ -2138,7 +2158,7 @@
 
                     slide.$content.removeClass( 'fancybox-is-hidden' );
 
-                    slide.$slide[0].offsetHeight;
+                    forceRedraw( slide.$slide );
 
                     slide.$slide.addClass( 'fancybox-slide--current' );
 
@@ -2158,7 +2178,7 @@
                 self.isAnimating = false;
                 slide.isRevealed = true;
 
-                slide.$slide[0].offsetHeight;
+                forceRedraw( slide.$slide );
 
                 self.complete();
 
