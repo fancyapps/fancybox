@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.1.0
+// fancyBox v3.1.1
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -247,12 +247,11 @@
 
         // See Documentation/API/Events for more information
         // Example:
-        /*
-            afterShow: function( instance, current ) {
-                // Clicked element:
-                console.info( current.opts.$orig );
-            }
-        */
+        //
+        // afterShow: function( instance, current ) {
+        //      console.info( 'Clicked element:' );
+        //      console.info( current.opts.$orig );
+        // }
 
         onInit       : $.noop,  // When instance has been initialized
 
@@ -2647,7 +2646,7 @@
 
     $.fancybox = {
 
-        version  : "3.1.0",
+        version  : "3.1.1",
         defaults : defaults,
 
 

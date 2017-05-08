@@ -237,12 +237,11 @@
 
         // See Documentation/API/Events for more information
         // Example:
-        /*
-            afterShow: function( instance, current ) {
-                // Clicked element:
-                console.info( current.opts.$orig );
-            }
-        */
+        //
+        // afterShow: function( instance, current ) {
+        //      console.info( 'Clicked element:' );
+        //      console.info( current.opts.$orig );
+        // }
 
         onInit       : $.noop,  // When instance has been initialized
 

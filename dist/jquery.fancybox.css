@@ -546,9 +546,10 @@
   opacity: 1; }
 
 /* transitionEffect: fade */
-.fancybox-fx-fade.fancybox-slide--previous {
-  opacity: 0; }
+.fancybox-fx-fade {
+  transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1); }
 
+.fancybox-fx-fade.fancybox-slide--previous,
 .fancybox-fx-fade.fancybox-slide--next {
   opacity: 0; }
 
