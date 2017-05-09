@@ -305,7 +305,7 @@
         // Internationalization
         // ============
 
-		lang : 'en',
+        lang : 'en',
         i18n : {
             'en' : {
                 CLOSE       : 'Close',
@@ -380,7 +380,7 @@
         }
 
     })();
-    
+
 
     // Force redraw on an element.
     // This helps in cases where the browser doesn't redraw an updated element properly.
@@ -590,6 +590,11 @@
 
                     opts.$orig = $item;
 
+                    if ( !obj.type && !obj.src ) {
+                        obj.type = 'inline';
+                        obj.src  = item;
+                    }
+
                 } else {
 
                     // Assume we have a simple html code, for example:
@@ -629,7 +634,7 @@
                     } else if ( src.charAt(0) === '#' ) {
                         type = 'inline';
 
-                    } else {
+                    } else if ( src ) {
 
                         // If no content type is found, then set it to `image` as fallback
         				item.type = 'image';
@@ -1801,7 +1806,7 @@
                 $slide	= slide.$slide,
                 $iframe;
 
-            slide.$content = $('<div class="fancybox-iframe-wrap"></div>')
+            slide.$content = $('<div class="fancybox-iframe-wrap' + ( opts.preload ? ' fancybox-is-hidden' : '' ) + '"></div>')
                 .css( opts.css )
                 .appendTo( $slide );
 
@@ -1809,13 +1814,14 @@
                 .attr( opts.attr )
                 .appendTo( slide.$content );
 
+
             if ( opts.preload ) {
-                slide.$content.addClass( 'fancybox-is-hidden' );
 
                 self.showLoading( slide );
 
                 // Unfortunately, it is not always possible to determine if iframe is successfully loaded
                 // (due to browser security policy)
+                
                 $iframe.on('load.fb error.fb', function(e) {
                     this.isReady = 1;
 
@@ -1826,6 +1832,7 @@
                 });
 
                 // Recalculate iframe content size
+                // ===============================
 
                 $slide.on('refresh.fb', function() {
                     var $wrap = slide.$content,
@@ -2076,45 +2083,59 @@
 
             var self = this;
 
-            var opacity;
-            var start;
-            var end;
+            var opacity, start, end, duration;
 
             if ( slide.isRevealed || !slide.isLoaded ) {
                 return;
             }
 
-            // Animate only current slide
-            if ( slide.pos === self.currPos ) {
+            // Animate only current slide and only if it has not been dragged
+            // ==============================================================
 
-                // Start zoom animation if this is first click on thumbnail
-                if ( self.firstRun && slide.opts.animationEffect === 'zoom' && slide.opts.animationDuration && !slide.leftValue && slide.type === 'image' && !slide.hasError && ( start = self.getThumbPos( slide ) ) ) {
+            if ( slide.pos === self.currPos && !slide.leftValue ) {
+
+                // Start zoom animation when opening image
+                // =======================================
+
+                if ( self.firstRun && slide.opts.animationEffect === 'zoom' && slide.opts.animationDuration && slide.type === 'image' && !slide.hasError ) {
 
                     self.isAnimating = true;
 
-                    end = self.getFitPos( slide );
-
-                    end.scaleX = Math.round( (end.width  / start.width)  * 100 ) / 100;
-                    end.scaleY = Math.round( (end.height / start.height) * 100 ) / 100;
-
-                    delete end.width;
-                    delete end.height;
-
-                    // Check if we need to animate opacity
-                    opacity = slide.opts.zoomOpacity;
-
-                    if ( opacity == 'auto' ) {
-                        opacity = Math.abs( slide.width / slide.height - start.width / start.height ) > 0.1;
-                    }
-
-                    if ( opacity ) {
-                        start.opacity = 0.1;
-                        end.opacity   = 1;
-                    }
-
                     slide.$content.removeClass( 'fancybox-is-hidden' );
 
-                    $.fancybox.animate( slide.$content, start, end, slide.opts.animationDuration, function() {
+                    // Check if thumbnail exists and is visible
+                    if ( ( start = self.getThumbPos( slide ) ) ) {
+
+                        end = self.getFitPos( slide );
+
+                        end.scaleX = Math.round( (end.width  / start.width)  * 100 ) / 100;
+                        end.scaleY = Math.round( (end.height / start.height) * 100 ) / 100;
+
+                        delete end.width;
+                        delete end.height;
+
+                        // Check if we need to animate opacity
+                        opacity = slide.opts.zoomOpacity;
+
+                        if ( opacity == 'auto' ) {
+                            opacity = Math.abs( slide.width / slide.height - start.width / start.height ) > 0.1;
+                        }
+
+                        if ( opacity ) {
+                            start.opacity = 0.1;
+                            end.opacity   = 1;
+                        }
+
+                        duration = slide.opts.animationDuration;
+
+                    } else {
+                        // If thumbnail is not visible, then simply fade in
+                        start    = { opacity : 0 };
+                        end      = { opacity : 1 };
+                        duration = 330;
+                    }
+
+                    $.fancybox.animate( slide.$content, start, end, duration, function() {
                         self.isAnimating = false;
                         slide.isRevealed = true;
 
@@ -2123,6 +2144,9 @@
 
                     return;
                 }
+
+                // Transition effect when changing gallery items
+                // =============================================
 
                 if ( slide.inTransition && slide.opts.transitionEffect && slide.opts.transitionDuration ) {
                     self.isAnimating = true;
@@ -2152,43 +2176,20 @@
                     return;
                 }
 
-                if ( ( self.firstRun && slide.opts.animationEffect === 'fade' ) || ( !self.firstRun && !slide.inTransition ) ) {
-
-                    slide.$slide.css('opacity', 0);
-
-                    slide.$content.removeClass( 'fancybox-is-hidden' );
-
-                    forceRedraw( slide.$slide );
-
-                    slide.$slide.addClass( 'fancybox-slide--current' );
-
-
-                    $.fancybox.animate( slide.$slide, { opacity : 0 }, { opacity : 1 }, slide.opts.transitionDuration, "easeOutSine", function() {
-                        slide.isRevealed = true;
-
-                        self.complete();
-                    });
-
-                    return;
-                }
-
-                // Simply show content of neighbour slides
-                slide.$content.removeClass( 'fancybox-is-hidden' );
-
-                self.isAnimating = false;
-                slide.isRevealed = true;
-
-                forceRedraw( slide.$slide );
-
-                self.complete();
-
-                return;
             }
 
-            // Simply show content of neighbour slides
+            // Simply show content
+            // ===================
+
             slide.$content.removeClass( 'fancybox-is-hidden' );
 
+            forceRedraw( slide.$slide );
+
             slide.isRevealed = true;
+
+            if ( slide.pos === self.currPos ) {
+                self.complete();
+            }
 
         },
 
@@ -2453,7 +2454,7 @@
 
                     start = $.fancybox.getTranslate( $what );
 
-                    start.width = start.width * start.scaleX;
+                    start.width  = start.width  * start.scaleX;
                     start.height = start.height * start.scaleY;
 
                     opacity = current.opts.zoomOpacity;
@@ -2472,20 +2473,17 @@
                     start.width  = end.width;
                     start.height = end.height;
 
-                    $.fancybox.animate( current.$content, start, end, duration, done);
+                    $.fancybox.animate( current.$content, start, end, duration, done );
 
                     return;
                 }
             }
 
             if ( current.opts.animationEffect ) {
-
                 $.fancybox.animate( current.$slide, null, { opacity : 0 }, duration, "easeOutSine", done);
 
             } else {
-
                 done();
-
             }
 
         },

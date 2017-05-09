@@ -310,7 +310,7 @@
 
 			if ( Math.abs( self.distance ) > 10 )  {
 
-				if ( self.instance.group.length < 2 ) {
+				if ( self.instance.group.length < 2 && self.instance.opts.touch.vertical ) {
 					self.isSwiping  = 'y';
 
 				} else if ( self.instance.current.leftValue || self.instance.opts.touch.vertical === false || ( self.instance.opts.touch.vertical === 'auto' && $( window ).width() > 800 ) ) {
