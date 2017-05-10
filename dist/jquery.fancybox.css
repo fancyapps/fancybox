@@ -770,4 +770,4 @@ li.fancybox-thumbs-loading {
   .fancybox-show-thumbs .fancybox-inner {
     right: 0; }
   .fancybox-show-thumbs .fancybox-toolbar button:not(.fancybox-button--thumbs) {
-    display: none !important; } }
+    display: none; } }

@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.1.5
+// fancyBox v3.1.6
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -962,7 +962,7 @@
             var groupLen = self.group.length;
             var canvasWidth;
 
-            if ( self.isSliding  || ( self.isAnimating && self.firstRun ) ) {
+            if ( self.isSliding || ( self.isAnimating && self.firstRun ) ) {
                 return;
             }
 
@@ -2109,8 +2109,6 @@
 
                 if ( self.firstRun && slide.opts.animationEffect && slide.opts.animationDuration ) {
 
-                    self.isAnimating = true;
-
                     slide.$content.removeClass( 'fancybox-is-hidden' );
 
                     duration = slide.opts.animationDuration;
@@ -2138,20 +2136,26 @@
                             end.opacity   = 1;
                         }
 
+                        self.isAnimating = true;
+
+                        $.fancybox.animate( slide.$content, start, end, duration, function() {
+                            self.isAnimating = false;
+                            slide.isRevealed = true;
+
+                            self.complete();
+                        });
+
                     } else {
 
-                        // Simply fade in
-                        start = { opacity : 0 };
-                        end   = { opacity : 1 };
+                        // Simply fade in slide
+                        $.fancybox.animate( slide.$slide, { opacity : 0 }, { opacity : 1 }, duration );
 
-                    }
-
-                    $.fancybox.animate( slide.$content, start, end, duration, function() {
-                        self.isAnimating = false;
+                        // It probably would be more accurate execute this after fade animation completes, but
+                        // this allows you to easily create custom animations using CSS, because
+                        // slide will immediately have class name "fancybox-slide--complete"
                         slide.isRevealed = true;
-
                         self.complete();
-                    });
+                    }
 
                     return;
                 }
@@ -2665,7 +2669,7 @@
 
     $.fancybox = {
 
-        version  : "3.1.5",
+        version  : "3.1.6",
         defaults : defaults,
 
 
@@ -3082,7 +3086,7 @@
         var selector;
 
         options  = options || {};
-        selector = options.selector || '';
+        selector = options.selector || false;
 
         if ( selector ) {
 
@@ -3101,7 +3105,6 @@
         }
 
         return this;
-
     };
 
 
