@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.1.4
+// fancyBox v3.1.5
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -2665,7 +2665,7 @@
 
     $.fancybox = {
 
-        version  : "3.1.4",
+        version  : "3.1.5",
         defaults : defaults,
 
 
@@ -3082,21 +3082,21 @@
         var selector;
 
         options  = options || {};
-        selector = this.selector || '';
+        selector = options.selector || '';
 
-        if ( !selector || options.live === false ) {
-
-            this.off( 'click.fb-start' ).on( 'click.fb-start', {
-                items   : this,
-                options : options
-            }, _run);
-
-        } else {
+        if ( selector ) {
 
             $( 'body' ).off( 'click.fb-start', selector ).on( 'click.fb-start', selector, {
                 items   : $( selector ),
                 options : options
             }, _run );
+
+        } else {
+
+            this.off( 'click.fb-start' ).on( 'click.fb-start', {
+                items   : this,
+                options : options
+            }, _run);
 
         }
 

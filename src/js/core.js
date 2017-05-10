@@ -3072,21 +3072,21 @@
         var selector;
 
         options  = options || {};
-        selector = this.selector || '';
+        selector = options.selector || '';
 
-        if ( !selector || options.live === false ) {
-
-            this.off( 'click.fb-start' ).on( 'click.fb-start', {
-                items   : this,
-                options : options
-            }, _run);
-
-        } else {
+        if ( selector ) {
 
             $( 'body' ).off( 'click.fb-start', selector ).on( 'click.fb-start', selector, {
                 items   : $( selector ),
                 options : options
             }, _run );
+
+        } else {
+
+            this.off( 'click.fb-start' ).on( 'click.fb-start', {
+                items   : this,
+                options : options
+            }, _run);
 
         }
 
