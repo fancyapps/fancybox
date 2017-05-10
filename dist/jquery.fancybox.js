@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.1.3
+// fancyBox v3.1.4
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -66,7 +66,7 @@
 
         // Should display buttons at top right corner of the content
         // If 'auto' - they will be created for content having type 'html', 'inline' or 'ajax'
-        // By default, it only has small close button, but you can use it to place anything
+        // Use template from `btnTpl.smallBtn` for customization
         smallBtn : 'auto',
 
         // Disable right-click and use simple image protection for images
@@ -128,7 +128,7 @@
         animationEffect : "zoom",
 
         // Duration in ms for open/close animation
-        animationDuration : 300,
+        animationDuration : 330,
 
         // Should image change opacity while zooming
         // If opacity is 'auto', then opacity will be changed if image and thumbnail have different aspect ratios
@@ -148,7 +148,7 @@
         transitionEffect : "fade",
 
         // Duration in ms for transition animation
-        transitionDuration : 300,
+        transitionDuration : 330,
 
         // Custom CSS class for slide element
         slideClass : '',
@@ -230,11 +230,11 @@
 
         thumbs : {
             autoStart   : false,   // Display thumbnails on opening
-	        hideOnClose : true     // Hide thumbnail grid when closing animation starts
+            hideOnClose : true     // Hide thumbnail grid when closing animation starts
         },
 
         touch : {
-        	vertical : true  // Allow vertical swipe
+            vertical : true  // Allow vertical swipe
         },
 
         // Hash value when initializing manually,
@@ -255,14 +255,14 @@
 
         onInit       : $.noop,  // When instance has been initialized
 
-        beforeLoad	 : $.noop,  // Before the content of a slide is being loaded
+        beforeLoad   : $.noop,  // Before the content of a slide is being loaded
         afterLoad    : $.noop,  // When the content of a slide is done loading
 
-        beforeShow 	 : $.noop,  // Before open animation starts
-        afterShow	 : $.noop,  // When content is done loading and animating
+        beforeShow   : $.noop,  // Before open animation starts
+        afterShow    : $.noop,  // When content is done loading and animating
 
-        beforeClose	 : $.noop,  // Before the instance attempts to close. Return false to cancel the close.
-        afterClose	 : $.noop,  // After instance has been closed
+        beforeClose  : $.noop,  // Before the instance attempts to close. Return false to cancel the close.
+        afterClose   : $.noop,  // After instance has been closed
 
         onActivate   : $.noop,  // When instance is brought to front
         onDeactivate : $.noop,  // When other instance has been activated
@@ -290,7 +290,7 @@
         // Clicked outside of the content
         clickOutside : 'close',
 
-        // Same as preivous two, but for double click
+        // Same as previous two, but for double click
         dblclickContent : false,
         dblclickOutside : false,
 
@@ -885,7 +885,7 @@
             if ( self.group[ self.currIndex ].opts.idleTime ) {
                 self.idleSecondsCounter = 0;
 
-                $(document).on('mousemove.fb-idle mouseenter.fb-idle mouseleave.fb-idle mousedown.fb-idle touchdown.fb-idle touchmove.fb-idle scroll.fb-idle keydown.fb-idle', function() {
+                $D.on('mousemove.fb-idle mouseenter.fb-idle mouseleave.fb-idle mousedown.fb-idle touchdown.fb-idle touchmove.fb-idle scroll.fb-idle keydown.fb-idle', function() {
                     self.idleSecondsCounter = 0;
 
                     if ( self.isIdle ) {
@@ -1831,7 +1831,7 @@
 
                 // Unfortunately, it is not always possible to determine if iframe is successfully loaded
                 // (due to browser security policy)
-                
+
                 $iframe.on('load.fb error.fb', function(e) {
                     this.isReady = 1;
 
@@ -2104,17 +2104,19 @@
 
             if ( slide.pos === self.currPos && !slide.leftValue ) {
 
-                // Start zoom animation when opening image
-                // =======================================
+                // Opening animation
+                // =================
 
-                if ( self.firstRun && slide.opts.animationEffect === 'zoom' && slide.opts.animationDuration && slide.type === 'image' && !slide.hasError ) {
+                if ( self.firstRun && slide.opts.animationEffect && slide.opts.animationDuration ) {
 
                     self.isAnimating = true;
 
                     slide.$content.removeClass( 'fancybox-is-hidden' );
 
+                    duration = slide.opts.animationDuration;
+
                     // Check if thumbnail exists and is visible
-                    if ( ( start = self.getThumbPos( slide ) ) ) {
+                    if ( slide.opts.animationEffect === 'zoom' && slide.type === 'image' && !slide.hasError && ( start = self.getThumbPos( slide ) ) ) {
 
                         end = self.getFitPos( slide );
 
@@ -2136,13 +2138,12 @@
                             end.opacity   = 1;
                         }
 
-                        duration = slide.opts.animationDuration;
-
                     } else {
-                        // If thumbnail is not visible, then simply fade in
-                        start    = { opacity : 0 };
-                        end      = { opacity : 1 };
-                        duration = 330;
+
+                        // Simply fade in
+                        start = { opacity : 0 };
+                        end   = { opacity : 1 };
+
                     }
 
                     $.fancybox.animate( slide.$content, start, end, duration, function() {
@@ -2564,7 +2565,7 @@
             }
 
             if ( name === 'afterClose' ) {
-                $( document ).trigger( name + '.fb', args );
+                $D.trigger( name + '.fb', args );
 
             } else {
                 self.$refs.container.trigger( name + '.fb', args );
@@ -2664,7 +2665,7 @@
 
     $.fancybox = {
 
-        version  : "3.1.3",
+        version  : "3.1.4",
         defaults : defaults,
 
 
@@ -2735,7 +2736,7 @@
 
             this.close( true );
 
-            $( document ).off( 'click.fb-start' );
+            $D.off( 'click.fb-start' );
 
         },
 
@@ -3060,6 +3061,12 @@
             items = items.length ? items.filter( '[data-fancybox="' + value + '"]' ) : $( '[data-fancybox="' + value + '"]' );
             index = items.index( target );
 
+            // Sometimes current item can not be found
+            // (for example, when slider clones items)
+            if ( index < 0 ) {
+                index = 0;
+            }
+
         } else {
             items = [ target ];
         }
@@ -3072,11 +3079,26 @@
     // ======================
 
     $.fn.fancybox = function (options) {
+        var selector;
 
-        this.off( 'click.fb-start' ).on( 'click.fb-start', {
-            items   : this,
-            options : options || {}
-        }, _run);
+        options  = options || {};
+        selector = this.selector || '';
+
+        if ( !selector || options.live === false ) {
+
+            this.off( 'click.fb-start' ).on( 'click.fb-start', {
+                items   : this,
+                options : options
+            }, _run);
+
+        } else {
+
+            $( 'body' ).off( 'click.fb-start', selector ).on( 'click.fb-start', selector, {
+                items   : $( selector ),
+                options : options
+            }, _run );
+
+        }
 
         return this;
 
@@ -3086,7 +3108,7 @@
     // Self initializing plugin
     // ========================
 
-    $( document ).on( 'click.fb-start', '[data-fancybox]', _run );
+    $D.on( 'click.fb-start', '[data-fancybox]', _run );
 
 }( window, document, window.jQuery ));
 
@@ -4305,26 +4327,19 @@
 	});
 
 	$(document).on({
-		'onInit.fb' : function(e, instance, current) {
-
-			if ( instance && !instance.SlideShow  ) {
-				instance.SlideShow = new SlideShow( instance );
-			}
-
-		},
 
 		'beforeShow.fb' : function(e, instance, current, firstRun) {
-			var slideShow = instance && instance.SlideShow;
+			var slideShow;
 
-			if ( slideShow ) {
+			if ( firstRun ) {
+				slideShow = instance.SlideShow = new SlideShow( instance );
 
-				if ( firstRun && current.opts.slideShow.autoStart ) {
+				if ( current.opts.slideShow.autoStart  ) {
 					slideShow.start();
-
-				} else if ( slideShow.isActive )  {
-					slideShow.clear();
 				}
 
+			} else if (  ( slideShow = instance && instance.SlideShow ) && slideShow.isActive )  {
+				slideShow.clear();
 			}
 
 		},
@@ -4961,7 +4976,7 @@
 
 							timerID = setTimeout(function() {
 
-								window.history[ 'replaceState' ]( {} , document.title, window.location.pathname + window.location.search + '#' +  currentHash );
+								window.history.replaceState( {} , document.title, window.location.pathname + window.location.search + '#' +  currentHash );
 
 								timerID = null;
 

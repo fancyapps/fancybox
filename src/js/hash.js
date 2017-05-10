@@ -147,7 +147,7 @@
 
 							timerID = setTimeout(function() {
 
-								window.history[ 'replaceState' ]( {} , document.title, window.location.pathname + window.location.search + '#' +  currentHash );
+								window.history.replaceState( {} , document.title, window.location.pathname + window.location.search + '#' +  currentHash );
 
 								timerID = null;
 

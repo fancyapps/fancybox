@@ -110,26 +110,19 @@
 	});
 
 	$(document).on({
-		'onInit.fb' : function(e, instance, current) {
-
-			if ( instance && !instance.SlideShow  ) {
-				instance.SlideShow = new SlideShow( instance );
-			}
-
-		},
 
 		'beforeShow.fb' : function(e, instance, current, firstRun) {
-			var slideShow = instance && instance.SlideShow;
+			var slideShow;
 
-			if ( slideShow ) {
+			if ( firstRun ) {
+				slideShow = instance.SlideShow = new SlideShow( instance );
 
-				if ( firstRun && current.opts.slideShow.autoStart ) {
+				if ( current.opts.slideShow.autoStart  ) {
 					slideShow.start();
-
-				} else if ( slideShow.isActive )  {
-					slideShow.clear();
 				}
 
+			} else if (  ( slideShow = instance && instance.SlideShow ) && slideShow.isActive )  {
+				slideShow.clear();
 			}
 
 		},

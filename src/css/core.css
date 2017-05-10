@@ -404,7 +404,6 @@
 	content: '';
 	pointer-events: none;
 	position: absolute;
-	border-color: #fff;
 	background-color: currentColor;
 	color: currentColor;
 	opacity: 0.9;
