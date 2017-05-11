@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.1.6
+// fancyBox v3.1.7
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -397,7 +397,7 @@
     // =================================================================================
 
     var forceRedraw = function( $el ) {
-        return $el[0].offsetHeight;  // jshint ignore:line
+        return ( $el && $el.length && $el[0].offsetHeight );
     };
 
 
@@ -935,7 +935,7 @@
         // ===============================
 
         previous : function( duration ) {
-            return this.jumpTo( this.currIndex - 1, duration );
+            return this.jumpTo( this.currPos - 1, duration );
         },
 
 
@@ -943,79 +943,56 @@
         // ===========================
 
         next : function( duration ) {
-            return this.jumpTo( this.currIndex + 1, duration );
+            return this.jumpTo( this.currPos + 1, duration );
         },
 
 
         // Display selected gallery item
         // =============================
 
-        jumpTo : function ( to, duration ) {
+        jumpTo : function ( pos, duration ) {
             var self = this,
                 firstRun,
-                index,
-                pos,
-                loop;
+                loop,
+                current,
+                previous,
+                canvasWidth;
 
-            var current;
-            var previous = self.current;
             var groupLen = self.group.length;
-            var canvasWidth;
 
             if ( self.isSliding || ( self.isAnimating && self.firstRun ) ) {
                 return;
             }
 
-            firstRun = self.firstRun = ( self.firstRun === null );
+            pos  = parseInt( pos, 10 );
+            loop = self.current ? self.current.opts.loop : self.opts.loop;
 
-            index = pos = to = parseInt( to, 10 );
-            loop  = self.current ? self.current.opts.loop : self.opts.loop;
-
-            // Find position based on the index
-            // Position can be negative or higher than group length if infinite looping is enabled
-            if ( groupLen > 1 && loop ) {
-
-                index = index % groupLen;
-                index = index < 0 ? groupLen + index : index;
-
-                if ( groupLen == 2 ) {
-                    pos = to - self.currIndex + self.currPos;
-
-                } else {
-                    pos = index - self.currIndex + self.currPos;
-
-                    if ( Math.abs( self.currPos - ( pos + groupLen ) ) < Math.abs( self.currPos - pos ) ) {
-                        pos = pos + groupLen;
-
-                    } else if ( Math.abs( self.currPos - ( pos - groupLen ) ) < Math.abs( self.currPos - pos ) ) {
-                        pos = pos - groupLen;
-                    }
-                }
-
-            } else if ( !self.group[ index ] ) {
+            if ( !loop && ( pos < 0 || pos >= groupLen ) ) {
                 return false;
             }
 
+            firstRun = self.firstRun = ( self.firstRun === null );
+
+            previous       = self.current;
             self.prevIndex = self.currIndex;
             self.prevPos   = self.currPos;
 
-            self.currIndex = index;
-            self.currPos   = pos;
-
             // Create slides
-            self.current = self.createSlide( pos );
+            current = self.createSlide( pos );
 
             if ( groupLen > 1 ) {
-                if ( loop || pos - 1 >= 0 ) {
+                if ( loop || current.index > 0 ) {
                     self.createSlide( pos - 1 );
                 }
 
-                if ( loop || pos + 1 < groupLen ) {
+                if ( loop || current.index < groupLen - 1 ) {
                     self.createSlide( pos + 1 );
                 }
             }
 
-            current = self.current;
+            self.current   = current;
+            self.currIndex = current.index;
+            self.currPos   = current.pos;
 
             self.trigger( 'beforeShow', firstRun );
 
@@ -1023,17 +1000,16 @@
 
             duration = parseInt( duration === undefined ? self.current.opts[ firstRun ? 'animationDuration' : 'transitionDuration' ] : duration, 10 );
 
-            current.inTransition = ( !firstRun && current.leftValue === undefined );
+            current.inTransition = ( !firstRun && current && current.leftValue === undefined );
 
             if ( firstRun ) {
-
                 if ( current.opts.animationEffect && self.$refs.bg.length ) {
-                    self.$refs.bg.css('transition-duration', duration + 'ms');
+                    self.$refs.bg.css( 'transition-duration', duration + 'ms' );
 
                     forceRedraw( self.$refs.bg );
                 }
 
-                self.current.$slide.addClass('fancybox-slide--current');
+                self.current.$slide.addClass( 'fancybox-slide--current' );
 
                 self.$refs.container.removeClass( 'fancybox-is-hidden' );
 
@@ -1042,7 +1018,6 @@
                 self.preload();
 
                 return;
-
             }
 
             previous.isComplete = false;
@@ -1080,18 +1055,14 @@
 
                 current.$slide.addClass( 'fancybox-slide--current' );
 
-
             } else {
-
 
                 self.$refs.stage.removeAttr('style');
 
                 canvasWidth = Math.round( current.$slide.width() );
 
-                //previous.$slide.removeClass( 'fancybox-slide--current' ); //
-                //previous.$slide.removeClass( 'fancybox-slide--next fancybox-slide--previous' );
-
                 $.each(self.slides, function( index, slide ) {
+                    var leftValue, startPos;
 
                     // Skip newly created slides
                     if ( slide.pos !== current.pos && slide.leftValue === undefined ) {
@@ -1100,24 +1071,17 @@
 
                     $.fancybox.stop( slide.$slide );
 
-                    var leftValue = ( (slide.pos - current.pos ) * canvasWidth );
+                    leftValue = ( (slide.pos - current.pos ) * canvasWidth );
+                    startPos  = $.fancybox.getTranslate( slide.$slide );
 
-                    var x = $.fancybox.getTranslate( slide.$slide );
-
-                    var fromLeftValue = x.left;
-
-                    $.fancybox.animate( slide.$slide, { top : x.top, left : fromLeftValue }, { top : 0, left : leftValue }, duration, function() {
+                    $.fancybox.animate( slide.$slide, { top : startPos.top, left : startPos.left }, { top : 0, left : leftValue }, duration, function() {
 
                         slide.leftValue = undefined;
 
                         slide.$slide.removeAttr('style');
 
-                        if ( slide.pos === current.pos ) {
-
-                            if ( slide.isLoaded ) {
-                                self.complete();
-                            }
-
+                        if ( slide.pos === current.pos && slide.isLoaded ) {
+                            self.complete();
                         }
 
                     });
@@ -1131,7 +1095,6 @@
             }
 
             self.preload();
-
         },
 
 
@@ -1156,7 +1119,9 @@
                     for (var key in self.slides) {
                         if ( self.slides[ key ].index === index ) {
                             found = self.slides[ key ];
+
                             found.pos = pos;
+                            found.leftValue = undefined;
 
                             self.slides[ pos ] = found;
 
@@ -1178,11 +1143,9 @@
                 });
 
                 self.updateSlide( self.slides[ pos ] );
-
             }
 
             return self.slides[ pos ];
-
         },
 
 
@@ -2669,7 +2632,7 @@
 
     $.fancybox = {
 
-        version  : "3.1.6",
+        version  : "3.1.7",
         defaults : defaults,
 
 
