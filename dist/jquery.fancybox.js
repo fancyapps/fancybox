@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.1.7
+// fancyBox v3.1.8
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -1416,7 +1416,7 @@
             //   - click action is "zoom"
             //   - actual size of the image is smaller than available area
             if ( current.type === 'image' && current.isLoaded && !current.hasError &&
-                ( current.opts.clickContent === 'zoom' || current.opts.clickContent( current ) ===  "zoom" )
+                ( current.opts.clickContent === 'zoom' || ( $.isFunction( current.opts.clickContent ) && current.opts.clickContent( current ) ===  "zoom" ) )
             ) {
 
                 fitPos = self.getFitPos( current );
@@ -2632,7 +2632,7 @@
 
     $.fancybox = {
 
-        version  : "3.1.7",
+        version  : "3.1.8",
         defaults : defaults,
 
 
@@ -3410,20 +3410,20 @@
 		self.instance = instance;
 
 		self.$bg        = instance.$refs.bg;
-		self.$stage      = instance.$refs.stage;
+		self.$stage     = instance.$refs.stage;
 		self.$container = instance.$refs.container;
 
 		self.destroy();
 
-		self.$stage.on('touchstart.fb.touch mousedown.fb.touch', $.proxy(self, "ontouchstart"));
+		self.$stage.on( 'touchstart.fb.touch mousedown.fb.touch', $.proxy(self, 'ontouchstart') );
 
-		self.$container.on('touchstart.fb.touch mousedown.fb.touch', $.proxy(self, "ontap"));
+		self.$container.on( 'touchstart.fb.touch mousedown.fb.touch', $.proxy(self, 'ontap') );
 
 	};
 
 	Guestures.prototype.destroy = function() {
 
-		this.$stage.add( this.$container ).off('.fb.touch');
+		this.$stage.add( this.$container ).off( '.fb.touch' );
 
 	};
 
@@ -3453,17 +3453,17 @@
 		}
 
 		// Skip if clicked on the scrollbar
-		if ( $target.is('.fancybox-slide') && e.originalEvent.clientX > self.canvasWidth + current.$slide.offset().left ) {
-			return true;
+		if ( e.originalEvent.clientX > $target[0].clientWidth + $target.offset().left ) {
+			return;
 		}
 
-		// Ignore taping on links, buttons and scrollable items
+		// Ignore taping on links, buttons, input elements
 		if ( isClickable( $target ) || isClickable( $target.parent() ) ) {
 			return;
 		}
 
 		// Skip on scrollable items on mobile, otherwise it would not be possible to scroll
-		if ( $.fancybox.isMobile &&  ( isScrollable( $target ) || isScrollable( $target.parent() ) ) ) {
+		if ( $.fancybox.isMobile && ( isScrollable( $target ) || isScrollable( $target.parent() ) ) ) {
 			e.stopPropagation();
 
 			return;
@@ -3471,7 +3471,7 @@
 
 		// If "touch" is disabled, then handle click event only
 		if ( !current.opts.touch ) {
-			return;// self.ontap( e );
+			return;
 		}
 
 		e.stopPropagation();
@@ -3523,8 +3523,6 @@
 				self.isPanning = true;
 
 			} else {
-
-
 
 				self.isSwiping = true;
 			}
@@ -3617,7 +3615,6 @@
 
 				// Reset points to avoid jumping, because we dropped first swipes to calculate the angle
 				self.startPoints = self.newPoints;
-
 
 				$.each(self.instance.slides, function( index, slide ) {
 					$.fancybox.stop( slide.$slide );
@@ -4026,13 +4023,13 @@
 	};
 
 	Guestures.prototype.ontap = function(e) {
-
-		var self = this;
+		var self    = this;
+		var $target = $( e.target );
 
 		var instance = self.instance;
 		var current  = instance.current;
 
-		var endPoints = self.startPoints || pointers( e );
+		var endPoints = ( e && pointers( e ) ) || self.startPoints;
 
 		var tapX = endPoints[0] ? endPoints[0].x - self.$stage.offset().left : 0;
 		var tapY = endPoints[0] ? endPoints[0].y - self.$stage.offset().top  : 0;
@@ -4112,8 +4109,13 @@
 			return;
 		}
 
+		// Skip if clicked on the scrollbar
+		if ( tapX > $target[0].clientWidth + $target.offset().left ) {
+			return;
+		}
+
 		// Check where is clicked
-		if ( $( e.target ).is('.fancybox-slide,.fancybox-bg,.fancybox-container') ) {
+		if ( $target.is('.fancybox-slide,.fancybox-bg,.fancybox-container') ) {
 			where = 'Outside';
 
 		} else if  ( instance.current.$content && instance.current.$content.has( e.target ).length ) {

@@ -1406,7 +1406,7 @@
             //   - click action is "zoom"
             //   - actual size of the image is smaller than available area
             if ( current.type === 'image' && current.isLoaded && !current.hasError &&
-                ( current.opts.clickContent === 'zoom' || current.opts.clickContent( current ) ===  "zoom" )
+                ( current.opts.clickContent === 'zoom' || ( $.isFunction( current.opts.clickContent ) && current.opts.clickContent( current ) ===  "zoom" ) )
             ) {
 
                 fitPos = self.getFitPos( current );
