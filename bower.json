@@ -14,8 +14,8 @@
   "license": "GPL-3.0",
   "moduleType": "globals",
   "main": [
-    "dist/jquery.fancybox.min.css",
-    "dist/jquery.fancybox.min.js"
+    "./dist/jquery.fancybox.min.css",
+    "./dist/jquery.fancybox.min.js"
   ],
   "dependencies": {
     "jquery": ">=1.9.0"
