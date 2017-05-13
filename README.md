@@ -12,6 +12,17 @@ Follow [@thefancyapps](//twitter.com/thefancyapps) for updates.
 
 1\.  Add latest jQuery and fancyBox files
 
+1.1.0 Install via [npm](https://www.npmjs.com/package/@fancyapps/fancybox).
+```bash
+npm i @fancyapps/fancybox --save
+```
+
+1.1.0 Install via bower.
+```bash
+bower install fancybox
+```
+
+1.2 Add to your project.
 ```html
 <script src="//code.jquery.com/jquery-3.1.1.min.js"></script>
 
