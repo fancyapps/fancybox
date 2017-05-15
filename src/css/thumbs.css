@@ -106,13 +106,13 @@ li.fancybox-thumbs-loading {
 @media all and (max-width: 800px) {
 
 	.fancybox-thumbs {
-	    top: 0;
+	    top: 44px;
 	    right: 0;
 	    bottom: 0;
 	    left: 0;
 	    width: auto;
 		height: auto;
-		padding: 70px 0;
+		padding: 20px 0;
 		background: rgba(0,0,0,0.8);
 	}
 

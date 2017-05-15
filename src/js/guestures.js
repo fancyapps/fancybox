@@ -214,9 +214,7 @@
 		self.isSwiping = false;
 		self.isZooming = false;
 
-		//if ( !self.sliderStartPos ) {
-		//	self.sliderStartPos = { top: 0, left: 0 };// $.fancybox.getTranslate( self.$slider );
-		//}
+		self.$stage.css( 'transition-duration', '0ms' );
 
 		self.sliderStartPos = self.sliderLastPos || { top: 0, left: 0 };
 

@@ -212,6 +212,13 @@
 
 			});
 
+			// If pressed back button
+			$(window).on('popstate', function (event) {
+				if (event.state!==null) {
+					$.fancybox.getInstance('close');
+				}
+			});
+
 			// Check current hash and trigger click event on matching element to start fancyBox, if needed
 			triggerFromUrl( parseUrl() );
 

@@ -8,11 +8,8 @@
 	'use strict';
 
 	var FancyThumbs = function( instance ) {
-
 		this.instance = instance;
-
 		this.init();
-
 	};
 
 	$.extend( FancyThumbs.prototype, {
@@ -74,10 +71,8 @@
 
 			list += '</ul>';
 
-			this.$list = $( list ).appendTo( this.$grid ).on('click touchstart', 'li', function() {
-
+			this.$list = $( list ).appendTo( this.$grid ).on('click', 'li', function() {
 				instance.jumpTo( $(this).data('index') );
-
 			});
 
 			this.$list.find('img').hide().one('load', function() {
@@ -137,9 +132,7 @@
 		},
 
 		close : function() {
-
 			this.$grid.hide();
-
 		},
 
 		update : function() {
@@ -166,27 +159,18 @@
 		},
 
 		hide : function() {
-
 			this.isVisible = false;
-
 			this.update();
-
 		},
 
 		show : function() {
-
 			this.isVisible = true;
-
 			this.update();
-
 		},
 
 		toggle : function() {
-
 			this.isVisible = !this.isVisible;
-
 			this.update();
-
 		}
 
 	});

@@ -36,21 +36,21 @@
 	right: 0;
 	bottom: 0;
 	left: 0;
+	z-index: 99993;
 }
 
 .fancybox-bg {
 	background: rgb(30,30,30);
 	opacity: 0.87;
-	transition: opacity;
+	transition-duration: inherit;
+	transition-property: opacity;
 	transition-timing-function: cubic-bezier(.22,.61,.36,1);
-	backface-visibility: hidden;
-	z-index: 99993;
 }
 
 .fancybox-is-hidden .fancybox-bg,
 .fancybox-is-closing .fancybox-bg {
 	opacity: 0;
-	transition-timing-function: cubic-bezier(.55,.06,.68,.19);
+	transition-timing-function: cubic-bezier(.47,0,.74,.71);
 }
 
 .fancybox-infobar,
@@ -65,16 +65,16 @@
 	transition: opacity .25s, transform 0s linear .25s;
 }
 
+.fancybox-infobar {
+	left : 50%;
+	margin-left: -79px;
+}
+
 .fancybox-show-infobar .fancybox-infobar,
 .fancybox-show-toolbar .fancybox-toolbar {
 	opacity: 1;
 	transform: translate3d(0, 0, 0);
 	transition: opacity .25s, transform 0s;
-}
-
-.fancybox-infobar {
-	left : 50%;
-	margin-left: -79px;
 }
 
 .fancybox-infobar__body {
@@ -99,7 +99,7 @@
 
 .fancybox-stage {
 	overflow: hidden;
-	/*direction: ltr;*/
+	direction: ltr;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -128,6 +128,7 @@
 	z-index: 99994;
 	-webkit-overflow-scrolling: touch;
 	display: none;
+	transition-duration: inherit;
 }
 
 .fancybox-slide::before {
@@ -302,7 +303,7 @@
 	border-radius: 50%;
 	border-width: 0;
 	background: #fff;
-	transition: background .2s;
+	transition: background .25s;
 	box-sizing: border-box;
 	z-index: 2;
 }
@@ -336,7 +337,7 @@
 	box-sizing: border-box;
 	background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.1) 20%, rgba(0,0,0,0.2) 40%,rgba(0,0,0,0.6) 80%, rgba(0,0,0,0.8) 100%);
 	opacity: 0;
-	transition: opacity .2s;
+	transition: opacity .25s;
 	pointer-events: none;
 }
 
@@ -480,7 +481,7 @@
 	opacity: 0;
 	user-select: none;
 	pointer-events: none;
-	transition: opacity .35s;
+	transition: opacity .25s;
 }
 
 .fancybox-arrow::after {
@@ -518,7 +519,7 @@
 	pointer-events: all;
 }
 
-.fancybox-arrow[disabled] {
+.fancybox-show-nav .fancybox-arrow[disabled] {
 	opacity: 0.3;
 }
 
@@ -554,7 +555,6 @@
 */
 
 .fancybox-animated {
-	transition-duration: inherit;
 	transition-timing-function: cubic-bezier(0, 0, 0.25, 1);
 }
 
