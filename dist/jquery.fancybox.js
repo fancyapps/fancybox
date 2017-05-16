@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.1.10
+// fancyBox v3.1.11
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -235,7 +235,8 @@
         },
 
         touch : {
-            vertical : true  // Allow vertical swipe
+            vertical : true,  // Allow to drag content vertically
+            momentum : true   // Continue movement after releasing mouse/touch when panning
         },
 
         // Hash value when initializing manually,
@@ -288,12 +289,16 @@
             return current.type === 'image' ? 'zoom' : false;
         },
 
-        // Clicked outside of the content
+        // Clicked outside the content, but inside sliding area
         clickOutside : 'close',
+
+        // Clicked on the background (backdrop) element
+        clickBg : 'close',
 
         // Same as previous two, but for double click
         dblclickContent : false,
         dblclickOutside : false,
+        dblclickBg      : false,
 
 
         // Custom options when mobile device is detected
@@ -737,8 +742,10 @@
                         // Disable click event handlers
                         clickContent    : false,
                         clickOutside    : false,
+                        clickBg         : false,
                         dblclickContent : false,
                         dblclickOutside : false,
+                        dblclickBg      : false
                     });
 
                 }
@@ -880,7 +887,7 @@
             if ( self.group[ self.currIndex ].opts.idleTime ) {
                 self.idleSecondsCounter = 0;
 
-                $D.on('mousemove.fb-idle mouseenter.fb-idle mouseleave.fb-idle mousedown.fb-idle touchdown.fb-idle touchmove.fb-idle scroll.fb-idle keydown.fb-idle', function() {
+                $D.on('mousemove.fb-idle mouseenter.fb-idle mouseleave.fb-idle mousedown.fb-idle touchstart.fb-idle touchmove.fb-idle scroll.fb-idle keydown.fb-idle', function() {
                     self.idleSecondsCounter = 0;
 
                     if ( self.isIdle ) {
@@ -2559,13 +2566,6 @@
             var caption  = opts.caption;
             var $caption = self.$refs.caption;
 
-            // Update infobar and navigation elements
-            $('[data-fancybox-count]').html( self.group.length );
-            $('[data-fancybox-index]').html( index + 1 );
-
-            $('[data-fancybox-prev]').prop('disabled', ( !opts.loop && index <= 0 ) );
-            $('[data-fancybox-next]').prop('disabled', ( !opts.loop && index >= self.group.length - 1 ) );
-
             // Recalculate content dimensions
             current.$slide.trigger( 'refresh' );
 
@@ -2579,6 +2579,13 @@
             if ( !self.isHiddenControls ) {
                 self.showControls();
             }
+
+            // Update infobar and navigation elements
+            $('[data-fancybox-count]').html( self.group.length );
+            $('[data-fancybox-index]').html( index + 1 );
+
+            $('[data-fancybox-prev]').prop('disabled', ( !opts.loop && index <= 0 ) );
+            $('[data-fancybox-next]').prop('disabled', ( !opts.loop && index >= self.group.length - 1 ) );
 
         },
 
@@ -2637,7 +2644,7 @@
 
     $.fancybox = {
 
-        version  : "3.1.10",
+        version  : "3.1.11",
         defaults : defaults,
 
 
@@ -3971,10 +3978,12 @@
 		var self = this;
 		var newOffsetX, newOffsetY, newPos;
 
-		if ( !self.contentLastPos ) {
+		if ( !self.contentLastPos || self.instance.current.opts.touch.momentum === false ) {
 			return;
 		}
 
+		// Continue movement
+		
 		newOffsetX = self.contentLastPos.left + ( self.velocityX * self.speed * 2 );
 		newOffsetY = self.contentLastPos.top  + ( self.velocityY * self.speed * 2 );
 
@@ -4127,7 +4136,10 @@
 		}
 
 		// Check where is clicked
-		if ( $target.is('.fancybox-slide,.fancybox-bg,.fancybox-container') ) {
+		if ( $target.is('.fancybox-bg,.fancybox-container') ) {
+			where = 'Bg';
+
+		} else if ( $target.is('.fancybox-slide') ) {
 			where = 'Outside';
 
 		} else if  ( instance.current.$content && instance.current.$content.has( e.target ).length ) {

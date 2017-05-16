@@ -668,10 +668,12 @@
 		var self = this;
 		var newOffsetX, newOffsetY, newPos;
 
-		if ( !self.contentLastPos ) {
+		if ( !self.contentLastPos || self.instance.current.opts.touch.momentum === false ) {
 			return;
 		}
 
+		// Continue movement
+		
 		newOffsetX = self.contentLastPos.left + ( self.velocityX * self.speed * 2 );
 		newOffsetY = self.contentLastPos.top  + ( self.velocityY * self.speed * 2 );
 
@@ -824,7 +826,10 @@
 		}
 
 		// Check where is clicked
-		if ( $target.is('.fancybox-slide,.fancybox-bg,.fancybox-container') ) {
+		if ( $target.is('.fancybox-bg,.fancybox-container') ) {
+			where = 'Bg';
+
+		} else if ( $target.is('.fancybox-slide') ) {
 			where = 'Outside';
 
 		} else if  ( instance.current.$content && instance.current.$content.has( e.target ).length ) {
