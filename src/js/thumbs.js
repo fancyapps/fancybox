@@ -145,12 +145,12 @@
 					this.create();
 				}
 
-				this.$grid.show();
+				this.instance.trigger( 'onThumbsShow' );
 
 				this.focus();
 
 			} else if ( this.$grid ) {
-				this.$grid.hide();
+				this.instance.trigger( 'onThumbsHide' );
 			}
 
 			// Update content position

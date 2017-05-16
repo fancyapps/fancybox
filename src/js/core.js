@@ -945,7 +945,7 @@
 
             var groupLen = self.group.length;
 
-            if ( self.isSliding || ( self.isAnimating && self.firstRun ) ) {
+            if ( self.isSliding || self.isClosing || ( self.isAnimating && self.firstRun ) ) {
                 return;
             }
 
@@ -2058,10 +2058,10 @@
                 return;
             }
 
-            effect   = self.firstRun ? slide.opts.animationEffect   : slide.opts.transitionEffect;
-            duration = self.firstRun ? slide.opts.animationDuration : slide.opts.transitionDuration;
+            effect   = slide.opts[ self.firstRun ? 'animationEffect'   : 'transitionEffect' ];
+            duration = slide.opts[ self.firstRun ? 'animationDuration' : 'transitionDuration' ];
 
-            if ( slide.leftValue !== undefined ) {
+            if ( slide.leftValue !== undefined || !duration ) {
                 effect = false;
             }
 
@@ -2388,17 +2388,21 @@
 
             $what    = current.$content;
             effect   = current.opts.animationEffect;
-            duration = d || current.opts.animationDuration;
+            duration = d || ( effect ? current.opts.animationDuration : 0 );
 
+            // Stop curent slide from animating and remove other slides
+            $.fancybox.stop( current.$slide );
+
+            current.$slide.off( transitionEnd ).removeClass( 'fancybox-slide--complete fancybox-slide--next fancybox-slide--previous fancybox-animated' );
+
+            current.$slide.siblings().trigger( 'onReset' ).remove();
+
+            // Trigger animations
             self.$refs.container.removeClass( 'fancybox-is-open' );
 
             forceRedraw( self.$refs.container );
 
             self.$refs.container.addClass( 'fancybox-is-closing' );
-
-            current.$slide.siblings().trigger( 'onReset' ).remove();
-
-            current.$slide.off( transitionEnd ).removeClass( 'fancybox-slide--complete fancybox-slide--next fancybox-slide--previous fancybox-animated' );
 
             // Clean up
             self.hideLoading( current );
@@ -2407,7 +2411,8 @@
 
             self.updateCursor();
 
-            if ( effect === 'zoom' && !( e !== true && $what && duration && current.type === 'image' && !current.hasError && ( end = self.getThumbPos( current ) ) ) ) {
+            // Check if possible to zoom-out
+            if ( effect === 'zoom' && !( e !== true && !current.leftValue && $what && duration && current.type === 'image' && !current.hasError && ( end = self.getThumbPos( current ) ) ) ) {
                 effect = 'fade';
             }
 
