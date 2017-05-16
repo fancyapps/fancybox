@@ -2395,21 +2395,21 @@
 
             $what    = current.$content;
             effect   = current.opts.animationEffect;
-            duration = d || ( effect ? current.opts.animationDuration : 0 );
+            duration = d !== undefined ? d : ( effect ? current.opts.animationDuration : 0 );
 
-            // Stop curent slide from animating and remove other slides
-            $.fancybox.stop( current.$slide );
-
+            // Remove other slides
             current.$slide.off( transitionEnd ).removeClass( 'fancybox-slide--complete fancybox-slide--next fancybox-slide--previous fancybox-animated' );
 
             current.$slide.siblings().trigger( 'onReset' ).remove();
 
             // Trigger animations
-            self.$refs.container.removeClass( 'fancybox-is-open' );
+            if ( duration ) {
+                self.$refs.container.removeClass( 'fancybox-is-open' );
 
-            forceRedraw( self.$refs.container );
+                forceRedraw( self.$refs.container );
 
-            self.$refs.container.addClass( 'fancybox-is-closing' );
+                self.$refs.container.addClass( 'fancybox-is-closing' );
+            }
 
             // Clean up
             self.hideLoading( current );
@@ -2455,10 +2455,12 @@
                 return;
             }
 
-            self.$refs.stage.css( 'transition-duration', duration + 'ms' );
-
             if ( effect && duration ) {
-                current.$slide.removeClass( 'fancybox-slide--current' ).addClass( 'fancybox-animated fancybox-slide--previous fancybox-fx-' + effect );
+
+                if ( e !== true ) {
+                    self.$refs.stage.css( 'transition-duration', duration + 'ms' );
+                    current.$slide.removeClass( 'fancybox-slide--current' ).addClass( 'fancybox-animated fancybox-slide--previous fancybox-fx-' + effect );
+                }
 
                 setTimeout( done, duration );
 

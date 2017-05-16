@@ -177,11 +177,11 @@
 
 		            // Remove hash from location bar
 		            if ( gallery && gallery !== '' ) {
+
 		                if ( 'replaceState' in history ) {
 							window.history.replaceState( {} , document.title, window.location.pathname + window.location.search + origHash );
 
 		                } else {
-
 							window.location.hash = origHash;
 
 							// Keep original scroll position
@@ -199,7 +199,6 @@
 				var url = parseUrl();
 
 				if ( $.fancybox.getInstance() ) {
-
 					if ( currentHash && currentHash !== url.gallery + '-' + url.index && !( url.index === 1 && currentHash == url.gallery ) ) {
 						currentHash = null;
 
@@ -209,14 +208,11 @@
 				} else if ( url.gallery !== '' ) {
 					triggerFromUrl( url );
 				}
-
 			});
 
-			// If pressed back button
-			$(window).on('popstate', function (event) {
-				if (event.state!==null) {
-					$.fancybox.getInstance('close');
-				}
+			// If navigating away from current page
+			$(window).one('unload.fb', function() {
+				$.fancybox.getInstance( 'close', true, 0 );
 			});
 
 			// Check current hash and trigger click event on matching element to start fancyBox, if needed

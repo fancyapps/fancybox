@@ -646,7 +646,7 @@
 				top     : self.sliderStartPos.top + self.distanceY + self.velocityY * 150,
 				left    : self.sliderStartPos.left,
 				opacity : 0
-			}, 300 );
+			}, 150 );
 
 			ret = self.instance.close( true, 300 );
 
@@ -663,19 +663,28 @@
 
 	};
 
+	// Limit panning from edges
+	// ========================
+
 	Guestures.prototype.endPanning = function() {
 
 		var self = this;
 		var newOffsetX, newOffsetY, newPos;
 
-		if ( !self.contentLastPos || self.instance.current.opts.touch.momentum === false ) {
+		if ( !self.contentLastPos ) {
 			return;
 		}
 
-		// Continue movement
-		
-		newOffsetX = self.contentLastPos.left + ( self.velocityX * self.speed * 2 );
-		newOffsetY = self.contentLastPos.top  + ( self.velocityY * self.speed * 2 );
+		if ( self.instance.current.opts.touch.momentum === false ) {
+			newOffsetX = self.contentLastPos.left;
+			newOffsetY = self.contentLastPos.top;
+
+		} else {
+
+			// Continue movement
+			newOffsetX = self.contentLastPos.left + ( self.velocityX * self.speed * 2 );
+			newOffsetY = self.contentLastPos.top  + ( self.velocityY * self.speed * 2 );
+		}
 
 		newPos = self.limitPosition( newOffsetX, newOffsetY, self.contentStartPos.width, self.contentStartPos.height );
 
@@ -683,7 +692,6 @@
 		 newPos.height = self.contentStartPos.height;
 
 		$.fancybox.animate( self.$content, null, newPos, 330, "easeOutSine" );
-
 	};
 
 

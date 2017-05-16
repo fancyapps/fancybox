@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.1.11
+// fancyBox v3.1.12
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -2405,21 +2405,21 @@
 
             $what    = current.$content;
             effect   = current.opts.animationEffect;
-            duration = d || ( effect ? current.opts.animationDuration : 0 );
+            duration = d !== undefined ? d : ( effect ? current.opts.animationDuration : 0 );
 
-            // Stop curent slide from animating and remove other slides
-            $.fancybox.stop( current.$slide );
-
+            // Remove other slides
             current.$slide.off( transitionEnd ).removeClass( 'fancybox-slide--complete fancybox-slide--next fancybox-slide--previous fancybox-animated' );
 
             current.$slide.siblings().trigger( 'onReset' ).remove();
 
             // Trigger animations
-            self.$refs.container.removeClass( 'fancybox-is-open' );
+            if ( duration ) {
+                self.$refs.container.removeClass( 'fancybox-is-open' );
 
-            forceRedraw( self.$refs.container );
+                forceRedraw( self.$refs.container );
 
-            self.$refs.container.addClass( 'fancybox-is-closing' );
+                self.$refs.container.addClass( 'fancybox-is-closing' );
+            }
 
             // Clean up
             self.hideLoading( current );
@@ -2465,10 +2465,12 @@
                 return;
             }
 
-            self.$refs.stage.css( 'transition-duration', duration + 'ms' );
-
             if ( effect && duration ) {
-                current.$slide.removeClass( 'fancybox-slide--current' ).addClass( 'fancybox-animated fancybox-slide--previous fancybox-fx-' + effect );
+
+                if ( e !== true ) {
+                    self.$refs.stage.css( 'transition-duration', duration + 'ms' );
+                    current.$slide.removeClass( 'fancybox-slide--current' ).addClass( 'fancybox-animated fancybox-slide--previous fancybox-fx-' + effect );
+                }
 
                 setTimeout( done, duration );
 
@@ -2644,7 +2646,7 @@
 
     $.fancybox = {
 
-        version  : "3.1.11",
+        version  : "3.1.12",
         defaults : defaults,
 
 
@@ -3956,7 +3958,7 @@
 				top     : self.sliderStartPos.top + self.distanceY + self.velocityY * 150,
 				left    : self.sliderStartPos.left,
 				opacity : 0
-			}, 300 );
+			}, 150 );
 
 			ret = self.instance.close( true, 300 );
 
@@ -3973,19 +3975,28 @@
 
 	};
 
+	// Limit panning from edges
+	// ========================
+
 	Guestures.prototype.endPanning = function() {
 
 		var self = this;
 		var newOffsetX, newOffsetY, newPos;
 
-		if ( !self.contentLastPos || self.instance.current.opts.touch.momentum === false ) {
+		if ( !self.contentLastPos ) {
 			return;
 		}
 
-		// Continue movement
-		
-		newOffsetX = self.contentLastPos.left + ( self.velocityX * self.speed * 2 );
-		newOffsetY = self.contentLastPos.top  + ( self.velocityY * self.speed * 2 );
+		if ( self.instance.current.opts.touch.momentum === false ) {
+			newOffsetX = self.contentLastPos.left;
+			newOffsetY = self.contentLastPos.top;
+
+		} else {
+
+			// Continue movement
+			newOffsetX = self.contentLastPos.left + ( self.velocityX * self.speed * 2 );
+			newOffsetY = self.contentLastPos.top  + ( self.velocityY * self.speed * 2 );
+		}
 
 		newPos = self.limitPosition( newOffsetX, newOffsetY, self.contentStartPos.width, self.contentStartPos.height );
 
@@ -3993,7 +4004,6 @@
 		 newPos.height = self.contentStartPos.height;
 
 		$.fancybox.animate( self.$content, null, newPos, 330, "easeOutSine" );
-
 	};
 
 
@@ -4982,11 +4992,11 @@
 
 		            // Remove hash from location bar
 		            if ( gallery && gallery !== '' ) {
+
 		                if ( 'replaceState' in history ) {
 							window.history.replaceState( {} , document.title, window.location.pathname + window.location.search + origHash );
 
 		                } else {
-
 							window.location.hash = origHash;
 
 							// Keep original scroll position
@@ -5004,7 +5014,6 @@
 				var url = parseUrl();
 
 				if ( $.fancybox.getInstance() ) {
-
 					if ( currentHash && currentHash !== url.gallery + '-' + url.index && !( url.index === 1 && currentHash == url.gallery ) ) {
 						currentHash = null;
 
@@ -5014,14 +5023,11 @@
 				} else if ( url.gallery !== '' ) {
 					triggerFromUrl( url );
 				}
-
 			});
 
-			// If pressed back button
-			$(window).on('popstate', function (event) {
-				if (event.state!==null) {
-					$.fancybox.getInstance('close');
-				}
+			// If navigating away from current page
+			$(window).one('unload.fb', function() {
+				$.fancybox.getInstance( 'close', true, 0 );
 			});
 
 			// Check current hash and trigger click event on matching element to start fancyBox, if needed
