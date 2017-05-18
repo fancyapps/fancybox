@@ -11,11 +11,8 @@
 	'use strict';
 
 	var SlideShow = function( instance ) {
-
 		this.instance = instance;
-
 		this.init();
-
 	};
 
 	$.extend( SlideShow.prototype, {
@@ -27,17 +24,13 @@
 		init : function() {
 			var self = this;
 
-			self.$button = self.instance.$refs.toolbar.find('[data-fancybox-play]');
+			self.$button = self.instance.$refs.toolbar.find('[data-fancybox-play]').on('click', function() {
+				self.toggle();
+			});
 
-			if ( self.instance.group.length > 1 && self.instance.group[ self.instance.currIndex ].opts.slideShow ) {
-				self.$button.on('click', function() {
-					self.toggle();
-				});
-
-			} else {
+			if ( self.instance.group.length < 2 || !self.instance.group[ self.instance.currIndex ].opts.slideShow ) {
 				self.$button.hide();
 			}
-
 		},
 
 		set : function() {
@@ -52,6 +45,8 @@
 
 			} else {
 				self.stop();
+				self.instance.idleSecondsCounter = 0;
+				self.instance.showControls();
 			}
 
 		},
@@ -80,7 +75,6 @@
 					self.set();
 				}
 			}
-
 		},
 
 		stop : function() {
@@ -110,62 +104,65 @@
 	});
 
 	$(document).on({
+		'onInit.fb' : function(e, instance) {
+			if ( instance && !instance.SlideShow ) {
+				instance.SlideShow = new SlideShow( instance );
+			}
+		},
 
 		'beforeShow.fb' : function(e, instance, current, firstRun) {
-			var slideShow;
+			var SlideShow = instance && instance.SlideShow;
 
 			if ( firstRun ) {
-				slideShow = instance.SlideShow = new SlideShow( instance );
 
-				if ( current.opts.slideShow.autoStart  ) {
-					slideShow.start();
+				if ( SlideShow && current.opts.slideShow.autoStart ) {
+					SlideShow.start();
 				}
 
-			} else if (  ( slideShow = instance && instance.SlideShow ) && slideShow.isActive )  {
-				slideShow.clear();
+			} else if ( SlideShow && SlideShow.isActive )  {
+				SlideShow.clear();
 			}
-
 		},
 
 		'afterShow.fb' : function(e, instance, current) {
-			var slideShow = instance && instance.SlideShow;
+			var SlideShow = instance && instance.SlideShow;
 
-			if ( slideShow && slideShow.isActive ) {
-				slideShow.set();
+			if ( SlideShow && SlideShow.isActive ) {
+				SlideShow.set();
 			}
-
 		},
 
 		'afterKeydown.fb' : function(e, instance, current, keypress, keycode) {
+			var SlideShow = instance && instance.SlideShow;
 
 			// "P" or Spacebar
-			if ( instance && instance.SlideShow && ( keycode === 80 || keycode === 32 ) && !$(document.activeElement).is('button,a,input') ) {
-				instance.SlideShow.toggle();
-			}
+			if ( SlideShow && current.opts.slideShow && ( keycode === 80 || keycode === 32 ) && !$(document.activeElement).is( 'button,a,input' ) ) {
+				keypress.preventDefault();
 
+				SlideShow.toggle();
+			}
 		},
 
 		'beforeClose.fb onDeactivate.fb' : function(e, instance) {
+			var SlideShow = instance && instance.SlideShow;
 
-			if ( instance && instance.SlideShow ) {
-				instance.SlideShow.stop();
+			if ( SlideShow ) {
+				SlideShow.stop();
 			}
-
 		}
-
 	});
 
 	// Page Visibility API to pause slideshow when window is not active
 	$(document).on("visibilitychange", function() {
 		var instance  = $.fancybox.getInstance();
-		var slideShow = instance && instance.SlideShow;
+		var SlideShow = instance && instance.SlideShow;
 
-		if ( slideShow && slideShow.isActive ) {
+		if ( SlideShow && SlideShow.isActive ) {
 			if ( document.hidden ) {
-				slideShow.clear();
+				SlideShow.clear();
 
 			} else {
-				slideShow.set();
+				SlideShow.set();
 			}
 		}
 	});

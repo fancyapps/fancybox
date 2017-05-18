@@ -6,10 +6,10 @@
 }
 
 .fancybox-button--thumbs::before {
-	top: 20px;
-	left: 21px;
 	width: 3px;
 	height: 3px;
+	top: calc(50% - 2px);
+	left: calc(50% - 2px);
 	box-shadow: 0 -4px 0, -4px -4px 0, 4px -4px 0, 0 0 0 32px inset, -4px 0 0, 4px 0 0, 0 4px 0, -4px 4px 0, 4px 4px 0;
 }
 

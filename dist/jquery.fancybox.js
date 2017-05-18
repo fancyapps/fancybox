@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.1.12
+// fancyBox v3.1.13
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -222,7 +222,7 @@
 
         slideShow : {
             autoStart : false,
-            speed     : 3000
+            speed     : 4000
         },
 
         fullScreen : {
@@ -289,16 +289,16 @@
             return current.type === 'image' ? 'zoom' : false;
         },
 
-        // Clicked outside the content, but inside sliding area
-        clickOutside : 'close',
+        // Clicked on the slide
+        clickSlide : 'close',
 
         // Clicked on the background (backdrop) element
-        clickBg : 'close',
+        clickOutside : 'close',
 
         // Same as previous two, but for double click
         dblclickContent : false,
+        dblclickSlide   : false,
         dblclickOutside : false,
-        dblclickBg      : false,
 
 
         // Custom options when mobile device is detected
@@ -308,11 +308,11 @@
             clickContent : function( current, event ) {
                 return current.type === 'image' ? 'toggleControls' : false;
             },
-            clickOutside : function( current, event ) {
-                return current.type === 'image' ? 'toggleControls' : 'close';
-            },
             dblclickContent : function( current, event ) {
                 return current.type === 'image' ? 'zoom' : false;
+            },
+            dblclickSlide : function( current, event ) {
+                return current.type === 'image' ? 'toggleControls' : 'close';
             }
         },
 
@@ -345,6 +345,9 @@
         }
 
     };
+
+    // Few useful variables and methods
+    // ================================
 
     var $W = $(window);
     var $D = $(document);
@@ -741,11 +744,11 @@
 
                         // Disable click event handlers
                         clickContent    : false,
+                        clickSlide      : false,
                         clickOutside    : false,
-                        clickBg         : false,
                         dblclickContent : false,
-                        dblclickOutside : false,
-                        dblclickBg      : false
+                        dblclickSlide   : false,
+                        dblclickOutside : false
                     });
 
                 }
@@ -879,7 +882,6 @@
                 }
 
                 self.trigger('afterKeydown', e, keycode);
-
             });
 
 
@@ -1229,6 +1231,10 @@
                 self.isAnimating = false;
             });
 
+            // Stop slideshow
+            if ( self.SlideShow && self.SlideShow.isActive ) {
+                self.SlideShow.stop();
+            }
         },
 
 
@@ -1793,7 +1799,6 @@
             $iframe = $( opts.tpl.replace(/\{rnd\}/g, new Date().getTime()) )
                 .attr( opts.attr )
                 .appendTo( slide.$content );
-
 
             if ( opts.preload ) {
 
@@ -2646,7 +2651,7 @@
 
     $.fancybox = {
 
-        version  : "3.1.12",
+        version  : "3.1.13",
         defaults : defaults,
 
 
@@ -3362,7 +3367,6 @@
 	};
 
 	var distance = function( point2, point1, what ) {
-
 		if ( !point1 || !point2 ) {
 			return 0;
 		}
@@ -3375,7 +3379,6 @@
 		}
 
 		return Math.sqrt( Math.pow( point2.x - point1.x, 2 ) + Math.pow( point2.y - point1.y, 2 ) );
-
 	};
 
 	var isClickable = function( $el ) {
@@ -3415,19 +3418,16 @@
 
 			$el = $el.parent();
 
-			if ( !$el.length || $el.hasClass('fancybox-slider') || $el.is('body') ) {
+			if ( !$el.length || $el.hasClass( 'fancybox-stage' ) || $el.is( 'body' ) ) {
 				break;
 			}
-
 		}
 
 		return rez;
-
 	};
 
 
 	var Guestures = function ( instance ) {
-
 		var self = this;
 
 		self.instance = instance;
@@ -3438,37 +3438,20 @@
 
 		self.destroy();
 
-		self.$stage.on( 'touchstart.fb.touch mousedown.fb.touch', $.proxy(self, 'ontouchstart') );
-
-		self.$container.on( 'touchstart.fb.touch mousedown.fb.touch', $.proxy(self, 'ontap') );
-
+		self.$container.on( 'touchstart.fb.touch mousedown.fb.touch', $.proxy(self, 'ontouchstart') );
 	};
 
 	Guestures.prototype.destroy = function() {
-
-		this.$stage.add( this.$container ).off( '.fb.touch' );
-
+		this.$container.off( '.fb.touch' );
 	};
 
 	Guestures.prototype.ontouchstart = function( e ) {
-
 		var self = this;
 
 		var $target  = $( e.target );
 		var instance = self.instance;
 		var current  = instance.current;
 		var $content = current.$content;
-
-		self.$target  = $target;
-		self.$content = $content;
-
-		self.canvasWidth  = Math.round( current.$slide[0].clientWidth );
-		self.canvasHeight = Math.round( current.$slide[0].clientHeight );
-
-		// Stop slideshow
-		if ( instance.SlideShow && instance.SlideShow.isActive ) {
-			instance.SlideShow.stop();
-		}
 
 		// Ignore right click
 		if ( e.originalEvent && e.originalEvent.button == 2 ) {
@@ -3492,13 +3475,21 @@
 			return;
 		}
 
+		e.stopPropagation();
+		e.preventDefault();
+
 		// If "touch" is disabled, then handle click event only
 		if ( !current.opts.touch ) {
+			self.onTap( e );
+
 			return;
 		}
 
-		e.stopPropagation();
-		e.preventDefault();
+		if ( !( $target.is( self.$stage ) || self.$stage.find( $target ).length ) ) {
+			self.onTap( e );
+
+			return;
+		}
 
 		if ( !current || self.instance.isAnimating || self.instance.isClosing ) {
 			return;
@@ -3511,12 +3502,17 @@
 			return;
 		}
 
-		self.$stage.off('touchmove.fb mousemove.fb',  $.proxy(self, "ontouchmove"));
-		self.$stage.off('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(self, "ontouchend"));
+		self.$container.off('touchmove.fb mousemove.fb',  $.proxy(self, "ontouchmove"));
+		self.$container.off('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(self, "ontouchend"));
 
-		self.$stage.on('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(self, "ontouchend"));
-		self.$stage.on('touchmove.fb mousemove.fb',  $.proxy(self, "ontouchmove"));
+		self.$container.on('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(self, "ontouchend"));
+		self.$container.on('touchmove.fb mousemove.fb',  $.proxy(self, "ontouchmove"));
 
+		self.$target  = $target;
+		self.$content = $content;
+
+		self.canvasWidth  = Math.round( current.$slide[0].clientWidth );
+		self.canvasHeight = Math.round( current.$slide[0].clientHeight );
 
 		self.startTime = new Date().getTime();
 		self.distanceX = self.distanceY = self.distance = 0;
@@ -3526,15 +3522,11 @@
 		self.isSwiping = false;
 		self.isZooming = false;
 
-		self.$stage.css( 'transition-duration', '0ms' );
-
-		self.sliderStartPos = self.sliderLastPos || { top: 0, left: 0 };
-
+		self.sliderStartPos  = self.sliderLastPos || { top: 0, left: 0 };
 		self.contentStartPos = $.fancybox.getTranslate( self.$content );
 		self.contentLastPos  = null;
 
 		if ( self.startPoints.length === 1 && !self.isZooming ) {
-
 			self.canTap = current.leftValue === undefined;
 
 			if ( current.type === 'image' && ( self.contentStartPos.width > self.canvasWidth + 1 || self.contentStartPos.height > self.canvasHeight + 1 ) ) {
@@ -3567,7 +3559,6 @@
 			self.percentageOfImageAtPinchPointY = ( self.centerPointStartY - self.contentStartPos.top  ) / self.contentStartPos.height;
 
 			self.startDistanceBetweenFingers = distance( self.startPoints[0], self.startPoints[1] );
-
 		}
 
 	};
@@ -3632,9 +3623,12 @@
 
 				self.canTap = false;
 
+				self.$stage.css( 'transition-duration', '0ms' );
+
 				self.instance.isSliding = self.isSwiping;
 
 				// Reset points to avoid jumping, because we dropped first swipes to calculate the angle
+
 				self.startPoints = self.newPoints;
 
 				$.each(self.instance.slides, function( index, slide ) {
@@ -3649,6 +3643,11 @@
 				});
 
 				self.instance.isAnimating = false;
+
+				// Stop slideshow
+				if ( self.instance.SlideShow && self.instance.SlideShow.isActive ) {
+					self.instance.SlideShow.stop();
+				}
 			}
 
 		} else {
@@ -3909,15 +3908,15 @@
 
 		self.$container.removeClass('fancybox-controls--isGrabbing');
 
-		self.$stage.off('touchmove.fb mousemove.fb',  $.proxy(this, "ontouchmove"));
-		self.$stage.off('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(this, "ontouchend"));
+		self.$container.off('touchmove.fb mousemove.fb',  $.proxy(this, "ontouchmove"));
+		self.$container.off('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(this, "ontouchend"));
 
 		self.isSwiping = false;
 		self.isPanning = false;
 		self.isZooming = false;
 
 		if ( self.canTap )  {
-			return self.ontap( e );
+			return self.onTap( e );
 		}
 
 		// Speed in px/ms
@@ -4053,7 +4052,7 @@
 
 	};
 
-	Guestures.prototype.ontap = function(e) {
+	Guestures.prototype.onTap = function(e) {
 		var self    = this;
 		var $target = $( e.target );
 
@@ -4146,11 +4145,11 @@
 		}
 
 		// Check where is clicked
-		if ( $target.is('.fancybox-bg,.fancybox-container') ) {
-			where = 'Bg';
+		if ( $target.is('.fancybox-bg,.fancybox-inner,.fancybox-container') ) {
+			where = 'Outside';
 
 		} else if ( $target.is('.fancybox-slide') ) {
-			where = 'Outside';
+			where = 'Slide';
 
 		} else if  ( instance.current.$content && instance.current.$content.has( e.target ).length ) {
 		 	where = 'Content';
@@ -4199,19 +4198,15 @@
 	};
 
 	$(document).on('onActivate.fb', function (e, instance) {
-
 		if ( instance && !instance.Guestures ) {
 			instance.Guestures = new Guestures( instance );
 		}
-
 	});
 
 	$(document).on('beforeClose.fb', function (e, instance) {
-
 		if ( instance && instance.Guestures ) {
 			instance.Guestures.destroy();
 		}
-
 	});
 
 
@@ -4230,11 +4225,8 @@
 	'use strict';
 
 	var SlideShow = function( instance ) {
-
 		this.instance = instance;
-
 		this.init();
-
 	};
 
 	$.extend( SlideShow.prototype, {
@@ -4246,17 +4238,13 @@
 		init : function() {
 			var self = this;
 
-			self.$button = self.instance.$refs.toolbar.find('[data-fancybox-play]');
+			self.$button = self.instance.$refs.toolbar.find('[data-fancybox-play]').on('click', function() {
+				self.toggle();
+			});
 
-			if ( self.instance.group.length > 1 && self.instance.group[ self.instance.currIndex ].opts.slideShow ) {
-				self.$button.on('click', function() {
-					self.toggle();
-				});
-
-			} else {
+			if ( self.instance.group.length < 2 || !self.instance.group[ self.instance.currIndex ].opts.slideShow ) {
 				self.$button.hide();
 			}
-
 		},
 
 		set : function() {
@@ -4271,6 +4259,8 @@
 
 			} else {
 				self.stop();
+				self.instance.idleSecondsCounter = 0;
+				self.instance.showControls();
 			}
 
 		},
@@ -4299,7 +4289,6 @@
 					self.set();
 				}
 			}
-
 		},
 
 		stop : function() {
@@ -4329,62 +4318,65 @@
 	});
 
 	$(document).on({
+		'onInit.fb' : function(e, instance) {
+			if ( instance && !instance.SlideShow ) {
+				instance.SlideShow = new SlideShow( instance );
+			}
+		},
 
 		'beforeShow.fb' : function(e, instance, current, firstRun) {
-			var slideShow;
+			var SlideShow = instance && instance.SlideShow;
 
 			if ( firstRun ) {
-				slideShow = instance.SlideShow = new SlideShow( instance );
 
-				if ( current.opts.slideShow.autoStart  ) {
-					slideShow.start();
+				if ( SlideShow && current.opts.slideShow.autoStart ) {
+					SlideShow.start();
 				}
 
-			} else if (  ( slideShow = instance && instance.SlideShow ) && slideShow.isActive )  {
-				slideShow.clear();
+			} else if ( SlideShow && SlideShow.isActive )  {
+				SlideShow.clear();
 			}
-
 		},
 
 		'afterShow.fb' : function(e, instance, current) {
-			var slideShow = instance && instance.SlideShow;
+			var SlideShow = instance && instance.SlideShow;
 
-			if ( slideShow && slideShow.isActive ) {
-				slideShow.set();
+			if ( SlideShow && SlideShow.isActive ) {
+				SlideShow.set();
 			}
-
 		},
 
 		'afterKeydown.fb' : function(e, instance, current, keypress, keycode) {
+			var SlideShow = instance && instance.SlideShow;
 
 			// "P" or Spacebar
-			if ( instance && instance.SlideShow && ( keycode === 80 || keycode === 32 ) && !$(document.activeElement).is('button,a,input') ) {
-				instance.SlideShow.toggle();
-			}
+			if ( SlideShow && current.opts.slideShow && ( keycode === 80 || keycode === 32 ) && !$(document.activeElement).is( 'button,a,input' ) ) {
+				keypress.preventDefault();
 
+				SlideShow.toggle();
+			}
 		},
 
 		'beforeClose.fb onDeactivate.fb' : function(e, instance) {
+			var SlideShow = instance && instance.SlideShow;
 
-			if ( instance && instance.SlideShow ) {
-				instance.SlideShow.stop();
+			if ( SlideShow ) {
+				SlideShow.stop();
 			}
-
 		}
-
 	});
 
 	// Page Visibility API to pause slideshow when window is not active
 	$(document).on("visibilitychange", function() {
 		var instance  = $.fancybox.getInstance();
-		var slideShow = instance && instance.SlideShow;
+		var SlideShow = instance && instance.SlideShow;
 
-		if ( slideShow && slideShow.isActive ) {
+		if ( SlideShow && SlideShow.isActive ) {
 			if ( document.hidden ) {
-				slideShow.clear();
+				SlideShow.clear();
 
 			} else {
-				slideShow.set();
+				SlideShow.set();
 			}
 		}
 	});
@@ -4758,55 +4750,52 @@
 	$(document).on({
 
 		'onInit.fb' : function(e, instance) {
-
 			if ( instance && !instance.Thumbs ) {
 				instance.Thumbs = new FancyThumbs( instance );
 			}
-
 		},
 
 		'beforeShow.fb' : function(e, instance, item, firstRun) {
-			var self = instance && instance.Thumbs;
+			var Thumbs = instance && instance.Thumbs;
 
-			if ( !self || !self.isActive ) {
+			if ( !Thumbs || !Thumbs.isActive ) {
 				return;
 			}
 
 			if ( item.modal ) {
-				self.$button.hide();
+				Thumbs.$button.hide();
 
-				self.hide();
+				Thumbs.hide();
 
 				return;
 			}
 
 			if ( firstRun && instance.opts.thumbs.autoStart === true ) {
-				self.show();
+				Thumbs.show();
 			}
 
-			if ( self.isVisible ) {
-				self.focus();
+			if ( Thumbs.isVisible ) {
+				Thumbs.focus();
 			}
 		},
 
 		'afterKeydown.fb' : function(e, instance, current, keypress, keycode) {
-			var self = instance && instance.Thumbs;
+			var Thumbs = instance && instance.Thumbs;
 
 			// "G"
-			if ( self && self.isActive && keycode === 71 ) {
+			if ( Thumbs && Thumbs.isActive && keycode === 71 ) {
 				keypress.preventDefault();
 
-				instance.Thumbs.toggle();
+				Thumbs.toggle();
 			}
-
 		},
 
 		'beforeClose.fb' : function( e, instance ) {
+			var Thumbs = instance && instance.Thumbs;
 
-			if ( instance && instance.Thumbs && instance.Thumbs.isVisible && instance.opts.thumbs.hideOnClose !== false ) {
-				instance.Thumbs.close();
+			if ( Thumbs && Thumbs.isVisible && instance.opts.thumbs.hideOnClose !== false ) {
+				Thumbs.close();
 			}
-
 		}
 
 	});
@@ -4955,14 +4944,12 @@
 						currentHash = gallery + ( instance.group.length > 1 ? '-' + ( current.index + 1 ) : '' );
 
 						if ( 'replaceState' in window.history ) {
-
 							if ( timerID ) {
 								clearTimeout( timerID );
 							}
 
 							timerID = setTimeout(function() {
-
-								window.history.replaceState( {} , document.title, window.location.pathname + window.location.search + '#' +  currentHash );
+								window.history[ firstRun ? 'pushState' : 'replaceState' ]( {} , document.title, window.location.pathname + window.location.search + '#' +  currentHash );
 
 								timerID = null;
 
@@ -5001,7 +4988,6 @@
 
 							// Keep original scroll position
 							$( window ).scrollTop( instance.scrollTop ).scrollLeft( instance.scrollLeft );
-
 		                }
 		            }
 
@@ -5026,7 +5012,7 @@
 			});
 
 			// If navigating away from current page
-			$(window).one('unload.fb', function() {
+			$(window).one('unload.fb popstate.fb', function() {
 				$.fancybox.getInstance( 'close', true, 0 );
 			});
 

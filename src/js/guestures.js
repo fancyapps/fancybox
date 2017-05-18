@@ -50,7 +50,6 @@
 	};
 
 	var distance = function( point2, point1, what ) {
-
 		if ( !point1 || !point2 ) {
 			return 0;
 		}
@@ -63,7 +62,6 @@
 		}
 
 		return Math.sqrt( Math.pow( point2.x - point1.x, 2 ) + Math.pow( point2.y - point1.y, 2 ) );
-
 	};
 
 	var isClickable = function( $el ) {
@@ -103,19 +101,16 @@
 
 			$el = $el.parent();
 
-			if ( !$el.length || $el.hasClass('fancybox-slider') || $el.is('body') ) {
+			if ( !$el.length || $el.hasClass( 'fancybox-stage' ) || $el.is( 'body' ) ) {
 				break;
 			}
-
 		}
 
 		return rez;
-
 	};
 
 
 	var Guestures = function ( instance ) {
-
 		var self = this;
 
 		self.instance = instance;
@@ -126,37 +121,20 @@
 
 		self.destroy();
 
-		self.$stage.on( 'touchstart.fb.touch mousedown.fb.touch', $.proxy(self, 'ontouchstart') );
-
-		self.$container.on( 'touchstart.fb.touch mousedown.fb.touch', $.proxy(self, 'ontap') );
-
+		self.$container.on( 'touchstart.fb.touch mousedown.fb.touch', $.proxy(self, 'ontouchstart') );
 	};
 
 	Guestures.prototype.destroy = function() {
-
-		this.$stage.add( this.$container ).off( '.fb.touch' );
-
+		this.$container.off( '.fb.touch' );
 	};
 
 	Guestures.prototype.ontouchstart = function( e ) {
-
 		var self = this;
 
 		var $target  = $( e.target );
 		var instance = self.instance;
 		var current  = instance.current;
 		var $content = current.$content;
-
-		self.$target  = $target;
-		self.$content = $content;
-
-		self.canvasWidth  = Math.round( current.$slide[0].clientWidth );
-		self.canvasHeight = Math.round( current.$slide[0].clientHeight );
-
-		// Stop slideshow
-		if ( instance.SlideShow && instance.SlideShow.isActive ) {
-			instance.SlideShow.stop();
-		}
 
 		// Ignore right click
 		if ( e.originalEvent && e.originalEvent.button == 2 ) {
@@ -180,13 +158,21 @@
 			return;
 		}
 
+		e.stopPropagation();
+		e.preventDefault();
+
 		// If "touch" is disabled, then handle click event only
 		if ( !current.opts.touch ) {
+			self.onTap( e );
+
 			return;
 		}
 
-		e.stopPropagation();
-		e.preventDefault();
+		if ( !( $target.is( self.$stage ) || self.$stage.find( $target ).length ) ) {
+			self.onTap( e );
+
+			return;
+		}
 
 		if ( !current || self.instance.isAnimating || self.instance.isClosing ) {
 			return;
@@ -199,12 +185,17 @@
 			return;
 		}
 
-		self.$stage.off('touchmove.fb mousemove.fb',  $.proxy(self, "ontouchmove"));
-		self.$stage.off('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(self, "ontouchend"));
+		self.$container.off('touchmove.fb mousemove.fb',  $.proxy(self, "ontouchmove"));
+		self.$container.off('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(self, "ontouchend"));
 
-		self.$stage.on('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(self, "ontouchend"));
-		self.$stage.on('touchmove.fb mousemove.fb',  $.proxy(self, "ontouchmove"));
+		self.$container.on('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(self, "ontouchend"));
+		self.$container.on('touchmove.fb mousemove.fb',  $.proxy(self, "ontouchmove"));
 
+		self.$target  = $target;
+		self.$content = $content;
+
+		self.canvasWidth  = Math.round( current.$slide[0].clientWidth );
+		self.canvasHeight = Math.round( current.$slide[0].clientHeight );
 
 		self.startTime = new Date().getTime();
 		self.distanceX = self.distanceY = self.distance = 0;
@@ -214,15 +205,11 @@
 		self.isSwiping = false;
 		self.isZooming = false;
 
-		self.$stage.css( 'transition-duration', '0ms' );
-
-		self.sliderStartPos = self.sliderLastPos || { top: 0, left: 0 };
-
+		self.sliderStartPos  = self.sliderLastPos || { top: 0, left: 0 };
 		self.contentStartPos = $.fancybox.getTranslate( self.$content );
 		self.contentLastPos  = null;
 
 		if ( self.startPoints.length === 1 && !self.isZooming ) {
-
 			self.canTap = current.leftValue === undefined;
 
 			if ( current.type === 'image' && ( self.contentStartPos.width > self.canvasWidth + 1 || self.contentStartPos.height > self.canvasHeight + 1 ) ) {
@@ -255,7 +242,6 @@
 			self.percentageOfImageAtPinchPointY = ( self.centerPointStartY - self.contentStartPos.top  ) / self.contentStartPos.height;
 
 			self.startDistanceBetweenFingers = distance( self.startPoints[0], self.startPoints[1] );
-
 		}
 
 	};
@@ -320,9 +306,12 @@
 
 				self.canTap = false;
 
+				self.$stage.css( 'transition-duration', '0ms' );
+
 				self.instance.isSliding = self.isSwiping;
 
 				// Reset points to avoid jumping, because we dropped first swipes to calculate the angle
+
 				self.startPoints = self.newPoints;
 
 				$.each(self.instance.slides, function( index, slide ) {
@@ -337,6 +326,11 @@
 				});
 
 				self.instance.isAnimating = false;
+
+				// Stop slideshow
+				if ( self.instance.SlideShow && self.instance.SlideShow.isActive ) {
+					self.instance.SlideShow.stop();
+				}
 			}
 
 		} else {
@@ -597,15 +591,15 @@
 
 		self.$container.removeClass('fancybox-controls--isGrabbing');
 
-		self.$stage.off('touchmove.fb mousemove.fb',  $.proxy(this, "ontouchmove"));
-		self.$stage.off('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(this, "ontouchend"));
+		self.$container.off('touchmove.fb mousemove.fb',  $.proxy(this, "ontouchmove"));
+		self.$container.off('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(this, "ontouchend"));
 
 		self.isSwiping = false;
 		self.isPanning = false;
 		self.isZooming = false;
 
 		if ( self.canTap )  {
-			return self.ontap( e );
+			return self.onTap( e );
 		}
 
 		// Speed in px/ms
@@ -741,7 +735,7 @@
 
 	};
 
-	Guestures.prototype.ontap = function(e) {
+	Guestures.prototype.onTap = function(e) {
 		var self    = this;
 		var $target = $( e.target );
 
@@ -834,11 +828,11 @@
 		}
 
 		// Check where is clicked
-		if ( $target.is('.fancybox-bg,.fancybox-container') ) {
-			where = 'Bg';
+		if ( $target.is('.fancybox-bg,.fancybox-inner,.fancybox-container') ) {
+			where = 'Outside';
 
 		} else if ( $target.is('.fancybox-slide') ) {
-			where = 'Outside';
+			where = 'Slide';
 
 		} else if  ( instance.current.$content && instance.current.$content.has( e.target ).length ) {
 		 	where = 'Content';
@@ -887,19 +881,15 @@
 	};
 
 	$(document).on('onActivate.fb', function (e, instance) {
-
 		if ( instance && !instance.Guestures ) {
 			instance.Guestures = new Guestures( instance );
 		}
-
 	});
 
 	$(document).on('beforeClose.fb', function (e, instance) {
-
 		if ( instance && instance.Guestures ) {
 			instance.Guestures.destroy();
 		}
-
 	});
 
 

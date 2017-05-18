@@ -178,55 +178,52 @@
 	$(document).on({
 
 		'onInit.fb' : function(e, instance) {
-
 			if ( instance && !instance.Thumbs ) {
 				instance.Thumbs = new FancyThumbs( instance );
 			}
-
 		},
 
 		'beforeShow.fb' : function(e, instance, item, firstRun) {
-			var self = instance && instance.Thumbs;
+			var Thumbs = instance && instance.Thumbs;
 
-			if ( !self || !self.isActive ) {
+			if ( !Thumbs || !Thumbs.isActive ) {
 				return;
 			}
 
 			if ( item.modal ) {
-				self.$button.hide();
+				Thumbs.$button.hide();
 
-				self.hide();
+				Thumbs.hide();
 
 				return;
 			}
 
 			if ( firstRun && instance.opts.thumbs.autoStart === true ) {
-				self.show();
+				Thumbs.show();
 			}
 
-			if ( self.isVisible ) {
-				self.focus();
+			if ( Thumbs.isVisible ) {
+				Thumbs.focus();
 			}
 		},
 
 		'afterKeydown.fb' : function(e, instance, current, keypress, keycode) {
-			var self = instance && instance.Thumbs;
+			var Thumbs = instance && instance.Thumbs;
 
 			// "G"
-			if ( self && self.isActive && keycode === 71 ) {
+			if ( Thumbs && Thumbs.isActive && keycode === 71 ) {
 				keypress.preventDefault();
 
-				instance.Thumbs.toggle();
+				Thumbs.toggle();
 			}
-
 		},
 
 		'beforeClose.fb' : function( e, instance ) {
+			var Thumbs = instance && instance.Thumbs;
 
-			if ( instance && instance.Thumbs && instance.Thumbs.isVisible && instance.opts.thumbs.hideOnClose !== false ) {
-				instance.Thumbs.close();
+			if ( Thumbs && Thumbs.isVisible && instance.opts.thumbs.hideOnClose !== false ) {
+				Thumbs.close();
 			}
-
 		}
 
 	});

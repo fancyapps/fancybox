@@ -212,7 +212,7 @@
 
         slideShow : {
             autoStart : false,
-            speed     : 3000
+            speed     : 4000
         },
 
         fullScreen : {
@@ -279,16 +279,16 @@
             return current.type === 'image' ? 'zoom' : false;
         },
 
-        // Clicked outside the content, but inside sliding area
-        clickOutside : 'close',
+        // Clicked on the slide
+        clickSlide : 'close',
 
         // Clicked on the background (backdrop) element
-        clickBg : 'close',
+        clickOutside : 'close',
 
         // Same as previous two, but for double click
         dblclickContent : false,
+        dblclickSlide   : false,
         dblclickOutside : false,
-        dblclickBg      : false,
 
 
         // Custom options when mobile device is detected
@@ -298,11 +298,11 @@
             clickContent : function( current, event ) {
                 return current.type === 'image' ? 'toggleControls' : false;
             },
-            clickOutside : function( current, event ) {
-                return current.type === 'image' ? 'toggleControls' : 'close';
-            },
             dblclickContent : function( current, event ) {
                 return current.type === 'image' ? 'zoom' : false;
+            },
+            dblclickSlide : function( current, event ) {
+                return current.type === 'image' ? 'toggleControls' : 'close';
             }
         },
 
@@ -335,6 +335,9 @@
         }
 
     };
+
+    // Few useful variables and methods
+    // ================================
 
     var $W = $(window);
     var $D = $(document);
@@ -731,11 +734,11 @@
 
                         // Disable click event handlers
                         clickContent    : false,
+                        clickSlide      : false,
                         clickOutside    : false,
-                        clickBg         : false,
                         dblclickContent : false,
-                        dblclickOutside : false,
-                        dblclickBg      : false
+                        dblclickSlide   : false,
+                        dblclickOutside : false
                     });
 
                 }
@@ -869,7 +872,6 @@
                 }
 
                 self.trigger('afterKeydown', e, keycode);
-
             });
 
 
@@ -1219,6 +1221,10 @@
                 self.isAnimating = false;
             });
 
+            // Stop slideshow
+            if ( self.SlideShow && self.SlideShow.isActive ) {
+                self.SlideShow.stop();
+            }
         },
 
 
@@ -1783,7 +1789,6 @@
             $iframe = $( opts.tpl.replace(/\{rnd\}/g, new Date().getTime()) )
                 .attr( opts.attr )
                 .appendTo( slide.$content );
-
 
             if ( opts.preload ) {
 

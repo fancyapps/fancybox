@@ -140,14 +140,12 @@
 						currentHash = gallery + ( instance.group.length > 1 ? '-' + ( current.index + 1 ) : '' );
 
 						if ( 'replaceState' in window.history ) {
-
 							if ( timerID ) {
 								clearTimeout( timerID );
 							}
 
 							timerID = setTimeout(function() {
-
-								window.history.replaceState( {} , document.title, window.location.pathname + window.location.search + '#' +  currentHash );
+								window.history[ firstRun ? 'pushState' : 'replaceState' ]( {} , document.title, window.location.pathname + window.location.search + '#' +  currentHash );
 
 								timerID = null;
 
@@ -186,7 +184,6 @@
 
 							// Keep original scroll position
 							$( window ).scrollTop( instance.scrollTop ).scrollLeft( instance.scrollLeft );
-
 		                }
 		            }
 
@@ -211,7 +208,7 @@
 			});
 
 			// If navigating away from current page
-			$(window).one('unload.fb', function() {
+			$(window).one('unload.fb popstate.fb', function() {
 				$.fancybox.getInstance( 'close', true, 0 );
 			});
 

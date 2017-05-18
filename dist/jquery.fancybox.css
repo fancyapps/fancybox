@@ -152,7 +152,7 @@
 .fancybox-slide--video iframe {
   background: transparent; }
 
-.fancybox-slide--current {
+.fancybox-slide--next {
   z-index: 99995; }
 
 .fancybox-slide > * {
@@ -345,17 +345,17 @@
 .fancybox-button {
   display: inline-block;
   position: relative;
-  width: 44px;
-  height: 44px;
-  line-height: 44px;
   margin: 0;
   padding: 0;
   border: 0;
-  border-radius: 0;
-  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+  text-align: center;
   background: transparent;
   color: #ddd;
-  box-sizing: border-box;
+  border-radius: 0;
+  cursor: pointer;
   vertical-align: top;
   outline: none; }
 
@@ -544,12 +544,10 @@
   opacity: 1; }
 
 /* transitionEffect: fade */
-.fancybox-fx-fade {
-  transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1); }
-
 .fancybox-fx-fade.fancybox-slide--previous,
 .fancybox-fx-fade.fancybox-slide--next {
-  opacity: 0; }
+  opacity: 0;
+  transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1); }
 
 .fancybox-fx-fade.fancybox-slide--current {
   opacity: 1; }
@@ -634,41 +632,41 @@
 .fancybox-button--fullscreen::before {
   width: 15px;
   height: 11px;
-  left: 15px;
-  top: 16px;
+  left: calc(50% - 7px);
+  top: calc(50% - 6px);
   border: 2px solid;
   background: none; }
 
 /* Slideshow button */
+.fancybox-button--play::before,
+.fancybox-button--pause::before {
+  top: calc(50% - 6px);
+  left: calc(50% - 4px);
+  background: transparent; }
+
 .fancybox-button--play::before {
-  top: 16px;
-  left: 18px;
   width: 0;
   height: 0;
   border-top: 6px inset transparent;
   border-bottom: 6px inset transparent;
   border-left: 10px solid;
-  border-radius: 1px;
-  background: transparent; }
+  border-radius: 1px; }
 
 .fancybox-button--pause::before {
-  top: 16px;
-  left: 18px;
   width: 7px;
   height: 11px;
   border-style: solid;
-  border-width: 0 2px 0 2px;
-  background: transparent; }
+  border-width: 0 2px 0 2px; }
 
 /* Thumbs */
 .fancybox-button--thumbs span {
   font-size: 23px; }
 
 .fancybox-button--thumbs::before {
-  top: 20px;
-  left: 21px;
   width: 3px;
   height: 3px;
+  top: calc(50% - 2px);
+  left: calc(50% - 2px);
   box-shadow: 0 -4px 0, -4px -4px 0, 4px -4px 0, 0 0 0 32px inset, -4px 0 0, 4px 0 0, 0 4px 0, -4px 4px 0, 4px 4px 0; }
 
 .fancybox-thumbs {

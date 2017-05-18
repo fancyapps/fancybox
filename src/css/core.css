@@ -159,7 +159,7 @@
 	background: transparent;
 }
 
-.fancybox-slide--current {
+.fancybox-slide--next {
 	z-index: 99995;
 }
 
@@ -370,18 +370,18 @@
 
 .fancybox-button {
 	display: inline-block;
-	position : relative;
-	width: 44px;
-	height: 44px;
-	line-height: 44px;
+	position: relative;
 	margin: 0;
 	padding: 0;
 	border: 0;
-	border-radius: 0;
-	cursor: pointer;
+	width: 44px;
+	height: 44px;
+	line-height: 44px;
+	text-align: center;
 	background: transparent;
 	color: #ddd;
-	box-sizing: border-box;
+	border-radius: 0;
+	cursor: pointer;
 	vertical-align: top;
 	outline: none;
 }
@@ -577,13 +577,10 @@
 
 /* transitionEffect: fade */
 
-.fancybox-fx-fade {
-	transition-timing-function: cubic-bezier(.19,1,.22,1);
-}
-
 .fancybox-fx-fade.fancybox-slide--previous,
 .fancybox-fx-fade.fancybox-slide--next {
 	opacity: 0;
+	transition-timing-function: cubic-bezier(.19,1,.22,1);
 }
 
 .fancybox-fx-fade.fancybox-slide--current {
