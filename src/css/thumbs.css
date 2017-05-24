@@ -25,8 +25,9 @@
 	background: #fff;
 	z-index: 99996;
 	word-break: normal;
-	-webkit-overflow-scrolling: touch;
 	-webkit-tap-highlight-color: rgba(0,0,0,0);
+	-webkit-overflow-scrolling: touch;
+	-ms-overflow-style: -ms-autohiding-scrollbar;
 	box-sizing: border-box;
 	z-index: 99995;
 	display: none;

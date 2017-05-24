@@ -26,14 +26,18 @@
 .fancybox-container ~ .fancybox-container {
   z-index: 99992; }
 
+.fancybox-outer,
 .fancybox-inner,
 .fancybox-bg {
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
-  left: 0;
-  z-index: 99993; }
+  left: 0; }
+
+.fancybox-outer {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; }
 
 .fancybox-bg {
   background: #1e1e1e;
@@ -681,8 +685,9 @@
   background: #fff;
   z-index: 99996;
   word-break: normal;
-  -webkit-overflow-scrolling: touch;
   -webkit-tap-highlight-color: transparent;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
   box-sizing: border-box;
   z-index: 99995;
   display: none; }

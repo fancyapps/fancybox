@@ -29,6 +29,7 @@
 	z-index: 99992;
 }
 
+.fancybox-outer,
 .fancybox-inner,
 .fancybox-bg {
 	position: absolute;
@@ -36,7 +37,11 @@
 	right: 0;
 	bottom: 0;
 	left: 0;
-	z-index: 99993;
+}
+
+.fancybox-outer {
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
 }
 
 .fancybox-bg {

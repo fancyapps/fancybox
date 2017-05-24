@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.1.13
+// fancyBox v3.1.14
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -62,7 +62,7 @@
         ],
 
         // Detect "idle" time in seconds
-        idleTime : 3,
+        idleTime : 4,
 
         // Should display buttons at top right corner of the content
         // If 'auto' - they will be created for content having type 'html', 'inline' or 'ajax'
@@ -713,14 +713,12 @@
 
                 // If the type is "pdf", then simply load file into iframe
                 if ( type === 'pdf' ) {
-
                     obj.type = 'iframe';
 
-                    obj.opts.closeBtn = true;
+                    obj.opts.toolbar  = true;
                     obj.opts.smallBtn = false;
 
                     obj.opts.iframe.preload = false;
-
                 }
 
                 // Hide all buttons and disable interactivity for modal items
@@ -826,7 +824,7 @@
             $D.on('focusin.fb', function(e) {
                 var instance = $.fancybox ? $.fancybox.getInstance() : null;
 
-                if ( !instance.current || !instance.current.opts.trapFocus || $( e.target ).hasClass( 'fancybox-container' ) || $( e.target ).is( document ) ) {
+                if ( instance.isClosing || !instance.current || !instance.current.opts.trapFocus || $( e.target ).hasClass( 'fancybox-container' ) || $( e.target ).is( document ) ) {
                     return;
                 }
 
@@ -2091,7 +2089,6 @@
             // ===================
 
             if ( !effect || slide.pos !== self.currPos ) {
-
                 slide.$content.removeClass( 'fancybox-is-hidden' );
 
                 slide.isRevealed = true;
@@ -2325,12 +2322,6 @@
             }
 
             $el.focus();
-
-            // Scroll position sometimes stucks after focusing
-            if ( current ) {
-                current.$slide.scrollTop(0);
-            }
-
         },
 
 
@@ -2410,7 +2401,7 @@
 
             $what    = current.$content;
             effect   = current.opts.animationEffect;
-            duration = d !== undefined ? d : ( effect ? current.opts.animationDuration : 0 );
+            duration = $.isNumeric( d ) ? d : ( effect ? current.opts.animationDuration : 0 );
 
             // Remove other slides
             current.$slide.off( transitionEnd ).removeClass( 'fancybox-slide--complete fancybox-slide--next fancybox-slide--previous fancybox-animated' );
@@ -2467,11 +2458,12 @@
 
                 $.fancybox.animate( current.$content, start, end, duration, done );
 
-                return;
+                return true;
             }
 
             if ( effect && duration ) {
 
+                // If skip animation
                 if ( e !== true ) {
                     self.$refs.stage.css( 'transition-duration', duration + 'ms' );
                     current.$slide.removeClass( 'fancybox-slide--current' ).addClass( 'fancybox-animated fancybox-slide--previous fancybox-fx-' + effect );
@@ -2483,6 +2475,7 @@
                 done();
             }
 
+            return true;
         },
 
 
@@ -2613,7 +2606,8 @@
             var opts = self.current ? self.current.opts : self.opts;
             var $container = self.$refs.container;
 
-            self.isHiddenControls = false;
+            self.isHiddenControls   = false;
+            self.idleSecondsCounter = 0;
 
             $container
                 .toggleClass('fancybox-show-toolbar', !!( opts.toolbar && opts.buttons ) )
@@ -2651,7 +2645,7 @@
 
     $.fancybox = {
 
-        version  : "3.1.13",
+        version  : "3.1.14",
         defaults : defaults,
 
 
@@ -2814,8 +2808,7 @@
             }
 
             if ( props.left !== undefined || props.top !== undefined ) {
-
-                str = ( props.left === undefined ? $el.position().top : props.left )  + 'px, ' + ( props.top === undefined ? $el.position().top : props.top ) + 'px';
+                str = ( props.left === undefined ? $el.position().left : props.left )  + 'px, ' + ( props.top === undefined ? $el.position().top : props.top ) + 'px';
 
                 if ( this.use3d ) {
                     str = 'translate3d(' + str + ', 0px)';
@@ -2823,7 +2816,6 @@
                 } else {
                     str = 'translate(' + str + ')';
                 }
-
             }
 
             if ( props.scaleX !== undefined && props.scaleY !== undefined ) {
@@ -2935,14 +2927,10 @@
 
                 // Are we done?
                 if ( animTime >= duration ) {
-
-                    finish();
-
-                    return;
+                    return finish();
                 }
 
                 for ( var prop in to ) {
-
                     if ( to.hasOwnProperty( prop ) && from[ prop ] !== undefined ) {
 
                         if ( from[ prop ] == to[ prop ] ) {
@@ -2951,7 +2939,6 @@
                         } else {
                             curr[ prop ] = self.easing[ easing ]( animTime, from[ prop ], to[ prop ] - from[ prop ], duration );
                         }
-
                     }
                 }
 
@@ -3453,6 +3440,13 @@
 		var current  = instance.current;
 		var $content = current.$content;
 
+		if ( !current || self.instance.isAnimating || self.instance.isClosing ) {
+			e.stopPropagation();
+			e.preventDefault();
+
+			return;
+		}
+
 		// Ignore right click
 		if ( e.originalEvent && e.originalEvent.button == 2 ) {
 			return;
@@ -3468,33 +3462,6 @@
 			return;
 		}
 
-		// Skip on scrollable items on mobile, otherwise it would not be possible to scroll
-		if ( $.fancybox.isMobile && ( isScrollable( $target ) || isScrollable( $target.parent() ) ) ) {
-			e.stopPropagation();
-
-			return;
-		}
-
-		e.stopPropagation();
-		e.preventDefault();
-
-		// If "touch" is disabled, then handle click event only
-		if ( !current.opts.touch ) {
-			self.onTap( e );
-
-			return;
-		}
-
-		if ( !( $target.is( self.$stage ) || self.$stage.find( $target ).length ) ) {
-			self.onTap( e );
-
-			return;
-		}
-
-		if ( !current || self.instance.isAnimating || self.instance.isClosing ) {
-			return;
-		}
-
 		self.startPoints = pointers( e );
 
 		// Prevent zooming if already swiping
@@ -3502,14 +3469,25 @@
 			return;
 		}
 
-		self.$container.off('touchmove.fb mousemove.fb',  $.proxy(self, "ontouchmove"));
+		self.$target  = $target;
+		self.$content = $content;
+		self.canTap   = true;
+
 		self.$container.off('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(self, "ontouchend"));
+		self.$container.off('touchmove.fb mousemove.fb',  $.proxy(self, "ontouchmove"));
 
 		self.$container.on('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(self, "ontouchend"));
 		self.$container.on('touchmove.fb mousemove.fb',  $.proxy(self, "ontouchmove"));
 
-		self.$target  = $target;
-		self.$content = $content;
+		if ( !self.instance.current.opts.touch || !( $target.is( self.$stage ) || self.$stage.find( $target ).length ) ) {
+			return;
+		}
+
+		e.stopPropagation();
+
+		if ( !( $.fancybox.isMobile && ( isScrollable( self.$target ) || isScrollable( self.$target.parent() ) ) ) ) {
+			e.preventDefault();
+		}
 
 		self.canvasWidth  = Math.round( current.$slide[0].clientWidth );
 		self.canvasHeight = Math.round( current.$slide[0].clientHeight );
@@ -3567,12 +3545,20 @@
 
 		var self = this;
 
-		e.preventDefault();
-
 		self.newPoints = pointers( e );
 
-		if ( !self.newPoints || !self.newPoints.length ) {
+		if ( $.fancybox.isMobile && ( isScrollable( self.$target ) || isScrollable( self.$target.parent() ) ) ) {
+			e.stopPropagation();
+
+			self.canTap = false;
+
 			return;
+		}
+
+		if ( !self.instance.current.opts.touch || !self.newPoints || !self.newPoints.length ) {
+			self.canTap = false;
+
+			return false;
 		}
 
 		self.distanceX = distance( self.newPoints[0], self.startPoints[0], 'x' );
@@ -3582,6 +3568,15 @@
 
 		// Skip false ontouchmove events (Chrome)
 		if ( self.distance > 0 ) {
+
+			if ( !( self.$target.is( self.$stage ) || self.$stage.find( self.$target ).length ) ) {
+				return false;
+			}
+
+			e.stopPropagation();
+			e.preventDefault();
+
+			self.canTap = false;
 
 			if ( self.isSwiping ) {
 				self.onSwipe();
@@ -3609,6 +3604,8 @@
 
 			if ( Math.abs( self.distance ) > 10 )  {
 
+
+
 				if ( self.instance.group.length < 2 && self.instance.opts.touch.vertical ) {
 					self.isSwiping  = 'y';
 
@@ -3621,7 +3618,6 @@
 					self.isSwiping = ( angle > 45 && angle < 135 ) ? 'y' : 'x';
 				}
 
-				self.canTap = false;
 
 				self.$stage.css( 'transition-duration', '0ms' );
 
@@ -3953,9 +3949,11 @@
 		if ( swiping == 'y' && Math.abs( self.distanceY ) > 50 ) {
 
 			// Continue vertical movement
-			$.fancybox.animate( self.instance.current.$slide, null, {
-				top     : self.sliderStartPos.top + self.distanceY + self.velocityY * 150,
-				left    : self.sliderStartPos.left,
+			$.fancybox.animate( self.instance.current.$slide, {
+				top     : self.sliderStartPos.top + self.distanceY,
+				opacity : 1
+			}, {
+				top     : self.sliderStartPos.top + self.distanceY + ( self.velocityY * 150 ),
 				opacity : 0
 			}, 150 );
 
@@ -4145,7 +4143,7 @@
 		}
 
 		// Check where is clicked
-		if ( $target.is('.fancybox-bg,.fancybox-inner,.fancybox-container') ) {
+		if ( $target.is('.fancybox-bg,.fancybox-inner,.fancybox-outer,.fancybox-container') ) {
 			where = 'Outside';
 
 		} else if ( $target.is('.fancybox-slide') ) {

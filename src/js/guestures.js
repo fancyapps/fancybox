@@ -136,6 +136,13 @@
 		var current  = instance.current;
 		var $content = current.$content;
 
+		if ( !current || self.instance.isAnimating || self.instance.isClosing ) {
+			e.stopPropagation();
+			e.preventDefault();
+
+			return;
+		}
+
 		// Ignore right click
 		if ( e.originalEvent && e.originalEvent.button == 2 ) {
 			return;
@@ -151,33 +158,6 @@
 			return;
 		}
 
-		// Skip on scrollable items on mobile, otherwise it would not be possible to scroll
-		if ( $.fancybox.isMobile && ( isScrollable( $target ) || isScrollable( $target.parent() ) ) ) {
-			e.stopPropagation();
-
-			return;
-		}
-
-		e.stopPropagation();
-		e.preventDefault();
-
-		// If "touch" is disabled, then handle click event only
-		if ( !current.opts.touch ) {
-			self.onTap( e );
-
-			return;
-		}
-
-		if ( !( $target.is( self.$stage ) || self.$stage.find( $target ).length ) ) {
-			self.onTap( e );
-
-			return;
-		}
-
-		if ( !current || self.instance.isAnimating || self.instance.isClosing ) {
-			return;
-		}
-
 		self.startPoints = pointers( e );
 
 		// Prevent zooming if already swiping
@@ -185,14 +165,25 @@
 			return;
 		}
 
-		self.$container.off('touchmove.fb mousemove.fb',  $.proxy(self, "ontouchmove"));
+		self.$target  = $target;
+		self.$content = $content;
+		self.canTap   = true;
+
 		self.$container.off('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(self, "ontouchend"));
+		self.$container.off('touchmove.fb mousemove.fb',  $.proxy(self, "ontouchmove"));
 
 		self.$container.on('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(self, "ontouchend"));
 		self.$container.on('touchmove.fb mousemove.fb',  $.proxy(self, "ontouchmove"));
 
-		self.$target  = $target;
-		self.$content = $content;
+		if ( !self.instance.current.opts.touch || !( $target.is( self.$stage ) || self.$stage.find( $target ).length ) ) {
+			return;
+		}
+
+		e.stopPropagation();
+
+		if ( !( $.fancybox.isMobile && ( isScrollable( self.$target ) || isScrollable( self.$target.parent() ) ) ) ) {
+			e.preventDefault();
+		}
 
 		self.canvasWidth  = Math.round( current.$slide[0].clientWidth );
 		self.canvasHeight = Math.round( current.$slide[0].clientHeight );
@@ -250,12 +241,20 @@
 
 		var self = this;
 
-		e.preventDefault();
-
 		self.newPoints = pointers( e );
 
-		if ( !self.newPoints || !self.newPoints.length ) {
+		if ( $.fancybox.isMobile && ( isScrollable( self.$target ) || isScrollable( self.$target.parent() ) ) ) {
+			e.stopPropagation();
+
+			self.canTap = false;
+
 			return;
+		}
+
+		if ( !self.instance.current.opts.touch || !self.newPoints || !self.newPoints.length ) {
+			self.canTap = false;
+
+			return false;
 		}
 
 		self.distanceX = distance( self.newPoints[0], self.startPoints[0], 'x' );
@@ -265,6 +264,15 @@
 
 		// Skip false ontouchmove events (Chrome)
 		if ( self.distance > 0 ) {
+
+			if ( !( self.$target.is( self.$stage ) || self.$stage.find( self.$target ).length ) ) {
+				return false;
+			}
+
+			e.stopPropagation();
+			e.preventDefault();
+
+			self.canTap = false;
 
 			if ( self.isSwiping ) {
 				self.onSwipe();
@@ -292,6 +300,8 @@
 
 			if ( Math.abs( self.distance ) > 10 )  {
 
+
+
 				if ( self.instance.group.length < 2 && self.instance.opts.touch.vertical ) {
 					self.isSwiping  = 'y';
 
@@ -304,7 +314,6 @@
 					self.isSwiping = ( angle > 45 && angle < 135 ) ? 'y' : 'x';
 				}
 
-				self.canTap = false;
 
 				self.$stage.css( 'transition-duration', '0ms' );
 
@@ -636,9 +645,11 @@
 		if ( swiping == 'y' && Math.abs( self.distanceY ) > 50 ) {
 
 			// Continue vertical movement
-			$.fancybox.animate( self.instance.current.$slide, null, {
-				top     : self.sliderStartPos.top + self.distanceY + self.velocityY * 150,
-				left    : self.sliderStartPos.left,
+			$.fancybox.animate( self.instance.current.$slide, {
+				top     : self.sliderStartPos.top + self.distanceY,
+				opacity : 1
+			}, {
+				top     : self.sliderStartPos.top + self.distanceY + ( self.velocityY * 150 ),
 				opacity : 0
 			}, 150 );
 
@@ -828,7 +839,7 @@
 		}
 
 		// Check where is clicked
-		if ( $target.is('.fancybox-bg,.fancybox-inner,.fancybox-container') ) {
+		if ( $target.is('.fancybox-bg,.fancybox-inner,.fancybox-outer,.fancybox-container') ) {
 			where = 'Outside';
 
 		} else if ( $target.is('.fancybox-slide') ) {
