@@ -451,8 +451,9 @@
             var testWidth;
             var $container;
 
-            var baseTpl = self.group[ self.currIndex ].opts.baseTpl;
-            var buttonStr;
+            var firstItemOpts = self.group[ self.currIndex ].opts;
+
+            var baseTpl = firstItemOpts.baseTpl, buttonStr;
 
             self.scrollTop  = $D.scrollTop();
             self.scrollLeft = $D.scrollLeft();
@@ -482,8 +483,8 @@
             // Build html code for buttons and insert into main template
             buttonStr = '';
 
-            $.each( self.opts.buttons, function( index, value ) {
-                buttonStr += ( self.opts.btnTpl[ value ] || '' );
+            $.each( firstItemOpts.buttons, function( index, value ) {
+                buttonStr += ( firstItemOpts.btnTpl[ value ] || '' );
             });
 
             baseTpl = baseTpl.replace( '\{\{BUTTONS\}\}', buttonStr );
@@ -494,9 +495,9 @@
             $container = $( self.translate( self, baseTpl ) )
                 .addClass( 'fancybox-is-hidden' )
                 .attr('id', 'fancybox-container-' + self.id)
-                .addClass( self.opts.baseClass )
+                .addClass( firstItemOpts.baseClass )
                 .data( 'FancyBox', self )
-                .prependTo( self.opts.parentEl );
+                .prependTo( firstItemOpts.parentEl );
 
             // Create object holding references to jQuery wrapped nodes
             self.$refs = {
@@ -512,7 +513,7 @@
             };
 
             // Hide arrows if they are not needed
-            if ( !self.opts.arrows || self.group.length < 2 ) {
+            if ( !firstItemOpts.arrows || self.group.length < 2 ) {
                 self.$refs.arrow_left.add( self.$refs.arrow_right ).hide();
             }
 
@@ -969,7 +970,8 @@
                 return;
             }
 
-            previous       = self.current;
+            previous = self.current;
+
             self.prevIndex = self.currIndex;
             self.prevPos   = self.currPos;
 
@@ -994,7 +996,16 @@
 
             self.updateControls();
 
-            duration = parseInt( duration === undefined ? current.opts[ firstRun ? 'animationDuration' : 'transitionDuration' ] : duration, 10 );
+            if ( $.isNumeric( duration ) ) {
+                current.forcedDuration = duration;
+
+            } else {
+                current.forcedDuration = undefined;
+
+                duration = current.opts[ firstRun ? 'animationDuration' : 'transitionDuration' ];
+            }
+
+            duration = parseInt( duration, 10 );
 
             current.inTransition = ( !firstRun && current && current.leftValue === undefined );
 
@@ -1029,7 +1040,7 @@
                 self.$refs.container.find( '.fancybox-slide' ).removeAttr( 'style' );
 
                 // Start transition
-                if ( previous.opts.transitionEffect && previous.opts.transitionDuration ) {
+                if ( previous.opts.transitionEffect && duration ) {
                     $.fancybox.animateCSS( previous.$slide, 'fancybox-animated fancybox-slide--' + ( previous.pos > current.pos ? 'next' : 'previous' ) + ' fancybox-fx-' + previous.opts.transitionEffect );
                 }
 
@@ -2071,6 +2082,8 @@
             effect   = slide.opts[ self.firstRun ? 'animationEffect'   : 'transitionEffect' ];
             duration = slide.opts[ self.firstRun ? 'animationDuration' : 'transitionDuration' ];
 
+            duration = parseInt( slide.forcedDuration === undefined ? duration : slide.forcedDuration, 10 );
+
             if ( slide.leftValue !== undefined || !duration ) {
                 effect = false;
             }
@@ -2117,12 +2130,9 @@
                     end.opacity   = 1;
                 }
 
-                self.isAnimating = true;
-
                 slide.$content.removeClass( 'fancybox-is-hidden' );
 
                 $.fancybox.animate( slide.$content, start, end, duration, function() {
-                    self.isAnimating = false;
                     slide.isRevealed = true;
 
                     self.complete();
@@ -2131,8 +2141,6 @@
                 return;
             }
 
-
-            self.isAnimating = true;
 
             slide.$slide.removeClass( 'fancybox-slide--next fancybox-slide--previous fancybox-slide--current' );
 
@@ -2150,7 +2158,6 @@
 
             $.fancybox.animateCSS( slide.$slide, 'fancybox-animated fancybox-slide--current', true, function(e) {
 
-                self.isAnimating = false;
                 slide.isRevealed = true;
 
                 slide.$slide.removeClass( 'fancybox-slide--next fancybox-slide--previous' );

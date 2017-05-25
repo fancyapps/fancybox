@@ -136,6 +136,7 @@
 		var current  = instance.current;
 		var $content = current.$content;
 
+		// Ignore clicks while zooming or closing
 		if ( !current || self.instance.isAnimating || self.instance.isClosing ) {
 			e.stopPropagation();
 			e.preventDefault();
@@ -148,13 +149,13 @@
 			return;
 		}
 
-		// Skip if clicked on the scrollbar
-		if ( e.originalEvent.clientX > $target[0].clientWidth + $target.offset().left ) {
+		// Ignore taping on links, buttons, input elements
+		if ( isClickable( $target ) || isClickable( $target.parent() ) ) {
 			return;
 		}
 
-		// Ignore taping on links, buttons, input elements
-		if ( isClickable( $target ) || isClickable( $target.parent() ) ) {
+		// Ignore clicks on the scrollbar
+		if ( e.originalEvent.clientX > $target[0].clientWidth + $target.offset().left ) {
 			return;
 		}
 
@@ -169,17 +170,22 @@
 		self.$content = $content;
 		self.canTap   = true;
 
-		self.$container.off('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(self, "ontouchend"));
-		self.$container.off('touchmove.fb mousemove.fb',  $.proxy(self, "ontouchmove"));
+		$(document).off( '.fb.touch' );
 
-		self.$container.on('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(self, "ontouchend"));
-		self.$container.on('touchmove.fb mousemove.fb',  $.proxy(self, "ontouchmove"));
-
-		if ( !self.instance.current.opts.touch || !( $target.is( self.$stage ) || self.$stage.find( $target ).length ) ) {
-			return;
-		}
+		$(document).on('touchend.fb.touch touchcancel.fb.touch mouseup.fb.touch mouseleave.fb.touch',  $.proxy(self, "ontouchend"));
+		$(document).on('touchmove.fb.touch mousemove.fb.touch',  $.proxy(self, "ontouchmove"));
 
 		e.stopPropagation();
+
+		if ( !self.instance.current.opts.touch || !( $target.is( self.$stage ) || self.$stage.find( $target ).length ) ) {
+
+			// Prevent ghosting
+			if ( $target.is('img') ) {
+				e.preventDefault();
+			}
+
+			return;
+		}
 
 		if ( !( $.fancybox.isMobile && ( isScrollable( self.$target ) || isScrollable( self.$target.parent() ) ) ) ) {
 			e.preventDefault();
@@ -191,7 +197,6 @@
 		self.startTime = new Date().getTime();
 		self.distanceX = self.distanceY = self.distance = 0;
 
-		self.canTap    = false;
 		self.isPanning = false;
 		self.isSwiping = false;
 		self.isZooming = false;
@@ -241,6 +246,14 @@
 
 		var self = this;
 
+		// Try to detect if user released mouse, but it was not detected
+		// (for example, over an iframe)
+		if ( e.type === 'mousemove' && !e.originalEvent.buttons ) {
+			self.ontouchend( e );
+
+			return;
+		}
+
 		self.newPoints = pointers( e );
 
 		if ( $.fancybox.isMobile && ( isScrollable( self.$target ) || isScrollable( self.$target.parent() ) ) ) {
@@ -252,8 +265,6 @@
 		}
 
 		if ( !self.instance.current.opts.touch || !self.newPoints || !self.newPoints.length ) {
-			self.canTap = false;
-
 			return false;
 		}
 
@@ -271,8 +282,6 @@
 
 			e.stopPropagation();
 			e.preventDefault();
-
-			self.canTap = false;
 
 			if ( self.isSwiping ) {
 				self.onSwipe();
@@ -300,7 +309,7 @@
 
 			if ( Math.abs( self.distance ) > 10 )  {
 
-
+				self.canTap = false;
 
 				if ( self.instance.group.length < 2 && self.instance.opts.touch.vertical ) {
 					self.isSwiping  = 'y';
@@ -347,10 +356,10 @@
 			if ( swiping == 'x' ) {
 
 				// Sticky edges
-				if ( !self.instance.current.opts.loop && self.instance.current.index === 0  && self.distanceX > 0 ) {
+				if ( self.distanceX > 0 && ( self.instance.group.length < 2 || ( self.instance.current.index === 0 && !self.instance.current.opts.loop ) ) ) {
 					left = left + Math.pow( self.distanceX, 0.8 );
 
-				} else if ( !self.instance.current.opts.loop &&self.instance.current.index === self.instance.group.length - 1 && self.distanceX < 0 ) {
+				} else if ( self.distanceX < 0 && ( self.instance.group.length < 2 || ( self.instance.current.index === self.instance.group.length - 1 && !self.instance.current.opts.loop ) ) ) {
 					left = left - Math.pow( -self.distanceX, 0.8 );
 
 				} else {
@@ -363,7 +372,6 @@
 				top  : swiping == 'x' ? 0 : self.sliderStartPos.top + self.distanceY,
 				left : left
 			};
-
 
 			self.$stage.children().removeClass( 'fancybox-animated fancybox-slide--next fancybox-slide--previous' );
 
@@ -394,7 +402,7 @@
 
 					});
 
-					self.$container.addClass('fancybox-sliding');
+					self.$container.addClass( 'fancybox-is-sliding' );
 				}
 
 			});
@@ -598,10 +606,9 @@
 
 		self.endPoints = pointers( e );
 
-		self.$container.removeClass('fancybox-controls--isGrabbing');
+		self.$container.removeClass( 'fancybox-controls--isGrabbing' );
 
-		self.$container.off('touchmove.fb mousemove.fb',  $.proxy(this, "ontouchmove"));
-		self.$container.off('touchend.fb touchcancel.fb mouseup.fb mouseleave.fb',  $.proxy(this, "ontouchend"));
+		$(document).off( '.fb.touch' );
 
 		self.isSwiping = false;
 		self.isPanning = false;
@@ -636,7 +643,7 @@
 		var self = this;
 		var ret = false;
 
-		self.$container.removeClass('fancybox-sliding');
+		self.$container.removeClass( 'fancybox-is-sliding' );
 
 		self.instance.isSliding = false;
 		self.sliderLastPos      = null;
@@ -655,10 +662,10 @@
 
 			ret = self.instance.close( true, 300 );
 
-		} else if ( swiping == 'x' && self.distanceX > 50 ) {
+		} else if ( swiping == 'x' && self.distanceX > 50 && self.instance.group.length > 1 ) {
 			ret = self.instance.previous( self.speedX );
 
-		} else if ( swiping == 'x' && self.distanceX < -50 ) {
+		} else if ( swiping == 'x' && self.distanceX < -50  && self.instance.group.length > 1 ) {
 			ret = self.instance.next( self.speedX );
 		}
 
@@ -828,7 +835,7 @@
 			return;
 		}
 
-		// Skip if current slide is not in the place
+		// Skip if current slide is not in the center
 		if ( current.leftValue ) {
 			return;
 		}
@@ -839,10 +846,10 @@
 		}
 
 		// Check where is clicked
-		if ( $target.is('.fancybox-bg,.fancybox-inner,.fancybox-outer,.fancybox-container') ) {
+		if ( $target.is( '.fancybox-bg,.fancybox-inner,.fancybox-outer,.fancybox-container' ) ) {
 			where = 'Outside';
 
-		} else if ( $target.is('.fancybox-slide') ) {
+		} else if ( $target.is( '.fancybox-slide' ) ) {
 			where = 'Slide';
 
 		} else if  ( instance.current.$content && instance.current.$content.has( e.target ).length ) {

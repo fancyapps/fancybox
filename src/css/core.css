@@ -144,7 +144,7 @@
 	width: 0;
 }
 
-.fancybox-sliding .fancybox-slide,
+.fancybox-is-sliding .fancybox-slide,
 .fancybox-slide--previous,
 .fancybox-slide--current,
 .fancybox-slide--next {
@@ -152,7 +152,7 @@
 }
 
 .fancybox-slide--image {
-	overflow: hidden;
+	overflow: visible;
 }
 
 .fancybox-slide--image::before {

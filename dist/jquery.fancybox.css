@@ -140,14 +140,14 @@
   height: 100%;
   width: 0; }
 
-.fancybox-sliding .fancybox-slide,
+.fancybox-is-sliding .fancybox-slide,
 .fancybox-slide--previous,
 .fancybox-slide--current,
 .fancybox-slide--next {
   display: block; }
 
 .fancybox-slide--image {
-  overflow: hidden; }
+  overflow: visible; }
 
 .fancybox-slide--image::before {
   display: none; }
