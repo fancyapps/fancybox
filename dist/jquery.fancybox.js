@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.1.15
+// fancyBox v3.1.16
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -2652,7 +2652,7 @@
 
     $.fancybox = {
 
-        version  : "3.1.15",
+        version  : "3.1.16",
         defaults : defaults,
 
 
@@ -3488,7 +3488,7 @@
 
 		e.stopPropagation();
 
-		if ( !self.instance.current.opts.touch || !( $target.is( self.$stage ) || self.$stage.find( $target ).length ) ) {
+		if ( !(self.instance.current.opts.touch || self.instance.canPan() ) || !( $target.is( self.$stage ) || self.$stage.find( $target ).length ) ) {
 
 			// Prevent ghosting
 			if ( $target.is('img') ) {
@@ -3575,7 +3575,7 @@
 			return;
 		}
 
-		if ( !self.instance.current.opts.touch || !self.newPoints || !self.newPoints.length ) {
+		if ( !( self.instance.current.opts.touch || self.instance.canPan() ) || !self.newPoints || !self.newPoints.length ) {
 			return false;
 		}
 

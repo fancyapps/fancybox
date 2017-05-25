@@ -177,7 +177,7 @@
 
 		e.stopPropagation();
 
-		if ( !self.instance.current.opts.touch || !( $target.is( self.$stage ) || self.$stage.find( $target ).length ) ) {
+		if ( !(self.instance.current.opts.touch || self.instance.canPan() ) || !( $target.is( self.$stage ) || self.$stage.find( $target ).length ) ) {
 
 			// Prevent ghosting
 			if ( $target.is('img') ) {
@@ -264,7 +264,7 @@
 			return;
 		}
 
-		if ( !self.instance.current.opts.touch || !self.newPoints || !self.newPoints.length ) {
+		if ( !( self.instance.current.opts.touch || self.instance.canPan() ) || !self.newPoints || !self.newPoints.length ) {
 			return false;
 		}
 
