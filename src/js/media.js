@@ -34,7 +34,7 @@
 
 	// Object containing properties for each media type
 
-	var media = {
+	var defaults = {
 		youtube : {
 			matcher : /(youtube\.com|youtu\.be|youtube\-nocookie\.com)\/(watch\?(.*&)?v=|v\/|u\/|embed\/?)?(videoseries\?list=(.*)|[\w-]{11}|\?listType=(.*)&list=(.*))(.*)/i,
 			params  : {
@@ -116,6 +116,7 @@
 
 			var url	 = item.src || '',
 				type = false,
+				media,
 				thumb,
 				rez,
 				params,
@@ -128,8 +129,9 @@
 				return;
 			}
 
-			// Look for any matching media type
+			media = $.extend( true, {}, defaults, item.opts.media );
 
+			// Look for any matching media type
 			$.each(media, function ( n, el ) {
 				rez = url.match(el.matcher);
 				o   = {};
@@ -177,7 +179,7 @@
 				item.src  = url;
 				item.type = type;
 
-				if ( !item.opts.thumb && !(item.opts.$thumb && item.opts.$thumb.length ) ) {
+				if ( !item.opts.thumb && !( item.opts.$thumb && item.opts.$thumb.length ) ) {
 					item.opts.thumb = thumb;
 				}
 
@@ -188,10 +190,7 @@
 							attr : {
 								scrolling : "no"
 							}
-						},
-						smallBtn   : false,
-						closeBtn   : true,
-						slideShow  : false
+						}
 					});
 
 					item.contentProvider = provider;
@@ -199,6 +198,10 @@
 					item.opts.slideClass += ' fancybox-slide--' + ( provider == 'google_maps' ? 'map' : 'video' );
 				}
 
+			} else {
+
+				// If no content type is found, then set it to `image` as fallback
+				item.type = 'image';
 			}
 
 		});

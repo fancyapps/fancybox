@@ -161,7 +161,7 @@
 
 .fancybox-slide--video .fancybox-iframe-wrap,
 .fancybox-slide--video iframe {
-	background: transparent;
+	background: #000;
 }
 
 .fancybox-slide--next {
@@ -239,7 +239,10 @@
 	padding: 0;
 	border: 0;
 	width: 80%;
-	height: calc(100% - 88px);
+	height: 80%;
+	max-width: calc(100% - 100px);
+	max-height: calc(100% - 88px);
+	overflow: visible;
 	vertical-align: middle;
 	line-height: normal;
 	text-align: left;
@@ -317,15 +320,24 @@
 	outline: 1px dotted #888;
 }
 
-.fancybox-slide--video .fancybox-close-small {
-	top : -36px;
-	right : -36px;
-	background: transparent;
-}
-
 .fancybox-close-small:hover:after {
 	color: #555;
 	background: #eee;
+}
+
+.fancybox-slide--iframe .fancybox-close-small {
+	top : 0;
+	right : -44px;
+}
+
+.fancybox-slide--iframe .fancybox-close-small:after {
+	background: transparent;
+	font-size: 35px;
+	color: #aaa;
+}
+
+.fancybox-slide--iframe .fancybox-close-small:hover:after {
+	color: #fff;
 }
 
 

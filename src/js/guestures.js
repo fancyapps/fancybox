@@ -618,11 +618,12 @@
 			return self.onTap( e );
 		}
 
-		// Speed in px/ms
-		self.velocityX = self.distanceX / dMs * 0.5;
-		self.velocityY = self.distanceY / dMs * 0.5;
-
 		self.speed  = 660;
+
+		// Speed in px/ms
+		self.velocityX = dMs > self.speed ? 0 : self.distanceX / dMs * 0.5;
+		self.velocityY = dMs > self.speed ? 0 : self.distanceY / dMs * 0.5;
+
 		self.speedX = Math.max( self.speed * 0.5, Math.min( self.speed, ( 1 / Math.abs( self.velocityX ) ) * self.speed ) );
 
 		if ( panning ) {

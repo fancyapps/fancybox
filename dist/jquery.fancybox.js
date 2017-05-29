@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.1.16
+// fancyBox v3.1.17
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -220,18 +220,8 @@
         // Module specific options
         // =======================
 
-        slideShow : {
-            autoStart : false,
-            speed     : 4000
-        },
-
         fullScreen : {
             autoStart : false,
-        },
-
-        thumbs : {
-            autoStart   : false,   // Display thumbnails on opening
-            hideOnClose : true     // Hide thumbnail grid when closing animation starts
         },
 
         touch : {
@@ -243,6 +233,28 @@
         // set `false` to disable hash change
         hash : null,
 
+        // Customize or add new media types
+        // Example:
+        /*
+        media : {
+            youtube : {
+                params : {
+                    autoplay : 0
+                }
+            }
+        }
+        */
+        media : {},
+
+        slideShow : {
+            autoStart : false,
+            speed     : 4000
+        },
+
+        thumbs : {
+            autoStart   : false,   // Display thumbnails on opening
+            hideOnClose : true     // Hide thumbnail grid when closing animation starts
+        },
 
         // Callbacks
         //==========
@@ -591,15 +603,14 @@
                     data  = $item.data();
 
                     opts = 'options' in data ? data.options : {};
-
                     opts = $.type( opts ) === 'object' ? opts : {};
 
                     obj.type = 'type' in data ? data.type : opts.type;
                     obj.src  = 'src'  in data ? data.src  : ( opts.src || $item.attr( 'href' ) );
 
-                    opts.width   = 'width'   in data ? data.width   : opts.width;
-                    opts.height  = 'height'  in data ? data.height  : opts.height;
-                    opts.thumb   = 'thumb'   in data ? data.thumb   : opts.thumb;
+                    opts.width  = 'width'  in data ? data.width  : opts.width;
+                    opts.height = 'height' in data ? data.height : opts.height;
+                    opts.thumb  = 'thumb'  in data ? data.thumb  : opts.thumb;
 
                     opts.selector = 'selector'  in data ? data.selector  : opts.selector;
 
@@ -633,14 +644,14 @@
                     obj.opts = $.extend( true, {}, obj.opts, obj.opts.mobile );
                 }
 
-                // Step 2 - Make sure we have supported content type
-                // =================================================
 
-                type = obj.type;
+                // Step 2 - Make sure we have content type, if not - try to guess
+                // ==============================================================
+
+                type = obj.type || obj.opts.type;
                 src  = obj.src || '';
 
-                if ( src && !type ) {
-
+                if ( !type && src ) {
                     if ( src.match(/(^data:image\/[a-z0-9+\/=]*,)|(\.(jp(e|g|eg)|gif|png|bmp|webp|svg|ico)((\?|#).*)?$)/i) ) {
                         type = 'image';
 
@@ -649,15 +660,11 @@
 
                     } else if ( src.charAt(0) === '#' ) {
                         type = 'inline';
-
-                    } else {
-
-                        // If no content type is found, then set it to `image` as fallback
-        				item.type = 'image';
                     }
-
-                    obj.type = type;
                 }
+
+                obj.type = type;
+
 
                 // Step 3 - Some adjustments
                 // =========================
@@ -715,9 +722,6 @@
                 // If the type is "pdf", then simply load file into iframe
                 if ( type === 'pdf' ) {
                     obj.type = 'iframe';
-
-                    obj.opts.toolbar  = true;
-                    obj.opts.smallBtn = false;
 
                     obj.opts.iframe.preload = false;
                 }
@@ -1020,7 +1024,6 @@
             current.inTransition = ( !firstRun && current && current.leftValue === undefined );
 
             if ( firstRun ) {
-
                 if ( current.opts.animationEffect && duration ) {
                     self.$refs.container.css( 'transition-duration', duration + 'ms' );
                 }
@@ -1038,16 +1041,16 @@
                 return;
             }
 
-            previous.isComplete = false;
-
             previous.$slide.off( transitionEnd ).removeClass( 'fancybox-slide--complete fancybox-slide--current fancybox-slide--next fancybox-slide--previous fancybox-animated' );
+
+            previous.isComplete = false;
 
             if ( current.inTransition ) {
 
-                self.$refs.stage.css( 'transition-duration', duration + 'ms' );
+                // Clean up, in case slides are animated after dragging
+                self.$refs.stage.children().removeAttr( 'style' );
 
-                // Clean up, in case it is currently in animation
-                self.$refs.container.find( '.fancybox-slide' ).removeAttr( 'style' );
+                self.$refs.stage.css( 'transition-duration', duration + 'ms' );
 
                 // Start transition
                 if ( previous.opts.transitionEffect && duration ) {
@@ -1056,6 +1059,7 @@
 
                 current.isRevealed = false;
 
+
                 if ( current.isLoaded ) {
 
                     // This should start transition that reveals content
@@ -1063,15 +1067,12 @@
 
                 } else {
 
-                    // Make current slide visible even if content is still loading,
+                    // Make current that slide is visible even if content is still loading,
                     // in that case slide will appear without any transition and loading icon will be displayed
-                    current.$slide.addClass( 'fancybox-slide--' + ( previous.pos < current.pos ? 'next' : 'previous' ) );
+                    current.$slide.addClass( 'fancybox-slide--current' );
 
                     self.loadSlide( self.current );
-
                 }
-
-                current.$slide.addClass( 'fancybox-slide--current' );
 
             } else {
 
@@ -1125,33 +1126,11 @@
             var self = this;
             var $slide;
             var index;
-            var found;
 
             index = pos % self.group.length;
             index = index < 0 ? self.group.length + index : index;
 
             if ( !self.slides[ pos ] && self.group[ index ] ) {
-
-                // If we are looping and slide with that index already exists, then reuse it
-                if ( self.opts.loop && self.group.length > 2 ) {
-                    for (var key in self.slides) {
-                        if ( self.slides[ key ].index === index ) {
-                            found = self.slides[ key ];
-
-                            found.pos = pos;
-                            found.leftValue = undefined;
-
-                            self.slides[ pos ] = found;
-
-                            delete self.slides[ key ];
-
-                            self.updateSlide( found );
-
-                            return found;
-                        }
-                    }
-                }
-
                 $slide = $('<div class="fancybox-slide"></div>').appendTo( self.$refs.stage );
 
                 self.slides[ pos ] = $.extend( true, {}, self.group[ index ], {
@@ -1568,9 +1547,7 @@
                     self.showLoading( slide );
 
                     ajaxLoad = $.ajax( $.extend( {}, slide.opts.ajax.settings, {
-
                         url : slide.src,
-
                         success : function ( data, textStatus ) {
 
                             if ( textStatus === 'success' ) {
@@ -1578,7 +1555,6 @@
                             }
 
                         },
-
                         error : function ( jqXHR, textStatus ) {
 
                             if ( jqXHR && textStatus !== 'abort' ) {
@@ -1586,7 +1562,6 @@
                             }
 
                         }
-
                     }));
 
                     $slide.one( 'onReset', function () {
@@ -1877,7 +1852,7 @@
 
             $iframe.attr( 'src', slide.src );
 
-            if ( slide.opts.smallBtn ) {
+            if ( slide.opts.smallBtn === true ) {
                 slide.$content.prepend( self.translate( slide, slide.opts.btnTpl.smallBtn ) );
             }
 
@@ -1931,7 +1906,7 @@
                 // Make sure content is visible
                 content.css('display', 'inline-block');
 
-            } else {
+            } else if ( !slide.hasError ) {
 
                 // If content is just a plain text, try to convert it to html
                 if ( $.type( content ) === 'string' ) {
@@ -2151,10 +2126,12 @@
                 return;
             }
 
+slide.$slide.off( transitionEnd );
+            if ( !slide.$slide.hasClass( 'fancybox-animated' ) ) {
+                slide.$slide.off( transitionEnd ).removeClass( 'fancybox-slide--complete fancybox-slide--current fancybox-slide--next fancybox-slide--previous fancybox-animated' );
 
-            slide.$slide.removeClass( 'fancybox-slide--next fancybox-slide--previous fancybox-slide--current' );
-
-            forceRedraw( slide.$slide );
+                forceRedraw( slide.$slide );
+            }
 
             self.$refs.stage.css( 'transition-duration', duration + 'ms');
 
@@ -2255,7 +2232,7 @@
             // Remove unnecessary slides
             $.each( self.slides, function( key, slide ) {
 
-                if (  slide.pos >= self.currPos - 1 && slide.pos <= self.currPos + 1 ) {
+                if ( slide.pos >= self.currPos - 1 && slide.pos <= self.currPos + 1 ) {
                     slides[ slide.pos ] = slide;
 
                 } else if ( slide ) {
@@ -2652,7 +2629,7 @@
 
     $.fancybox = {
 
-        version  : "3.1.16",
+        version  : "3.1.17",
         defaults : defaults,
 
 
@@ -3006,7 +2983,8 @@
 
             $el.off( event ).on( event, function(e) {
 
-                if ( e && e.originalEvent && !$el.is( e.originalEvent.target ) ) {
+                // Skip events from child elements and z-index change
+                if ( e && e.originalEvent && ( !$el.is( e.originalEvent.target ) || e.originalEvent.propertyName == 'z-index' ) ) {
                     return;
                 }
 
@@ -3136,7 +3114,7 @@
 
 	// Object containing properties for each media type
 
-	var media = {
+	var defaults = {
 		youtube : {
 			matcher : /(youtube\.com|youtu\.be|youtube\-nocookie\.com)\/(watch\?(.*&)?v=|v\/|u\/|embed\/?)?(videoseries\?list=(.*)|[\w-]{11}|\?listType=(.*)&list=(.*))(.*)/i,
 			params  : {
@@ -3218,6 +3196,7 @@
 
 			var url	 = item.src || '',
 				type = false,
+				media,
 				thumb,
 				rez,
 				params,
@@ -3230,8 +3209,9 @@
 				return;
 			}
 
-			// Look for any matching media type
+			media = $.extend( true, {}, defaults, item.opts.media );
 
+			// Look for any matching media type
 			$.each(media, function ( n, el ) {
 				rez = url.match(el.matcher);
 				o   = {};
@@ -3279,7 +3259,7 @@
 				item.src  = url;
 				item.type = type;
 
-				if ( !item.opts.thumb && !(item.opts.$thumb && item.opts.$thumb.length ) ) {
+				if ( !item.opts.thumb && !( item.opts.$thumb && item.opts.$thumb.length ) ) {
 					item.opts.thumb = thumb;
 				}
 
@@ -3290,10 +3270,7 @@
 							attr : {
 								scrolling : "no"
 							}
-						},
-						smallBtn   : false,
-						closeBtn   : true,
-						slideShow  : false
+						}
 					});
 
 					item.contentProvider = provider;
@@ -3301,6 +3278,10 @@
 					item.opts.slideClass += ' fancybox-slide--' + ( provider == 'google_maps' ? 'map' : 'video' );
 				}
 
+			} else {
+
+				// If no content type is found, then set it to `image` as fallback
+				item.type = 'image';
 			}
 
 		});
@@ -3929,11 +3910,12 @@
 			return self.onTap( e );
 		}
 
-		// Speed in px/ms
-		self.velocityX = self.distanceX / dMs * 0.5;
-		self.velocityY = self.distanceY / dMs * 0.5;
-
 		self.speed  = 660;
+
+		// Speed in px/ms
+		self.velocityX = dMs > self.speed ? 0 : self.distanceX / dMs * 0.5;
+		self.velocityY = dMs > self.speed ? 0 : self.distanceY / dMs * 0.5;
+
 		self.speedX = Math.max( self.speed * 0.5, Math.min( self.speed, ( 1 / Math.abs( self.velocityX ) ) * self.speed ) );
 
 		if ( panning ) {
