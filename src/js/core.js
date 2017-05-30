@@ -1049,7 +1049,7 @@
 
                 current.isRevealed = false;
 
-
+                // Check if content is already preloaded
                 if ( current.isLoaded ) {
 
                     // This should start transition that reveals content
@@ -2084,6 +2084,9 @@
                 effect = 'fade';
             }
 
+            // Zoom animation
+            // ==============
+
             if ( effect === 'zoom' ) {
                 end = self.getFitPos( slide );
 
@@ -2116,7 +2119,10 @@
                 return;
             }
 
-slide.$slide.off( transitionEnd );
+            // Transition effect
+            // =================
+
+            // Set initial state if slide is not already animating
             if ( !slide.$slide.hasClass( 'fancybox-animated' ) ) {
                 slide.$slide.off( transitionEnd ).removeClass( 'fancybox-slide--complete fancybox-slide--current fancybox-slide--next fancybox-slide--previous fancybox-animated' );
 
@@ -2542,12 +2548,7 @@ slide.$slide.off( transitionEnd );
 
             // Recalculate content dimensions
             current.$slide.trigger( 'refresh' );
-
-            // Reveal or create new caption
-            if ( $caption ) {
-                $caption.empty();
-            }
-
+            
             self.$caption = caption && caption.length ? $caption.html( caption ) : null;
 
             if ( !self.isHiddenControls ) {
