@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.1.18
+// fancyBox v3.1.19
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -954,8 +954,8 @@
         },
 
 
-        // Display selected gallery item
-        // =============================
+        // Switch to selected gallery item
+        // ===============================
 
         jumpTo : function ( pos, duration ) {
             var self = this,
@@ -1308,9 +1308,9 @@
 
         },
 
-        // Move slider to current position
-        // Update all slides (and their content)
-        // =====================================
+
+        // Update position and content of all slides
+        // =========================================
 
         update : function() {
 
@@ -1776,7 +1776,7 @@
                 $slide	= slide.$slide,
                 $iframe;
 
-            slide.$content = $('<div class="fancybox-iframe-wrap' + ( opts.preload ? ' fancybox-is-hidden' : '' ) + '"></div>')
+            slide.$content = $('<div class="fancybox-content' + ( opts.preload ? ' fancybox-is-hidden' : '' ) + '"></div>')
                 .css( opts.css )
                 .appendTo( $slide );
 
@@ -1987,8 +1987,8 @@
 
         },
 
-        // Remove loading icon from slide
-        // ==============================
+        // Remove loading icon from the slide
+        // ==================================
 
         hideLoading : function( slide ) {
 
@@ -2025,7 +2025,7 @@
 
             self.updateSlide( slide );
 
-            if ( slide.opts.protect && slide.$content ) {
+            if ( slide.opts.protect && slide.$content && !slide.hasError ) {
 
                 // Disable right click
                 slide.$content.on( 'contextmenu.fb', function( e ) {
@@ -2058,7 +2058,7 @@
 
             var self = this;
 
-            var opacity, start, end, effect, duration;
+            var opacity, effect, duration, end, start = false;
 
             if ( slide.isRevealed || !slide.isLoaded ) {
                 return;
@@ -2173,27 +2173,40 @@
             var self = this;
             var rez  = false;
 
+            // Check if element is inside the viewport by at least 1 pixel
+            var isElementVisible = function( $el ) {
+                var element = $el[0];
+
+                var elementRect = element.getBoundingClientRect();
+                var parentRects = [];
+
+                var visibleInAllParents;
+
+                while ( element.parentElement != null ) {
+                    if ( $(element.parentElement).css('overflow') === 'hidden'  || $(element.parentElement).css('overflow') === 'auto' ) {
+                        parentRects.push(element.parentElement.getBoundingClientRect());
+                    }
+
+                    element = element.parentElement;
+                }
+
+                visibleInAllParents = parentRects.every(function(parentRect){
+                    var visiblePixelX = Math.min(elementRect.right, parentRect.right) - Math.max(elementRect.left, parentRect.left);
+                    var visiblePixelY = Math.min(elementRect.bottom, parentRect.bottom) - Math.max(elementRect.top, parentRect.top);
+
+                    return visiblePixelX > 0 && visiblePixelY > 0;
+                });
+
+                return visibleInAllParents &&
+                    elementRect.bottom > 0 && elementRect.right > 0 &&
+                    elementRect.left < $(window).width() && elementRect.top < $(window).height();
+            };
+
             var $thumb   = slide.opts.$thumb;
             var thumbPos = $thumb ? $thumb.offset() : 0;
             var slidePos;
 
-            // Check if element is inside the viewport by at least 1 pixel
-            var isElementInViewport = function( el ) {
-                var rect;
-
-                if ( typeof $ === "function" && el instanceof $ ) {
-                    el = el[0];
-                }
-
-                rect = el.getBoundingClientRect();
-
-                return rect.bottom > 0 && rect.right > 0 &&
-                        rect.left < (window.innerWidth || document.documentElement.clientWidth)  &&
-                        rect.top < (window.innerHeight || document.documentElement.clientHeight);
-            };
-
-            if ( thumbPos && isElementInViewport( $thumb ) ) {
-
+            if ( thumbPos && $thumb[0].ownerDocument === document && isElementVisible( $thumb ) ) {
                 slidePos = self.$refs.stage.offset();
 
                 rez = {
@@ -2204,7 +2217,6 @@
                     scaleX : 1,
                     scaleY : 1
                 };
-
             }
 
             return rez;
@@ -2257,7 +2269,7 @@
             self.trigger( 'afterShow' );
 
             // Try to focus on the first focusable element
-            if ( current.opts.autoFocus ) {
+            if ( current.opts.autoFocus && !( current.type == 'image' || current.type === 'iframe' ) ) {
                 self.focus();
             }
 
@@ -2301,15 +2313,8 @@
             }
 
             // Skip for images and iframes
-            if ( current && !( current.type == 'image' || current.type === 'iframe' ) ) {
-                $el = current && current.isComplete ? current.$slide.find('button,:input,[tabindex],a').filter(':not([disabled]):visible:first') : null;
-            }
-
-            $el = $el && $el.length ? $el : this.$refs.container || null;
-
-            if ( !$el ) {
-                return;
-            }
+            $el = current && current.isComplete ? current.$slide.find('button,:input,[tabindex],a').filter(':not([disabled]):visible:first') : null;
+            $el = $el && $el.length ? $el : this.$refs.container;
 
             $el.focus();
         },
@@ -2556,16 +2561,27 @@
             var caption  = opts.caption;
             var $caption = self.$refs.caption;
 
+            // Check for redundant elements
+            if ( !current.opts.infobar && self.$refs.infobar ) {
+                self.$refs.infobar.remove();
+                self.$refs.infobar = null;
+            }
+
+            if ( !current.opts.toolbar && self.$refs.toolbar ) {
+                self.$refs.toolbar.remove();
+                self.$refs.toolbar = null;
+            }
+
             // Recalculate content dimensions
             current.$slide.trigger( 'refresh' );
-            
+
             self.$caption = caption && caption.length ? $caption.html( caption ) : null;
 
             if ( !self.isHiddenControls ) {
                 self.showControls();
             }
 
-            // Update infobar and navigation elements
+            // Update info and navigation elements
             $('[data-fancybox-count]').html( self.group.length );
             $('[data-fancybox-index]').html( index + 1 );
 
@@ -2630,7 +2646,7 @@
 
     $.fancybox = {
 
-        version  : "3.1.18",
+        version  : "3.1.19",
         defaults : defaults,
 
 
