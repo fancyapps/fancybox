@@ -442,14 +442,14 @@ npm install @fancyapps/fancybox --save
 &lt;/a&gt;</pre>
 
 			<p>
-				If you choose this method, default settings settings will be applied.
-				See <a href="#options">Options</a> section for examples how to customize by changing defaults.
+				If you choose this method, default settings will be applied.
+				See <a href="#options">Options</a> section for examples how to customize by changing defaults or using <code>data-options</code> attribute.
 			</p>
 
 			<h3>Initialize with JavaScript</h3>
 
 			<p>
-				To pass custom options, select elements with a jQuery selector and call the <code>fancybox</code> method:
+				Select elements with a jQuery selector and call the <code>fancybox</code> method:
 			</p>
 
 			<pre><code>&lt;script type=&quot;text/javascript&quot;&gt;
@@ -458,6 +458,21 @@ npm install @fancyapps/fancybox --save
 	});
 &lt;/script&gt;</code></pre>
 
+
+			<p>
+				Using this method, click event handler is attached only to the currently selected elements.
+				<br />
+				To attach click event listener for elements that exist now or in the future, use <code>selector</code> option. Example:
+			</p>
+
+			<pre><code>$().fancybox({
+  selector : '[data-fancybox="images"]',
+  loop     : true
+});</code></pre>
+
+			<p class="demo">
+				<a href="https://codepen.io/fancyapps/pen/gWvorB?editors=1010" target="_blank">View demo on CodePen</a>
+			</p>
 
 			<h3>Manual calling of fancyBox</h3>
 
@@ -612,10 +627,10 @@ npm install @fancyapps/fancybox --save
 			</p>
 
 			<p>
-				Additionally it is possible to define a selector with the <code>data-selector</code> attribute to show only a part of the response. The selector can be any string, that is a valid jQuery selector:
+				Additionally it is possible to define a selector with the <code>data-filter</code> attribute to show only a part of the response. The selector can be any string, that is a valid jQuery selector:
 			</p>
 
-			<pre><code>&lt;a data-fancybox data-type=&quot;ajax&quot; data-src=&quot;my_page.com/path/to/ajax/&quot; data-selector=&quot;#two&quot; href=&quot;javascript:;&quot;&gt;
+			<pre><code>&lt;a data-fancybox data-type=&quot;ajax&quot; data-src=&quot;my_page.com/path/to/ajax/&quot; data-filter=&quot;#two&quot; href=&quot;javascript:;&quot;&gt;
 	AJAX content
 &lt;/a&gt;
 </code></pre>
@@ -1620,7 +1635,7 @@ FAQ
 				<h3>How to create custom button in the toolbar</h3>
 
 				<p>
-					Example of creating reusable button and changing "href" property dynamically
+					Example of creating reusable button and changing <code>href</code> property dynamically
 				</p>
 
 				<pre><code>// Create template for download button
