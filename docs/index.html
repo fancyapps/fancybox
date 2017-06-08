@@ -813,6 +813,9 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 	// Space around image, ignored if zoomed-in or viewport smaller than 800px
 	margin : [44, 0],
 
+	// Horizontal space between slides
+	gutter : 50,
+
 	// Enable keyboard navigation
 	keyboard : true,
 
@@ -903,7 +906,7 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 	animationEffect : &quot;zoom&quot;,
 
 	// Duration in ms for open/close animation
-	animationDuration : 330,
+	animationDuration : 366,
 
 	// Should image change opacity while zooming
 	// If opacity is 'auto', then opacity will be changed if image and thumbnail have different aspect ratios
@@ -923,7 +926,7 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 	transitionEffect : &quot;fade&quot;,
 
 	// Duration in ms for transition animation
-	transitionDuration : 330,
+	transitionDuration : 366,
 
 	// Custom CSS class for slide element
 	slideClass : '',
@@ -1035,11 +1038,12 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 
 	// See Documentation/API/Events for more information
 	// Example:
-	//
-	// afterShow: function( instance, current ) {
-	//      console.info( 'Clicked element:' );
-	//      console.info( current.opts.$orig );
-	// }
+	/*
+		afterShow: function( instance, current ) {
+			 console.info( 'Clicked element:' );
+			 console.info( current.opts.$orig );
+		}
+	*/
 
 	onInit       : $.noop,  // When instance has been initialized
 
@@ -1094,11 +1098,14 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 		clickContent : function( current, event ) {
 			return current.type === 'image' ? 'toggleControls' : false;
 		},
+		clickSlide : function( current, event ) {
+			return current.type === 'image' ? 'toggleControls' : &quot;close&quot;;
+		},
 		dblclickContent : function( current, event ) {
 			return current.type === 'image' ? 'zoom' : false;
 		},
 		dblclickSlide : function( current, event ) {
-			return current.type === 'image' ? 'toggleControls' : 'close';
+			return current.type === 'image' ? 'zoom' : false;
 		}
 	},
 
@@ -1283,7 +1290,7 @@ $links.on('click', function() {
 				<h3 id="instance_methods">Instance methods</h3>
 
 				<p>
-					In order to use these methods, you need an instance of the plugin's object:
+					In order to use these methods, you need an instance of the plugin's object.
 				</p>
 
 				<pre><code>var instance = $.fancybox.open(
@@ -1297,7 +1304,7 @@ $links.on('click', function() {
 				<pre><code>var instance = $.fancybox.getInstance();</code></pre>
 
 				<p>
-					Or within callback
+					The first argument of the callback is reference to instance:
 				</p>
 
 				<pre><code>$("[data-fancybox]").fancybox({
@@ -1311,52 +1318,52 @@ $links.on('click', function() {
 
 
 				<pre><code>// Go to next gallery item
-$instance.next( duration );
+instance.next( duration );
 
 // Go to previous gallery item
-$instance.previous( duration );
+instance.previous( duration );
 
 // Switch to selected gallery item
-$instance.jumpTo( index, duration );
+instance.jumpTo( index, duration );
 
 // Check if current image dimensions are smaller than actual
-$instance.isScaledDown();
+instance.isScaledDown();
 
 // Scale image to the actual size of the image
-$instance.scaleToActual( x, y, duration );
+instance.scaleToActual( x, y, duration );
 
 // Check if image dimensions exceed parent element
-$instance.canPan();
+instance.canPan();
 
 // Scale image to fit inside parent element
-$instance.scaleToFit( duration );
+instance.scaleToFit( duration );
 
 // Update position and content of all slides
-$instance.update();
+instance.update();
 
 // Update slide position and scale content to fit
-$instance.updateSlide( slide );
+instance.updateSlide( slide );
 
 // Update infobar values, navigation button states and reveal caption
-$instance.updateControls( force );
+instance.updateControls( force );
 
 // Load custom content into the slide
-$instance.setContent( slide, content );
+instance.setContent( slide, content );
 
 // Show loading icon inside the slide
-$instance.showLoading( slide );
+instance.showLoading( slide );
 
 // Remove loading icon from the slide
-$instance.hideLoading( slide );
+instance.hideLoading( slide );
 
 // Try to find and focus on the first focusable element
-$instance.focus();
+instance.focus();
 
 // Activates current instance, brings it to the front
-$instance.activate();
+instance.activate();
 
 // Close instance
-$instance.close();
+instance.close();
 </code></pre>
 
 
@@ -1441,7 +1448,7 @@ onDeactivate : When other instance has been activated</code></pre>
 
 
 				<p>
-					If you wish to prevent closing of the modal, for example, if form is not validating, you can use <code>beforeClose</code>
+					If you wish to prevent closing of the modal (for example, after form submit), you can use <code>beforeClose</code>
 					callback. Simply return <code>false</code>:
 				</p>
 

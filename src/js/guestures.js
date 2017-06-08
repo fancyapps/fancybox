@@ -136,6 +136,13 @@
 		var current  = instance.current;
 		var $content = current.$content;
 
+		var isTouchDevice = ( e.type == 'touchstart' );
+
+		// Do not respond to both events
+		if ( isTouchDevice ) {
+	        self.$container.off( 'mousedown.fb.touch' );
+	    }
+
 		// Ignore clicks while zooming or closing
 		if ( !current || self.instance.isAnimating || self.instance.isClosing ) {
 			e.stopPropagation();
@@ -150,7 +157,7 @@
 		}
 
 		// Ignore taping on links, buttons, input elements
-		if ( isClickable( $target ) || isClickable( $target.parent() ) ) {
+		if ( !$target.length || isClickable( $target ) || isClickable( $target.parent() ) ) {
 			return;
 		}
 
@@ -162,7 +169,7 @@
 		self.startPoints = pointers( e );
 
 		// Prevent zooming if already swiping
-		if ( !self.startPoints || ( self.startPoints.length > 1 && current.leftValue ) ) {
+		if ( !self.startPoints || ( self.startPoints.length > 1 && instance.isSliding ) ) {
 			return;
 		}
 
@@ -172,12 +179,12 @@
 
 		$(document).off( '.fb.touch' );
 
-		$(document).on('touchend.fb.touch touchcancel.fb.touch mouseup.fb.touch mouseleave.fb.touch',  $.proxy(self, "ontouchend"));
-		$(document).on('touchmove.fb.touch mousemove.fb.touch',  $.proxy(self, "ontouchmove"));
+		$(document).on( isTouchDevice ? 'touchend.fb.touch touchcancel.fb.touch' : 'mouseup.fb.touch mouseleave.fb.touch',  $.proxy(self, "ontouchend"));
+		$(document).on( isTouchDevice ? 'touchmove.fb.touch' : 'mousemove.fb.touch',  $.proxy(self, "ontouchmove"));
 
 		e.stopPropagation();
 
-		if ( !(self.instance.current.opts.touch || self.instance.canPan() ) || !( $target.is( self.$stage ) || self.$stage.find( $target ).length ) ) {
+		if ( !(instance.current.opts.touch || instance.canPan() ) || !( $target.is( self.$stage ) || self.$stage.find( $target ).length ) ) {
 
 			// Prevent ghosting
 			if ( $target.is('img') ) {
@@ -206,11 +213,13 @@
 		self.contentLastPos  = null;
 
 		if ( self.startPoints.length === 1 && !self.isZooming ) {
-			self.canTap = current.leftValue === undefined;
+			self.canTap = !instance.isSliding;
 
 			if ( current.type === 'image' && ( self.contentStartPos.width > self.canvasWidth + 1 || self.contentStartPos.height > self.canvasHeight + 1 ) ) {
 
 				$.fancybox.stop( self.$content );
+
+				self.$content.css( 'transition-duration', '0ms' );
 
 				self.isPanning = true;
 
@@ -222,14 +231,15 @@
 			self.$container.addClass('fancybox-controls--isGrabbing');
 		}
 
-		if ( self.startPoints.length === 2 && !current.leftValue  && !current.hasError && current.type === 'image' && ( current.isLoaded || current.$ghost ) ) {
-
+		if ( self.startPoints.length === 2 && !instance.isAnimating && !current.hasError && current.type === 'image' && ( current.isLoaded || current.$ghost ) ) {
 			self.isZooming = true;
 
 			self.isSwiping = false;
 			self.isPanning = false;
 
 			$.fancybox.stop( self.$content );
+
+			self.$content.css( 'transition-duration', '0ms' );
 
 			self.centerPointStartX = ( ( self.startPoints[0].x + self.startPoints[1].x ) * 0.5 ) - $(window).scrollLeft();
 			self.centerPointStartY = ( ( self.startPoints[0].y + self.startPoints[1].y ) * 0.5 ) - $(window).scrollTop();
@@ -246,14 +256,6 @@
 
 		var self = this;
 
-		// Try to detect if user released mouse, but it was not detected
-		// (for example, over an iframe)
-		if ( e.type === 'mousemove' && !e.originalEvent.buttons ) {
-			self.ontouchend( e );
-
-			return;
-		}
-
 		self.newPoints = pointers( e );
 
 		if ( $.fancybox.isMobile && ( isScrollable( self.$target ) || isScrollable( self.$target.parent() ) ) ) {
@@ -265,7 +267,7 @@
 		}
 
 		if ( !( self.instance.current.opts.touch || self.instance.canPan() ) || !self.newPoints || !self.newPoints.length ) {
-			return false;
+			return;
 		}
 
 		self.distanceX = distance( self.newPoints[0], self.startPoints[0], 'x' );
@@ -277,7 +279,7 @@
 		if ( self.distance > 0 ) {
 
 			if ( !( self.$target.is( self.$stage ) || self.$stage.find( self.$target ).length ) ) {
-				return false;
+				return;
 			}
 
 			e.stopPropagation();
@@ -314,7 +316,7 @@
 				if ( self.instance.group.length < 2 && self.instance.opts.touch.vertical ) {
 					self.isSwiping  = 'y';
 
-				} else if ( self.instance.current.leftValue || self.instance.opts.touch.vertical === false || ( self.instance.opts.touch.vertical === 'auto' && $( window ).width() > 800 ) ) {
+				} else if ( self.instance.isSliding || self.instance.opts.touch.vertical === false || ( self.instance.opts.touch.vertical === 'auto' && $( window ).width() > 800 ) ) {
 					self.isSwiping  = 'x';
 
 				} else {
@@ -323,27 +325,24 @@
 					self.isSwiping = ( angle > 45 && angle < 135 ) ? 'y' : 'x';
 				}
 
-
-				self.$stage.css( 'transition-duration', '0ms' );
-
 				self.instance.isSliding = self.isSwiping;
 
 				// Reset points to avoid jumping, because we dropped first swipes to calculate the angle
-
 				self.startPoints = self.newPoints;
 
 				$.each(self.instance.slides, function( index, slide ) {
 					$.fancybox.stop( slide.$slide );
 
+					slide.$slide.css( 'transition-duration', '0ms' );
+
 					slide.inTransition = false;
-					slide.leftValue = $.fancybox.getTranslate( slide.$slide ).left;
 
 					if ( slide.pos === self.instance.current.pos ) {
-						self.sliderStartPos.left = slide.leftValue;
+						self.sliderStartPos.left = $.fancybox.getTranslate( slide.$slide ).left;
 					}
 				});
 
-				self.instance.isAnimating = false;
+				//self.instance.current.isMoved = true;
 
 				// Stop slideshow
 				if ( self.instance.SlideShow && self.instance.SlideShow.isActive ) {
@@ -373,16 +372,6 @@
 				left : left
 			};
 
-			self.$stage.children().removeClass( 'fancybox-animated fancybox-slide--next fancybox-slide--previous' );
-
-			$.each(self.instance.slides, function( index, slide ) {
-
-				var pos = slide.pos - self.instance.currPos;
-
-				slide.leftValue = self.sliderLastPos.left + ( pos * self.canvasWidth );
-
-			});
-
 			if ( self.requestId ) {
 				cancelAFrame( self.requestId );
 
@@ -392,14 +381,13 @@
 			self.requestId = requestAFrame(function() {
 
 				if ( self.sliderLastPos ) {
-
 					$.each(self.instance.slides, function( index, slide ) {
+						var pos = slide.pos - self.instance.currPos;
 
 						$.fancybox.setTranslate( slide.$slide, {
 							top  : self.sliderLastPos.top,
-							left : slide.leftValue
+							left : self.sliderLastPos.left + ( pos * self.canvasWidth ) + ( pos * slide.opts.gutter )
 						});
-
 					});
 
 					self.$container.addClass( 'fancybox-is-sliding' );
@@ -435,7 +423,13 @@
 
 		self.contentLastPos = newPos;
 
-		requestAFrame(function() {
+		if ( self.requestId ) {
+			cancelAFrame( self.requestId );
+
+			self.requestId = null;
+		}
+
+		self.requestId = requestAFrame(function() {
 			$.fancybox.setTranslate( self.$content, self.contentLastPos );
 		});
 	};
@@ -589,7 +583,13 @@
 
 		self.contentLastPos = newPos;
 
-		requestAFrame(function() {
+		if ( self.requestId ) {
+			cancelAFrame( self.requestId );
+
+			self.requestId = null;
+		}
+
+		self.requestId = requestAFrame(function() {
 			$.fancybox.setTranslate( self.$content, self.contentLastPos );
 		});
 
@@ -610,6 +610,12 @@
 
 		$(document).off( '.fb.touch' );
 
+		if ( self.requestId ) {
+			cancelAFrame( self.requestId );
+
+			self.requestId = null;
+		}
+
 		self.isSwiping = false;
 		self.isPanning = false;
 		self.isZooming = false;
@@ -618,13 +624,13 @@
 			return self.onTap( e );
 		}
 
-		self.speed  = 660;
+		self.speed = 366;
 
 		// Speed in px/ms
-		self.velocityX = dMs > self.speed ? 0 : self.distanceX / dMs * 0.5;
-		self.velocityY = dMs > self.speed ? 0 : self.distanceY / dMs * 0.5;
+		self.velocityX = self.distanceX / dMs * 0.5;
+		self.velocityY = self.distanceY / dMs * 0.5;
 
-		self.speedX = Math.max( self.speed * 0.5, Math.min( self.speed, ( 1 / Math.abs( self.velocityX ) ) * self.speed ) );
+		self.speedX = Math.max( self.speed * 0.5, Math.min( self.speed * 1.5, ( 1 / Math.abs( self.velocityX ) ) * self.speed ) );
 
 		if ( panning ) {
 			self.endPanning();
@@ -644,8 +650,6 @@
 		var self = this;
 		var ret = false;
 
-		self.$container.removeClass( 'fancybox-is-sliding' );
-
 		self.instance.isSliding = false;
 		self.sliderLastPos      = null;
 
@@ -654,9 +658,6 @@
 
 			// Continue vertical movement
 			$.fancybox.animate( self.instance.current.$slide, {
-				top     : self.sliderStartPos.top + self.distanceY,
-				opacity : 1
-			}, {
 				top     : self.sliderStartPos.top + self.distanceY + ( self.velocityY * 150 ),
 				opacity : 0
 			}, 150 );
@@ -673,6 +674,8 @@
 		if ( ret === false && ( swiping == 'x' || swiping == 'y' ) ) {
 			self.instance.jumpTo( self.instance.current.index, 150 );
 		}
+
+		self.$container.removeClass( 'fancybox-is-sliding' );
 
 	};
 
@@ -695,8 +698,8 @@
 		} else {
 
 			// Continue movement
-			newOffsetX = self.contentLastPos.left + ( self.velocityX * self.speed * 2 );
-			newOffsetY = self.contentLastPos.top  + ( self.velocityY * self.speed * 2 );
+			newOffsetX = self.contentLastPos.left + ( self.velocityX * self.speed );
+			newOffsetY = self.contentLastPos.top  + ( self.velocityY * self.speed );
 		}
 
 		newPos = self.limitPosition( newOffsetX, newOffsetY, self.contentStartPos.width, self.contentStartPos.height );
@@ -704,7 +707,7 @@
 		 newPos.width  = self.contentStartPos.width;
 		 newPos.height = self.contentStartPos.height;
 
-		$.fancybox.animate( self.$content, null, newPos, 330, "easeOutSine" );
+		$.fancybox.animate( self.$content, newPos, 330 );
 	};
 
 
@@ -748,8 +751,10 @@
 
 			newPos = self.limitPosition( newOffsetX, newOffsetY, newWidth, newHeight );
 
-			$.fancybox.animate( self.$content, null, newPos, self.speed, "easeOutSine" );
+			// Switch from scale() to width/height or animation will not work correctly
+			$.fancybox.setTranslate( self.content, $.fancybox.getTranslate( self.$content ) );
 
+			$.fancybox.animate( self.$content, newPos, 150 );
 		}
 
 	};
@@ -837,7 +842,7 @@
 		}
 
 		// Skip if current slide is not in the center
-		if ( current.leftValue ) {
+		if ( instance.isSliding ) {
 			return;
 		}
 
@@ -868,7 +873,7 @@
 			self.tapped = null;
 
 			// Skip if distance between taps is too big
-			if ( Math.abs( tapX - self.tapX ) > 50 || Math.abs( tapY - self.tapY ) > 50 || current.leftValue ) {
+			if ( Math.abs( tapX - self.tapX ) > 50 || Math.abs( tapY - self.tapY ) > 50 || instance.isSliding ) {
 				return this;
 			}
 
