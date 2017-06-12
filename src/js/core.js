@@ -23,6 +23,9 @@
 
     var defaults = {
 
+        // Store target
+        target: false,
+        
         // Enable infinite gallery navigation
         loop : false,
 
@@ -2218,7 +2221,7 @@
         // ==================================================================
 
         complete : function() {
-
+            
             var self = this;
 
             var current = self.current;
@@ -2227,7 +2230,10 @@
             if ( current.isMoved || !current.isLoaded || current.isComplete ) {
                 return;
             }
-
+            
+            // Remove old target
+            $.fancybox.defaults.target = false;
+            
             current.isComplete = true;
 
             current.$slide.siblings().trigger( 'onReset' );
@@ -2464,7 +2470,10 @@
         cleanUp : function( e ) {
             var self = this,
                 instance;
-
+            
+            // Remove old target
+            $.fancybox.defaults.target = false;
+            
             self.current.$slide.trigger( 'onReset' );
 
             self.$refs.container.empty().remove();
@@ -2917,8 +2926,13 @@
         } else {
             items = [ target ];
         }
-
-        $.fancybox.open( items, opts, index );
+        
+        // Check for previous clicked targets
+        if ($.fancybox.defaults.target !== target) {
+            $.fancybox.defaults.target = target;
+            $.fancybox.open(items, opts, index);
+        }
+        
     }
 
 
