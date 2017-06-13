@@ -696,10 +696,26 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 
 
 			<p>
-				If you have not disabled iframe preloading (using an "preload" option), then the script will atempt to
+				If you have not disabled iframe preloading (using <code>preload</code> option), then the script will atempt to
 				calculate content dimensions and will adjust width/height of iframe to fit with content in it.
 				Keep in mind, that due to <a href="https://en.wikipedia.org/wiki/Same-origin_policy" target="_blank">same origin policy</a>,
 				there are some limitations.
+			</p>
+
+			<p>
+				This example will disable iframe preloading and will display small close button next to iframe instead of the toolbar:
+			</p>
+
+			<pre><code>$('[data-fancybox]').fancybox({
+	toolbar  : false,
+	smallBtn : true,
+	iframe : {
+		preload : false
+	}
+})
+</code></pre>
+			<p class="demo">
+				<a href="https://codepen.io/fancyapps/pen/eRzwye?editors=1010" target="_blank">View demo on CodePen</a>
 			</p>
 
 
@@ -1545,7 +1561,6 @@ thumbs : {
 				</p>
 
 				<pre><code>Thumbs.focus()
-Thumbs.close();
 Thumbs.update();
 Thumbs.hide();
 Thumbs.show();
