@@ -156,18 +156,18 @@
                 '<div class="fancybox-bg"></div>' +
                 '<div class="fancybox-inner">' +
                     '<div class="fancybox-infobar">' +
-                        '<button data-fancybox-prev title="{{PREV}}" class="fancybox-button fancybox-button--left"></button>' +
+                        '<button data-fancybox-prev="data-fancybox-prev" title="{{PREV}}" class="fancybox-button fancybox-button--left"></button>' +
                         '<div class="fancybox-infobar__body">' +
-                            '<span data-fancybox-index></span>&nbsp;/&nbsp;<span data-fancybox-count></span>' +
+                            '<span data-fancybox-index="data-fancybox-index"></span>&#160;/&#160;<span data-fancybox-count="data-fancybox-count"></span>' +
                         '</div>' +
-                        '<button data-fancybox-next title="{{NEXT}}" class="fancybox-button fancybox-button--right"></button>' +
+                        '<button data-fancybox-next="data-fancybox-next" title="{{NEXT}}" class="fancybox-button fancybox-button--right"></button>' +
                     '</div>' +
                     '<div class="fancybox-toolbar">' +
                         '{{BUTTONS}}' +
                     '</div>' +
                     '<div class="fancybox-navigation">' +
-                        '<button data-fancybox-prev title="{{PREV}}" class="fancybox-arrow fancybox-arrow--left" />' +
-                        '<button data-fancybox-next title="{{NEXT}}" class="fancybox-arrow fancybox-arrow--right" />' +
+                        '<button data-fancybox-prev="data-fancybox-prev" title="{{PREV}}" class="fancybox-arrow fancybox-arrow--left" />' +
+                        '<button data-fancybox-next="data-fancybox-next" title="{{NEXT}}" class="fancybox-arrow fancybox-arrow--right" />' +
                     '</div>' +
                     '<div class="fancybox-stage"></div>' +
                     '<div class="fancybox-caption-wrap">' +
@@ -183,14 +183,14 @@
         errorTpl : '<div class="fancybox-error"><p>{{ERROR}}<p></div>',
 
         btnTpl : {
-            slideShow  : '<button data-fancybox-play class="fancybox-button fancybox-button--play" title="{{PLAY_START}}"></button>',
-            fullScreen : '<button data-fancybox-fullscreen class="fancybox-button fancybox-button--fullscreen" title="{{FULL_SCREEN}}"></button>',
-            thumbs     : '<button data-fancybox-thumbs class="fancybox-button fancybox-button--thumbs" title="{{THUMBS}}"></button>',
-            close      : '<button data-fancybox-close class="fancybox-button fancybox-button--close" title="{{CLOSE}}"></button>',
+            slideShow  : '<button data-fancybox-play="data-fancybox-play" class="fancybox-button fancybox-button--play" title="{{PLAY_START}}"></button>',
+            fullScreen : '<button data-fancybox-fullscreen="data-fancybox-fullscreen" class="fancybox-button fancybox-button--fullscreen" title="{{FULL_SCREEN}}"></button>',
+            thumbs     : '<button data-fancybox-thumbs="data-fancybox-thumbs" class="fancybox-button fancybox-button--thumbs" title="{{THUMBS}}"></button>',
+            close      : '<button data-fancybox-close="data-fancybox-close" class="fancybox-button fancybox-button--close" title="{{CLOSE}}"></button>',
 
             // This small close button will be appended to your html/inline/ajax content by default,
             // if "smallBtn" option is not set to false
-            smallBtn   : '<button data-fancybox-close class="fancybox-close-small" title="{{CLOSE}}"></button>'
+            smallBtn   : '<button data-fancybox-close="data-fancybox-close" class="fancybox-close-small" title="{{CLOSE}}"></button>'
         },
 
         // Container is injected into this element
