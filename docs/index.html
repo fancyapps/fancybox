@@ -1625,19 +1625,36 @@ FAQ
 
 				<pre><code>$( '[data-fancybox]' ).fancybox({
 	caption : function( instance, item ) {
-		var caption, link;
+		var caption = $(this).data('caption') || '';
 
 		if ( item.type === 'image' ) {
-			caption = $(this).data('caption');
-			link    = '&lt;a href=&quot;' + item.src + '&quot;&gt;Download image&lt;/a&gt;';
-
-			return (caption ? caption + '&lt;br /&gt;' : '') + link;
+			caption = (caption.length ? caption + '&lt;br /&gt;' : '') + '&lt;a href=&quot;' + item.src + '&quot;&gt;Download image&lt;/a&gt;' ;
 		}
+
+		return caption;
 	}
 });</code></pre>
 				<p class="demo">
 					<a href="https://codepen.io/fancyapps/pen/jwNbaW?editors=1010" target="_blank">View demo on CodePen</a>
 				</p>
+
+
+				<p>
+					Add current image index and image count (the total number of images in the gallery) right in the caption:
+				</p>
+
+				<pre><code>$( '[data-fancybox]' ).fancybox({
+	caption : function( instance, item ) {
+		var caption = $(this).data('caption') || '';
+
+		return '(&lt;span data-fancybox-index&gt;&lt;/span&gt;/&lt;span data-fancybox-count&gt;&lt;/span&gt;)' + ( caption.length ? ' ' + caption : '' );
+	}
+});
+</code></pre>
+								<p class="demo">
+									<a href="https://codepen.io/fancyapps/pen/LLWpgO?editors=1010" target="_blank">View demo on CodePen</a>
+								</p>
+
 
 
 				<p>
