@@ -215,6 +215,7 @@
 
         fullScreen : {
             autoStart : false,
+            closeOnExit: false
         },
 
         touch : {
