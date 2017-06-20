@@ -181,6 +181,10 @@
 			instance.update( true, true, 0 );
 		}
 
-	});
+        if( instance.FullScreen && !instance.FullScreen.isFullscreen() && instance.opts.fullScreen.closeOnExit === true ) {
+            instance.close();
+        }
+
+    });
 
 }(document, window.jQuery));
