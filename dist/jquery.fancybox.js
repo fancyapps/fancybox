@@ -2092,8 +2092,8 @@
             if ( effect === 'zoom' ) {
                 end = self.getFitPos( slide );
 
-                end.scaleX = Math.round( (end.width  / start.width)  * 100 ) / 100;
-                end.scaleY = Math.round( (end.height / start.height) * 100 ) / 100;
+                end.scaleX = end.width  / start.width;
+                end.scaleY = end.height / start.height;
 
                 delete end.width;
                 delete end.height;
@@ -2855,8 +2855,8 @@
                     if ( to.scaleX !== undefined && to.scaleY !== undefined ) {
                         $el.css( 'transition-duration', '0ms' );
 
-                        to.width  = $el.width()  * to.scaleX;
-                        to.height = $el.height() * to.scaleY;
+                        to.width  = Math.round( $el.width()  * to.scaleX );
+                        to.height = Math.round( $el.height() * to.scaleY );
 
                         to.scaleX = 1;
                         to.scaleY = 1;
