@@ -75,6 +75,14 @@
             // If 'auto' - will zoom in thumbnail if 'width' and 'height' attributes are found
             preload : "auto",
 
+            // Maximum image width. Allows image downscalling
+            // Image height is automatically computed from this value
+            maxWidth : 0,
+
+            // Maximum image height. Allows image downscalling
+            // Image width is automatically computed from this value
+            maxHeight : 0,
+
         },
 
         ajax : {
@@ -1722,8 +1730,7 @@
                         return;
                     }
 
-                    slide.width  = this.naturalWidth;
-                    slide.height = this.naturalHeight;
+                    self.resolveImageSlideSize(slide, this.naturalWidth, this.naturalHeight);
 
                     if ( slide.opts.image.srcset ) {
                         $img.attr( 'sizes', '100vw' ).attr( 'srcset', slide.opts.image.srcset );
@@ -1768,6 +1775,28 @@
 
         },
 
+        // Computes the slide size from image size and maxWidth/maxHeight
+        // ==============================================================
+
+        resolveImageSlideSize : function( slide, imgWidth, imgHeight ) {
+            var self = this;
+            var maxWidth = Math.abs(parseInt(self.opts.image.maxWidth));
+            var maxHeight = Math.abs(parseInt(self.opts.image.maxHeight));
+
+            // Sets the default values from the image
+            slide.width = imgWidth;
+            slide.height = imgHeight;
+
+            if (maxWidth > 0) {
+                slide.width = maxWidth;
+                slide.height = Math.floor((maxWidth * imgHeight) / imgWidth);
+            }
+
+            if (maxHeight > 0) {
+                slide.width = Math.floor((maxHeight * imgWidth) / imgHeight);
+                slide.height = maxHeight;
+            }
+        },
 
         // Create iframe wrapper, iframe and bindings
         // ==========================================

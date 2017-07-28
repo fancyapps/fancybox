@@ -875,6 +875,13 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 		// If 'auto' - will zoom in thumbnail if 'width' and 'height' attributes are found
 		preload : &quot;auto&quot;,
 
+		// Maximum image width. Allows image downscalling
+        // Image height is automatically computed from this value
+        maxWidth : 0,
+
+        // Maximum image height. Allows image downscalling
+        // Image width is automatically computed from this value
+        maxHeight : 0,
 	},
 
 	ajax : {
