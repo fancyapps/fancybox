@@ -360,6 +360,16 @@
                 PLAY_STOP   : 'Diaschau beenden',
                 FULL_SCREEN : 'Vollbild',
                 THUMBS      : 'Vorschaubilder'
+            },
+            'it' : {
+                CLOSE       : 'Chiudi',
+                NEXT        : 'Avanti',
+                PREV        : 'Indietro',
+                ERROR       : 'Contenuto non disponibile. <br/> Riprova più tardi.',
+                PLAY_START  : 'Avvia slideshow',
+                PLAY_STOP   : 'Pausa slideshow',
+                FULL_SCREEN : 'Schermo intero',
+                THUMBS      : 'Miniature'
             }
         }
 
