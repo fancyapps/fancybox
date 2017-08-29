@@ -3247,7 +3247,7 @@
 	};
 
 	var isClickable = function( $el ) {
-		if ( $el.is('a,button,input,select,textarea') || $.isFunction( $el.get(0).onclick ) ) {
+		if ( $el.is('a,button,input,select,textarea,canvas') || $.isFunction( $el.get(0).onclick ) ) {
 			return true;
 		}
 
