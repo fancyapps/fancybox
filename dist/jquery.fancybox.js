@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.1.20
+// fancyBox v3.1.21
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -2629,7 +2629,7 @@
 
     $.fancybox = {
 
-        version  : "3.1.20",
+        version  : "3.1.21",
         defaults : defaults,
 
 
@@ -2906,12 +2906,18 @@
     function _run( e ) {
         var target	= e.currentTarget,
             opts	= e.data ? e.data.options : {},
-            items	= e.data ? e.data.items : [],
+            items	= opts.selector ? $( opts.selector ) : ( e.data ? e.data.items : [] ),
             value	= $(target).attr( 'data-fancybox' ) || '',
-            index	= 0;
+            index	= 0,
+            active  = $.fancybox.getInstance();
 
         e.preventDefault();
         e.stopPropagation();
+
+        // Avoid opening multiple times
+        if ( active && active.current.opts.$orig.is( target ) ) {
+            return;
+        }
 
         // Get all related items and find index for clicked one
         if ( value ) {
@@ -2944,7 +2950,6 @@
         if ( selector ) {
 
             $( 'body' ).off( 'click.fb-start', selector ).on( 'click.fb-start', selector, {
-                items   : $( selector ),
                 options : options
             }, _run );
 
