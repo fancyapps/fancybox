@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.1.21
+// fancyBox v3.1.22
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -2482,7 +2482,7 @@
             self.trigger( 'afterClose', e );
 
             // Place back focus
-            if ( self.$lastFocus && !!!self.current.focusBack ) {
+            if ( self.$lastFocus && !!self.current.opts.backFocus ) {
                 self.$lastFocus.focus();
             }
 
@@ -2629,7 +2629,7 @@
 
     $.fancybox = {
 
-        version  : "3.1.21",
+        version  : "3.1.22",
         defaults : defaults,
 
 
