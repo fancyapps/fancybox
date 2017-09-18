@@ -30,11 +30,14 @@
 		};
 	}
 
+	// Create new history entry only once
+	var shouldCreateHistory = true;
+
 	// Variable containing last hash value set by fancyBox
 	// It will be used to determine if fancyBox needs to close after hash change is detected
     var currentHash = null;
 
-	// Throtlling the history change
+	// Throttling the history change
 	var timerID = null;
 
 	// Get info about gallery name and current index from url
@@ -65,21 +68,22 @@
 			// If we can find element matching 'data-fancybox' atribute, then trigger click event for that ..
 			$el = $( "[data-fancybox='" + $.escapeSelector( url.gallery ) + "']" ).eq( url.index - 1 );
 
-            if ( $el.length ) {
-				$el.trigger( 'click' );
-
-			} else {
-
+            if ( !$el.length ) {
 				// .. if not, try finding element by ID
-				$( "#" + $.escapeSelector( url.gallery ) + "" ).trigger( 'click' );
+				$el = $( "#" + $.escapeSelector( url.gallery ) + "" );
+			}
 
+			if ( $el.length ) {
+				shouldCreateHistory = false;
+
+				$el.trigger( 'click' );
 			}
 
         }
 	}
 
 	// Get gallery name from current instance
-	function getGallery( instance ) {
+	function getGalleryID( instance ) {
 		var opts;
 
 		if ( !instance ) {
@@ -88,7 +92,7 @@
 
 		opts = instance.current ? instance.current.opts : instance.opts;
 
-		return opts.$orig ? opts.$orig.data( 'fancybox' ) : ( opts.hash || '' );
+		return opts.hash || ( opts.$orig ? opts.$orig.data( 'fancybox' ) : ''  );
 	}
 
 	// Star when DOM becomes ready
@@ -112,7 +116,7 @@
 					}
 
 					url     = parseUrl();
-					gallery = getGallery( instance );
+					gallery = getGalleryID( instance );
 
 					// Make sure gallery start index matches index from hash
 					if ( gallery && url.gallery && gallery == url.gallery ) {
@@ -121,14 +125,14 @@
 
 				},
 
-				'beforeShow.fb' : function( e, instance, current, firstRun ) {
+				'beforeShow.fb' : function( e, instance, current ) {
 					var gallery;
 
-					if ( current.opts.hash === false ) {
+					if ( !current || current.opts.hash === false ) {
 						return;
 					}
 
-		            gallery = getGallery( instance );
+		            gallery = getGalleryID( instance );
 
 		            // Update window hash
 		            if ( gallery && gallery !== '' ) {
@@ -145,9 +149,11 @@
 							}
 
 							timerID = setTimeout(function() {
-								window.history[ firstRun ? 'pushState' : 'replaceState' ]( {} , document.title, window.location.pathname + window.location.search + '#' +  currentHash );
+								window.history[ shouldCreateHistory ? 'pushState' : 'replaceState' ]( {} , document.title, window.location.pathname + window.location.search + '#' +  currentHash );
 
 								timerID = null;
+
+								shouldCreateHistory = false;
 
 							}, 300);
 
@@ -170,7 +176,7 @@
 						return;
 					}
 
-					gallery  = getGallery( instance );
+					gallery  = getGalleryID( instance );
 					origHash = instance && instance.opts.origHash ? instance.opts.origHash : '';
 
 		            // Remove hash from location bar
@@ -207,17 +213,11 @@
 				}
 			});
 
-			// If navigating away from current page
-			$(window).one('unload.fb popstate.fb', function() {
-				$.fancybox.getInstance( 'close', true, 0 );
-			});
-
 			// Check current hash and trigger click event on matching element to start fancyBox, if needed
 			triggerFromUrl( parseUrl() );
 
 		}, 50);
 
     });
-
 
 }(document, window, window.jQuery));

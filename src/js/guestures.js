@@ -65,7 +65,8 @@
 	};
 
 	var isClickable = function( $el ) {
-		if ( $el.is('a,button,input,select,textarea') || $.isFunction( $el.get(0).onclick ) ) {
+
+		if ( $el.is('a,button,input,select,textarea') || $.isFunction( $el.get(0).onclick ) || $el.data('selectable') ) {
 			return true;
 		}
 
@@ -182,8 +183,6 @@
 		$(document).on( isTouchDevice ? 'touchend.fb.touch touchcancel.fb.touch' : 'mouseup.fb.touch mouseleave.fb.touch',  $.proxy(self, "ontouchend"));
 		$(document).on( isTouchDevice ? 'touchmove.fb.touch' : 'mousemove.fb.touch',  $.proxy(self, "ontouchmove"));
 
-		e.stopPropagation();
-
 		if ( !(instance.current.opts.touch || instance.canPan() ) || !( $target.is( self.$stage ) || self.$stage.find( $target ).length ) ) {
 
 			// Prevent ghosting
@@ -193,6 +192,8 @@
 
 			return;
 		}
+
+		e.stopPropagation();
 
 		if ( !( $.fancybox.isMobile && ( isScrollable( self.$target ) || isScrollable( self.$target.parent() ) ) ) ) {
 			e.preventDefault();

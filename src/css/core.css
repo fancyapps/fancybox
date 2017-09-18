@@ -172,7 +172,7 @@
 	z-index: 99995;
 }
 
-.fancybox-slide > * {
+.fancybox-slide > div {
 	display: inline-block;
 	position: relative;
 	padding: 24px;
@@ -200,6 +200,7 @@
 	background-size: 100% 100%;
 	background-repeat: no-repeat;
 	backface-visibility: hidden;
+	user-select: none;
 }
 
 .fancybox-can-zoomOut .fancybox-image-wrap {
@@ -230,6 +231,7 @@
 	border: 0;
 	max-width: none;
 	max-height: none;
+	user-select: none;
 }
 
  .fancybox-spaceball {
@@ -520,7 +522,7 @@
 
 /* Loading indicator */
 
-.fancybox-loading {
+.fancybox-slide > .fancybox-loading {
 	border: 6px solid rgba(100, 100, 100, .4);
 	border-top: 6px solid rgba(255, 255, 255, .6);
 	border-radius: 100%;

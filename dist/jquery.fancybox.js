@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.1.24
+// fancyBox v3.1.25
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -1964,7 +1964,7 @@
             slide.$content = $( content ).appendTo( slide.$slide );
 
             if ( slide.opts.smallBtn && !slide.$smallBtn ) {
-                slide.$smallBtn = $( self.translate( slide, slide.opts.btnTpl.smallBtn ) ).appendTo( slide.$content );
+                slide.$smallBtn = $( self.translate( slide, slide.opts.btnTpl.smallBtn ) ).appendTo( slide.$content.filter('div').first() );
             }
 
             this.afterLoad( slide );
@@ -2629,7 +2629,7 @@
 
     $.fancybox = {
 
-        version  : "3.1.24",
+        version  : "3.1.25",
         defaults : defaults,
 
 
@@ -2971,7 +2971,7 @@
 
     $D.on( 'click.fb-start', '[data-fancybox]', _run );
 
-}( window, document, window.jQuery ));
+}( window, document, window.jQuery || jQuery ));
 
 // ==========================================================================
 //
@@ -3264,7 +3264,8 @@
 	};
 
 	var isClickable = function( $el ) {
-		if ( $el.is('a,button,input,select,textarea') || $.isFunction( $el.get(0).onclick ) ) {
+
+		if ( $el.is('a,button,input,select,textarea') || $.isFunction( $el.get(0).onclick ) || $el.data('selectable') ) {
 			return true;
 		}
 
@@ -3381,8 +3382,6 @@
 		$(document).on( isTouchDevice ? 'touchend.fb.touch touchcancel.fb.touch' : 'mouseup.fb.touch mouseleave.fb.touch',  $.proxy(self, "ontouchend"));
 		$(document).on( isTouchDevice ? 'touchmove.fb.touch' : 'mousemove.fb.touch',  $.proxy(self, "ontouchmove"));
 
-		e.stopPropagation();
-
 		if ( !(instance.current.opts.touch || instance.canPan() ) || !( $target.is( self.$stage ) || self.$stage.find( $target ).length ) ) {
 
 			// Prevent ghosting
@@ -3392,6 +3391,8 @@
 
 			return;
 		}
+
+		e.stopPropagation();
 
 		if ( !( $.fancybox.isMobile && ( isScrollable( self.$target ) || isScrollable( self.$target.parent() ) ) ) ) {
 			e.preventDefault();
@@ -4369,12 +4370,16 @@
 
 	// If browser does not have Full Screen API, then simply unset default button template and stop
 	if ( !fn ) {
-		$.fancybox.defaults.btnTpl.fullScreen = false;
+
+		if ( $ && $.fancybox ) {
+			$.fancybox.defaults.btnTpl.fullScreen = false;
+		}
 
 		return;
 	}
 
 	var FullScreen = {
+
 		request : function ( elem ) {
 
 			elem = elem || document.documentElement;
@@ -4471,6 +4476,8 @@
 
 			instance.update( true, true, 0 );
 		}
+
+		instance.trigger('onFullscreenChange', FullScreen.isFullscreen() );
 
 	});
 
@@ -4793,7 +4800,7 @@
 	}
 
 	// Get gallery name from current instance
-	function getGallery( instance ) {
+	function getGalleryID( instance ) {
 		var opts;
 
 		if ( !instance ) {
@@ -4802,7 +4809,7 @@
 
 		opts = instance.current ? instance.current.opts : instance.opts;
 
-		return opts.$orig ? opts.$orig.data( 'fancybox' ) : ( opts.hash || '' );
+		return opts.hash || ( opts.$orig ? opts.$orig.data( 'fancybox' ) : ''  );
 	}
 
 	// Star when DOM becomes ready
@@ -4826,7 +4833,7 @@
 					}
 
 					url     = parseUrl();
-					gallery = getGallery( instance );
+					gallery = getGalleryID( instance );
 
 					// Make sure gallery start index matches index from hash
 					if ( gallery && url.gallery && gallery == url.gallery ) {
@@ -4838,11 +4845,11 @@
 				'beforeShow.fb' : function( e, instance, current ) {
 					var gallery;
 
-					if ( current.opts.hash === false ) {
+					if ( !current || current.opts.hash === false ) {
 						return;
 					}
 
-		            gallery = getGallery( instance );
+		            gallery = getGalleryID( instance );
 
 		            // Update window hash
 		            if ( gallery && gallery !== '' ) {
@@ -4886,7 +4893,7 @@
 						return;
 					}
 
-					gallery  = getGallery( instance );
+					gallery  = getGalleryID( instance );
 					origHash = instance && instance.opts.origHash ? instance.opts.origHash : '';
 
 		            // Remove hash from location bar
@@ -4916,8 +4923,6 @@
 						currentHash = null;
 
 						$.fancybox.close();
-
-						shouldCreateHistory = true;
 					}
 
 				} else if ( url.gallery !== '' ) {
@@ -4931,6 +4936,5 @@
 		}, 50);
 
     });
-
 
 }(document, window, window.jQuery));

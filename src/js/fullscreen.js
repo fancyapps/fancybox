@@ -78,12 +78,16 @@
 
 	// If browser does not have Full Screen API, then simply unset default button template and stop
 	if ( !fn ) {
-		$.fancybox.defaults.btnTpl.fullScreen = false;
+
+		if ( $ && $.fancybox ) {
+			$.fancybox.defaults.btnTpl.fullScreen = false;
+		}
 
 		return;
 	}
 
 	var FullScreen = {
+
 		request : function ( elem ) {
 
 			elem = elem || document.documentElement;
@@ -180,6 +184,8 @@
 
 			instance.update( true, true, 0 );
 		}
+
+		instance.trigger('onFullscreenChange', FullScreen.isFullscreen() );
 
 	});
 

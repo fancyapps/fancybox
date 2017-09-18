@@ -333,6 +333,12 @@
 				 jQuery 3+ is preferred, but fancyBox works with jQuery 1.9.1+ and jQuery 2+
 			</p>
 
+			<h4 class="important">Important</h4>
+
+			<p>
+				If you experience issues with image zooming, then update jQuery to the latest (at least v3.2.1).
+			</p>
+
 			<h3>Compatibility</h3>
 
 			<p>
@@ -739,7 +745,7 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
   Vimeo video
 &lt;/a&gt;
 
-&lt;a data-fancybox href=&quot;https://www.google.com/maps/place/Googleplex/@37.4220041,-122.0833494,17z/data=!4m5!3m4!1s0x0:0x6c296c66619367e0!8m2!3d37.4219998!4d-122.0840572&quot;&gt;
+&lt;a data-fancybox href=&quot;https://www.google.com/maps/search/Empire+State+Building/&quot;&gt;
 	Google Map
 &lt;/a&gt;
 
@@ -1214,7 +1220,7 @@ API
 
 
 				<pre><code>// Close only the currently active or all fancyBox instances
-$.fancybox.close( all );
+$.fancybox.close( true );
 
 // Open the fancyBox right away
 $.fancybox.open( items, opts, index );

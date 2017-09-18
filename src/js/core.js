@@ -1954,7 +1954,7 @@
             slide.$content = $( content ).appendTo( slide.$slide );
 
             if ( slide.opts.smallBtn && !slide.$smallBtn ) {
-                slide.$smallBtn = $( self.translate( slide, slide.opts.btnTpl.smallBtn ) ).appendTo( slide.$content );
+                slide.$smallBtn = $( self.translate( slide, slide.opts.btnTpl.smallBtn ) ).appendTo( slide.$content.filter('div').first() );
             }
 
             this.afterLoad( slide );
@@ -2961,4 +2961,4 @@
 
     $D.on( 'click.fb-start', '[data-fancybox]', _run );
 
-}( window, document, window.jQuery ));
+}( window, document, window.jQuery || jQuery ));
