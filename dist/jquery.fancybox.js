@@ -2311,7 +2311,17 @@
             }
 
             // Skip for images and iframes
-            $el = current && current.isComplete ? current.$slide.find('button,:input,[tabindex],a').filter(':not([disabled]):visible:first') : null;
+            if ( !current || !current.isComplete ) {
+                return;
+            }
+
+            // Look for first input with autofocus attribute
+            $el = current.$slide.find('input[autofocus]:not([disabled]):visible:first');
+
+            if ($el.length < 1) {
+                $el = current.$slide.find('button,:input,[tabindex],a').filter(':not([disabled]):visible:first');
+            }
+
             $el = $el && $el.length ? $el : this.$refs.container;
 
             $el.focus();
