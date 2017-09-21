@@ -8,11 +8,8 @@
 	'use strict';
 
 	var FancyThumbs = function( instance ) {
-
 		this.instance = instance;
-
 		this.init();
-
 	};
 
 	$.extend( FancyThumbs.prototype, {
@@ -25,14 +22,27 @@
 		init : function() {
 			var self = this;
 
-			self.$button = $('<button data-fancybox-thumbs class="fancybox-button fancybox-button--thumbs" title="Thumbnails (G)"></button>')
-				.appendTo( this.instance.$refs.buttons )
-				.on('touchend click', function(e) {
-					e.stopPropagation();
-					e.preventDefault();
+			var first  = self.instance.group[0],
+				second = self.instance.group[1];
 
+			self.$button = self.instance.$refs.toolbar.find( '[data-fancybox-thumbs]' );
+
+			if ( self.instance.group.length > 1 && self.instance.group[ self.instance.currIndex ].opts.thumbs && (
+		    		( first.type == 'image'  || first.opts.thumb  || first.opts.$thumb ) &&
+		    		( second.type == 'image' || second.opts.thumb || second.opts.$thumb )
+			)) {
+
+				self.$button.on('click', function() {
 					self.toggle();
 				});
+
+				self.isActive = true;
+
+			} else {
+				self.$button.hide();
+
+				self.isActive = false;
+			}
 
 		},
 
@@ -61,10 +71,8 @@
 
 			list += '</ul>';
 
-			this.$list = $( list ).appendTo( this.$grid ).on('click touchstart', 'li', function() {
-
+			this.$list = $( list ).appendTo( this.$grid ).on('click', 'li', function() {
 				instance.jumpTo( $(this).data('index') );
-
 			});
 
 			this.$list.find('img').hide().one('load', function() {
@@ -124,14 +132,12 @@
 		},
 
 		close : function() {
-
 			this.$grid.hide();
-
 		},
 
 		update : function() {
 
-			this.instance.$refs.container.toggleClass('fancybox-container--thumbs', this.isVisible);
+			this.instance.$refs.container.toggleClass( 'fancybox-show-thumbs', this.isVisible );
 
 			if ( this.isVisible ) {
 
@@ -139,99 +145,85 @@
 					this.create();
 				}
 
-				this.$grid.show();
+				this.instance.trigger( 'onThumbsShow' );
 
 				this.focus();
 
 			} else if ( this.$grid ) {
-				this.$grid.hide();
+				this.instance.trigger( 'onThumbsHide' );
 			}
 
+			// Update content position
 			this.instance.update();
 
 		},
 
 		hide : function() {
-
 			this.isVisible = false;
-
 			this.update();
-
 		},
 
 		show : function() {
-
 			this.isVisible = true;
-
 			this.update();
-
 		},
 
 		toggle : function() {
-
-			if ( this.isVisible ) {
-				this.hide();
-
-			} else {
-				this.show();
-			}
+			this.isVisible = !this.isVisible;
+			this.update();
 		}
 
 	});
 
-	$(document).on('onInit.fb', function(e, instance) {
-		var first  = instance.group[0],
-			second = instance.group[1];
+	$(document).on({
 
-		if ( !!instance.opts.thumbs && !instance.Thumbs && instance.group.length > 1 && (
-		    		( first.type == 'image'  || first.opts.thumb  || first.opts.$thumb ) &&
-		    		( second.type == 'image' || second.opts.thumb || second.opts.$thumb )
-			 	)
-		   ) {
+		'onInit.fb' : function(e, instance) {
+			if ( instance && !instance.Thumbs ) {
+				instance.Thumbs = new FancyThumbs( instance );
+			}
+		},
 
-			instance.Thumbs = new FancyThumbs( instance );
-		}
+		'beforeShow.fb' : function(e, instance, item, firstRun) {
+			var Thumbs = instance && instance.Thumbs;
 
-	});
-
-	$(document).on('beforeMove.fb', function(e, instance, item) {
-		var self = instance && instance.Thumbs;
-
-		if ( !self ) {
-			return;
-		}
-
-		if ( item.modal ) {
-
-			self.$button.hide();
-
-			self.hide();
-
-		} else {
-
-			if ( instance.opts.thumbs.showOnStart === true && instance.firstRun ) {
-				self.show();
-
+			if ( !Thumbs || !Thumbs.isActive ) {
+				return;
 			}
 
-			self.$button.show();
+			if ( item.modal ) {
+				Thumbs.$button.hide();
 
-			if ( self.isVisible ) {
-				self.focus();
+				Thumbs.hide();
+
+				return;
 			}
 
-		}
-
-	});
-
-	$(document).on('beforeClose.fb', function(e, instance) {
-
-		if ( instance && instance.Thumbs) {
-			if ( instance.Thumbs.isVisible && instance.opts.thumbs.hideOnClosing !== false ) {
-				instance.Thumbs.close();
+			if ( firstRun && instance.opts.thumbs.autoStart === true ) {
+				Thumbs.show();
 			}
 
-			instance.Thumbs = null;
+			if ( Thumbs.isVisible ) {
+				Thumbs.focus();
+			}
+		},
+
+		'afterKeydown.fb' : function(e, instance, current, keypress, keycode) {
+			var Thumbs = instance && instance.Thumbs;
+
+			// "G"
+			if ( Thumbs && Thumbs.isActive && keycode === 71 ) {
+				keypress.preventDefault();
+
+				Thumbs.toggle();
+			}
+		},
+
+		'beforeClose.fb' : function( e, instance ) {
+			var Thumbs = instance && instance.Thumbs;
+
+			if ( Thumbs && Thumbs.isVisible && instance.opts.thumbs.hideOnClose !== false ) {
+				Thumbs.close();
+			}
 		}
 
 	});

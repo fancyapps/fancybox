@@ -4,8 +4,8 @@
 .fancybox-button--fullscreen::before {
 	width: 15px;
 	height: 11px;
-	left: 15px;
-	top: 16px;
+	left: calc(50% - 7px);
+	top: calc(50% - 6px);
 	border: 2px solid;
 	background: none;
 }
