@@ -191,14 +191,14 @@
 			        transform: skewY(2deg);
 		}
 
-		.content {
+		section, .content {
 			position: relative;
 			max-width: 1020px;
 			margin: 0 auto;
 			padding: 0 50px;
 		}
 
-		section .content {
+		section {
 			padding-left: 250px;
 		}
 
@@ -257,11 +257,10 @@
 				left: 0;
 			}
 
-			.content {
+			section, .content {
 				padding: 0 25px;
 			}
 
-			section .content,
 			footer .content {
 				padding-left: 25px;
 			}
@@ -286,30 +285,33 @@
 	</header>
 
 	<section>
-		<div class="content">
 
-			<aside>
-				<ul class="sticky">
-					<li><a href="#introduction">Introduction</a></li>
-					<li><a href="#setup">Setup</a></li>
-					<li><a href="#usage">How to Use</a></li>
-					<li>
-						<a href="#media_types">Media types</a>
+		<aside>
+			<ul class="sticky">
+				<li><a href="#introduction">Introduction</a></li>
+				<li><a href="#setup">Setup</a></li>
+				<li><a href="#usage">How to Use</a></li>
+				<li>
+					<a href="#media_types">Media types</a>
 
-						<ul>
-							<li><a href="#images">Images</a></li>
-							<li><a href="#inline">Inline</a></li>
-							<li><a href="#ajax">Ajax</a></li>
-							<li><a href="#iframe">Iframe</a></li>
-						</ul>
-					</li>
-					<li><a href="#embedding">Embedding</a></li>
-					<li><a href="#options">Options</a></li>
-					<li><a href="#api">Api</a></li>
-					<li><a href="#modules">Modules</a></li>
-					<li><a href="#faq">FAQ</a></li>
-				</ul>
-			</aside>
+					<ul>
+						<li><a href="#images">Images</a></li>
+						<li><a href="#inline">Inline</a></li>
+						<li><a href="#ajax">Ajax</a></li>
+						<li><a href="#iframe">Iframe</a></li>
+					</ul>
+				</li>
+				<li><a href="#embedding">Embedding</a></li>
+				<li><a href="#options">Options</a></li>
+				<li><a href="#api">Api</a></li>
+				<li><a href="#modules">Modules</a></li>
+				<li><a href="#faq">FAQ</a></li>
+			</ul>
+		</aside>
+
+		<div class="article">
+
+
 <!--
 
 	Introduction
@@ -829,335 +831,336 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 
 			<pre>defaults = {
 
-	// Enable infinite gallery navigation
-	loop : false,
+    // Enable infinite gallery navigation
+    loop : false,
 
-	// Space around image, ignored if zoomed-in or viewport smaller than 800px
-	margin : [44, 0],
+    // Space around image, ignored if zoomed-in or viewport width is smaller than 800px
+    margin : [44, 0],
 
-	// Horizontal space between slides
-	gutter : 50,
+    // Horizontal space between slides
+    gutter : 50,
 
-	// Enable keyboard navigation
-	keyboard : true,
+    // Enable keyboard navigation
+    keyboard : true,
 
-	// Should display navigation arrows at the screen edges
-	arrows : true,
-
-	// Should display infobar (counter and arrows at the top)
-	infobar : false,
-
-	// Should display toolbar (buttons at the top)
-	toolbar : true,
-
-	// What buttons should appear in the top right corner.
-	// Buttons will be created using templates from `btnTpl` option
-	// and they will be placed into toolbar (class=&quot;fancybox-toolbar&quot;` element)
-	buttons : [
-		'slideShow',
-		'fullScreen',
-		'thumbs',
-		'close'
-	],
-
-	// Detect &quot;idle&quot; time in seconds
-	idleTime : 4,
-
-	// Should display buttons at top right corner of the content
-	// If 'auto' - they will be created for content having type 'html', 'inline' or 'ajax'
-	// Use template from `btnTpl.smallBtn` for customization
-	smallBtn : 'auto',
-
-	// Disable right-click and use simple image protection for images
-	protect : false,
-
-	// Shortcut to make content &quot;modal&quot; - disable keyboard navigtion, hide buttons, etc
-	modal : false,
-
-	image : {
-
-		// Wait for images to load before displaying
-		// Requires predefined image dimensions
-		// If 'auto' - will zoom in thumbnail if 'width' and 'height' attributes are found
-		preload : &quot;auto&quot;,
-
-	},
-
-	ajax : {
-
-		// Object containing settings for ajax request
-		settings : {
-
-			// This helps to indicate that request comes from the modal
-			// Feel free to change naming
-			data : {
-				fancybox : true
-			}
-		}
-
-	},
-
-	iframe : {
-
-		// Iframe template
-		tpl : '&lt;iframe id=&quot;fancybox-frame{rnd}&quot; name=&quot;fancybox-frame{rnd}&quot; class=&quot;fancybox-iframe&quot; frameborder=&quot;0&quot; vspace=&quot;0&quot; hspace=&quot;0&quot; webkitAllowFullScreen mozallowfullscreen allowFullScreen allowtransparency=&quot;true&quot; src=&quot;&quot;&gt;&lt;/iframe&gt;',
-
-		// Preload iframe before displaying it
-		// This allows to calculate iframe content width and height
-		// (note: Due to &quot;Same Origin Policy&quot;, you can't get cross domain data).
-		preload : true,
-
-		// Custom CSS styling for iframe wrapping element
-		// You can use this to set custom iframe dimensions
-		css : {},
-
-		// Iframe tag attributes
-		attr : {
-			scrolling : 'auto'
-		}
-
-	},
-
-	// Open/close animation type
-	// Possible values:
-	//   false            - disable
-	//   &quot;zoom&quot;           - zoom images from/to thumbnail
-	//   &quot;fade&quot;
-	//   &quot;zoom-in-out&quot;
-	//
-	animationEffect : &quot;zoom&quot;,
-
-	// Duration in ms for open/close animation
-	animationDuration : 366,
-
-	// Should image change opacity while zooming
-	// If opacity is 'auto', then opacity will be changed if image and thumbnail have different aspect ratios
-	zoomOpacity : 'auto',
-
-	// Transition effect between slides
-	//
-	// Possible values:
-	//   false            - disable
-	//   &quot;fade'
-	//   &quot;slide'
-	//   &quot;circular'
-	//   &quot;tube'
-	//   &quot;zoom-in-out'
-	//   &quot;rotate'
-	//
-	transitionEffect : &quot;fade&quot;,
-
-	// Duration in ms for transition animation
-	transitionDuration : 366,
-
-	// Custom CSS class for slide element
-	slideClass : '',
-
-	// Custom CSS class for layout
-	baseClass : '',
-
-	// Base template for layout
-	baseTpl	:
-		'&lt;div class=&quot;fancybox-container&quot; role=&quot;dialog&quot; tabindex=&quot;-1&quot;&gt;' +
-			'&lt;div class=&quot;fancybox-bg&quot;&gt;&lt;/div&gt;' +
-			'&lt;div class=&quot;fancybox-inner&quot;&gt;' +
-				'&lt;div class=&quot;fancybox-infobar&quot;&gt;' +
-					'&lt;button data-fancybox-prev title=&quot;{{PREV}}&quot; class=&quot;fancybox-button fancybox-button--left&quot;&gt;&lt;/button&gt;' +
-					'&lt;div class=&quot;fancybox-infobar__body&quot;&gt;' +
-						'&lt;span data-fancybox-index&gt;&lt;/span&gt;&amp;nbsp;/&amp;nbsp;&lt;span data-fancybox-count&gt;&lt;/span&gt;' +
-					'&lt;/div&gt;' +
-					'&lt;button data-fancybox-next title=&quot;{{NEXT}}&quot; class=&quot;fancybox-button fancybox-button--right&quot;&gt;&lt;/button&gt;' +
-				'&lt;/div&gt;' +
-				'&lt;div class=&quot;fancybox-toolbar&quot;&gt;' +
-					'{{BUTTONS}}' +
-				'&lt;/div&gt;' +
-				'&lt;div class=&quot;fancybox-navigation&quot;&gt;' +
-					'&lt;button data-fancybox-prev title=&quot;{{PREV}}&quot; class=&quot;fancybox-arrow fancybox-arrow--left&quot; /&gt;' +
-					'&lt;button data-fancybox-next title=&quot;{{NEXT}}&quot; class=&quot;fancybox-arrow fancybox-arrow--right&quot; /&gt;' +
-				'&lt;/div&gt;' +
-				'&lt;div class=&quot;fancybox-stage&quot;&gt;&lt;/div&gt;' +
-				'&lt;div class=&quot;fancybox-caption-wrap&quot;&gt;' +
-					'&lt;div class=&quot;fancybox-caption&quot;&gt;&lt;/div&gt;' +
-				'&lt;/div&gt;' +
-			'&lt;/div&gt;' +
-		'&lt;/div&gt;',
-
-	// Loading indicator template
-	spinnerTpl : '&lt;div class=&quot;fancybox-loading&quot;&gt;&lt;/div&gt;',
-
-	// Error message template
-	errorTpl : '&lt;div class=&quot;fancybox-error&quot;&gt;&lt;p&gt;{{ERROR}}&lt;p&gt;&lt;/div&gt;',
-
-	btnTpl : {
-		slideShow  : '&lt;button data-fancybox-play class=&quot;fancybox-button fancybox-button--play&quot; title=&quot;{{PLAY_START}}&quot;&gt;&lt;/button&gt;',
-		fullScreen : '&lt;button data-fancybox-fullscreen class=&quot;fancybox-button fancybox-button--fullscreen&quot; title=&quot;{{FULL_SCREEN}}&quot;&gt;&lt;/button&gt;',
-		thumbs     : '&lt;button data-fancybox-thumbs class=&quot;fancybox-button fancybox-button--thumbs&quot; title=&quot;{{THUMBS}}&quot;&gt;&lt;/button&gt;',
-		close      : '&lt;button data-fancybox-close class=&quot;fancybox-button fancybox-button--close&quot; title=&quot;{{CLOSE}}&quot;&gt;&lt;/button&gt;',
-
-		// This small close button will be appended to your html/inline/ajax content by default,
-		// if &quot;smallBtn&quot; option is not set to false
-		smallBtn   : '&lt;button data-fancybox-close class=&quot;fancybox-close-small&quot; title=&quot;{{CLOSE}}&quot;&gt;&lt;/button&gt;'
-	},
-
-	// Container is injected into this element
-	parentEl : 'body',
-
-
-	// Focus handling
-	// ==============
-
-	// Try to focus on the first focusable element after opening
-	autoFocus : true,
-
-	// Put focus back to active element after closing
-	backFocus : true,
-
-	// Do not let user to focus on element outside modal content
-	trapFocus : true,
-
-
-	// Module specific options
-	// =======================
-
-	fullScreen : {
-		autoStart : false,
-	},
-
-	touch : {
-		vertical : true,  // Allow to drag content vertically
-		momentum : true   // Continue movement after releasing mouse/touch when panning
-	},
-
-	// Hash value when initializing manually,
-	// set `false` to disable hash change
-	hash : null,
-
-	// Customize or add new media types
-	// Example:
-	/*
-	media : {
-		youtube : {
-			params : {
-				autoplay : 0
-			}
-		}
-	}
-	*/
-	media : {},
-
-	slideShow : {
-		autoStart : false,
-		speed     : 4000
-	},
-
-	thumbs : {
-		autoStart   : false,   // Display thumbnails on opening
-		hideOnClose : true     // Hide thumbnail grid when closing animation starts
-	},
-
-	// Callbacks
-	//==========
-
-	// See Documentation/API/Events for more information
-	// Example:
-	/*
-		afterShow: function( instance, current ) {
-			 console.info( 'Clicked element:' );
-			 console.info( current.opts.$orig );
-		}
-	*/
-
-	onInit       : $.noop,  // When instance has been initialized
-
-	beforeLoad   : $.noop,  // Before the content of a slide is being loaded
-	afterLoad    : $.noop,  // When the content of a slide is done loading
-
-	beforeShow   : $.noop,  // Before open animation starts
-	afterShow    : $.noop,  // When content is done loading and animating
-
-	beforeClose  : $.noop,  // Before the instance attempts to close. Return false to cancel the close.
-	afterClose   : $.noop,  // After instance has been closed
-
-	onActivate   : $.noop,  // When instance is brought to front
-	onDeactivate : $.noop,  // When other instance has been activated
-
-
-	// Interaction
-	// ===========
-
-	// Use options below to customize taken action when user clicks or double clicks on the fancyBox area,
-	// each option can be string or method that returns value.
-	//
-	// Possible values:
-	//   &quot;close&quot;           - close instance
-	//   &quot;next&quot;            - move to next gallery item
-	//   &quot;nextOrClose&quot;     - move to next gallery item or close if gallery has only one item
-	//   &quot;toggleControls&quot;  - show/hide controls
-	//   &quot;zoom&quot;            - zoom image (if loaded)
-	//   false             - do nothing
-
-	// Clicked on the content
-	clickContent : function( current, event ) {
-		return current.type === 'image' ? 'zoom' : false;
-	},
-
-	// Clicked on the slide
-	clickSlide : 'close',
-
-	// Clicked on the background (backdrop) element
-	clickOutside : 'close',
-
-	// Same as previous two, but for double click
-	dblclickContent : false,
-	dblclickSlide   : false,
-	dblclickOutside : false,
-
-
-	// Custom options when mobile device is detected
-	// =============================================
-
-	mobile : {
-		clickContent : function( current, event ) {
-			return current.type === 'image' ? 'toggleControls' : false;
-		},
-		clickSlide : function( current, event ) {
-			return current.type === 'image' ? 'toggleControls' : &quot;close&quot;;
-		},
-		dblclickContent : function( current, event ) {
-			return current.type === 'image' ? 'zoom' : false;
-		},
-		dblclickSlide : function( current, event ) {
-			return current.type === 'image' ? 'zoom' : false;
-		}
-	},
-
-
-	// Internationalization
-	// ============
-
-	lang : 'en',
-	i18n : {
-		'en' : {
-			CLOSE       : 'Close',
-			NEXT        : 'Next',
-			PREV        : 'Previous',
-			ERROR       : 'The requested content cannot be loaded. &lt;br/&gt; Please try again later.',
-			PLAY_START  : 'Start slideshow',
-			PLAY_STOP   : 'Pause slideshow',
-			FULL_SCREEN : 'Full screen',
-			THUMBS      : 'Thumbnails'
-		},
-		'de' : {
-			CLOSE       : 'Schliessen',
-			NEXT        : 'Weiter',
-			PREV        : 'Zurück',
-			ERROR       : 'Die angeforderten Daten konnten nicht geladen werden. &lt;br/&gt; Bitte versuchen Sie es später nochmal.',
-			PLAY_START  : 'Diaschau starten',
-			PLAY_STOP   : 'Diaschau beenden',
-			FULL_SCREEN : 'Vollbild',
-			THUMBS      : 'Vorschaubilder'
-		}
-	}
+    // Should display navigation arrows at the screen edges
+    arrows : true,
+
+    // Should display infobar (counter and arrows at the top)
+    infobar : false,
+
+    // Should display toolbar (buttons at the top)
+    toolbar : true,
+
+    // What buttons should appear in the top right corner.
+    // Buttons will be created using templates from `btnTpl` option
+    // and they will be placed into toolbar (class=&quot;fancybox-toolbar&quot;` element)
+    buttons : [
+        'slideShow',
+        'fullScreen',
+        'thumbs',
+        'close'
+    ],
+
+    // Detect &quot;idle&quot; time in seconds
+    idleTime : 4,
+
+    // Should display buttons at top right corner of the content
+    // If 'auto' - they will be created for content having type 'html', 'inline' or 'ajax'
+    // Use template from `btnTpl.smallBtn` for customization
+    smallBtn : 'auto',
+
+    // Disable right-click and use simple image protection for images
+    protect : false,
+
+    // Shortcut to make content &quot;modal&quot; - disable keyboard navigtion, hide buttons, etc
+    modal : false,
+
+    image : {
+
+        // Wait for images to load before displaying
+        // Requires predefined image dimensions
+        // If 'auto' - will zoom in thumbnail if 'width' and 'height' attributes are found
+        preload : &quot;auto&quot;,
+
+    },
+
+    ajax : {
+
+        // Object containing settings for ajax request
+        settings : {
+
+            // This helps to indicate that request comes from the modal
+            // Feel free to change naming
+            data : {
+                fancybox : true
+            }
+        }
+
+    },
+
+    iframe : {
+
+        // Iframe template
+        tpl : '&lt;iframe id=&quot;fancybox-frame{rnd}&quot; name=&quot;fancybox-frame{rnd}&quot; class=&quot;fancybox-iframe&quot; frameborder=&quot;0&quot; vspace=&quot;0&quot; hspace=&quot;0&quot; webkitAllowFullScreen mozallowfullscreen allowFullScreen allowtransparency=&quot;true&quot; src=&quot;&quot;&gt;&lt;/iframe&gt;',
+
+        // Preload iframe before displaying it
+        // This allows to calculate iframe content width and height
+        // (note: Due to &quot;Same Origin Policy&quot;, you can't get cross domain data).
+        preload : true,
+
+        // Custom CSS styling for iframe wrapping element
+        // You can use this to set custom iframe dimensions
+        css : {},
+
+        // Iframe tag attributes
+        attr : {
+            scrolling : 'auto'
+        }
+
+    },
+
+    // Open/close animation type
+    // Possible values:
+    //   false            - disable
+    //   &quot;zoom&quot;           - zoom images from/to thumbnail
+    //   &quot;fade&quot;
+    //   &quot;zoom-in-out&quot;
+    //
+    animationEffect : &quot;zoom&quot;,
+
+    // Duration in ms for open/close animation
+    animationDuration : 366,
+
+    // Should image change opacity while zooming
+    // If opacity is 'auto', then opacity will be changed if image and thumbnail have different aspect ratios
+    zoomOpacity : 'auto',
+
+    // Transition effect between slides
+    //
+    // Possible values:
+    //   false            - disable
+    //   &quot;fade'
+    //   &quot;slide'
+    //   &quot;circular'
+    //   &quot;tube'
+    //   &quot;zoom-in-out'
+    //   &quot;rotate'
+    //
+    transitionEffect : &quot;fade&quot;,
+
+    // Duration in ms for transition animation
+    transitionDuration : 366,
+
+    // Custom CSS class for slide element
+    slideClass : '',
+
+    // Custom CSS class for layout
+    baseClass : '',
+
+    // Base template for layout
+    baseTpl	:
+        '&lt;div class=&quot;fancybox-container&quot; role=&quot;dialog&quot; tabindex=&quot;-1&quot;&gt;' +
+            '&lt;div class=&quot;fancybox-bg&quot;&gt;&lt;/div&gt;' +
+            '&lt;div class=&quot;fancybox-inner&quot;&gt;' +
+                '&lt;div class=&quot;fancybox-infobar&quot;&gt;' +
+                    '&lt;button data-fancybox-prev title=&quot;{{PREV}}&quot; class=&quot;fancybox-button fancybox-button--left&quot;&gt;&lt;/button&gt;' +
+                    '&lt;div class=&quot;fancybox-infobar__body&quot;&gt;' +
+                        '&lt;span data-fancybox-index&gt;&lt;/span&gt;&amp;nbsp;/&amp;nbsp;&lt;span data-fancybox-count&gt;&lt;/span&gt;' +
+                    '&lt;/div&gt;' +
+                    '&lt;button data-fancybox-next title=&quot;{{NEXT}}&quot; class=&quot;fancybox-button fancybox-button--right&quot;&gt;&lt;/button&gt;' +
+                '&lt;/div&gt;' +
+                '&lt;div class=&quot;fancybox-toolbar&quot;&gt;' +
+                    '{{BUTTONS}}' +
+                '&lt;/div&gt;' +
+                '&lt;div class=&quot;fancybox-navigation&quot;&gt;' +
+                    '&lt;button data-fancybox-prev title=&quot;{{PREV}}&quot; class=&quot;fancybox-arrow fancybox-arrow--left&quot; /&gt;' +
+                    '&lt;button data-fancybox-next title=&quot;{{NEXT}}&quot; class=&quot;fancybox-arrow fancybox-arrow--right&quot; /&gt;' +
+                '&lt;/div&gt;' +
+                '&lt;div class=&quot;fancybox-stage&quot;&gt;&lt;/div&gt;' +
+                '&lt;div class=&quot;fancybox-caption-wrap&quot;&gt;' +
+                    '&lt;div class=&quot;fancybox-caption&quot;&gt;&lt;/div&gt;' +
+                '&lt;/div&gt;' +
+            '&lt;/div&gt;' +
+        '&lt;/div&gt;',
+
+    // Loading indicator template
+    spinnerTpl : '&lt;div class=&quot;fancybox-loading&quot;&gt;&lt;/div&gt;',
+
+    // Error message template
+    errorTpl : '&lt;div class=&quot;fancybox-error&quot;&gt;&lt;p&gt;{{ERROR}}&lt;p&gt;&lt;/div&gt;',
+
+    btnTpl : {
+        slideShow  : '&lt;button data-fancybox-play class=&quot;fancybox-button fancybox-button--play&quot; title=&quot;{{PLAY_START}}&quot;&gt;&lt;/button&gt;',
+        fullScreen : '&lt;button data-fancybox-fullscreen class=&quot;fancybox-button fancybox-button--fullscreen&quot; title=&quot;{{FULL_SCREEN}}&quot;&gt;&lt;/button&gt;',
+        thumbs     : '&lt;button data-fancybox-thumbs class=&quot;fancybox-button fancybox-button--thumbs&quot; title=&quot;{{THUMBS}}&quot;&gt;&lt;/button&gt;',
+        close      : '&lt;button data-fancybox-close class=&quot;fancybox-button fancybox-button--close&quot; title=&quot;{{CLOSE}}&quot;&gt;&lt;/button&gt;',
+
+        // This small close button will be appended to your html/inline/ajax content by default,
+        // if &quot;smallBtn&quot; option is not set to false
+        smallBtn   : '&lt;button data-fancybox-close class=&quot;fancybox-close-small&quot; title=&quot;{{CLOSE}}&quot;&gt;&lt;/button&gt;'
+    },
+
+    // Container is injected into this element
+    parentEl : 'body',
+
+
+    // Focus handling
+    // ==============
+
+    // Try to focus on the first focusable element after opening
+    autoFocus : true,
+
+    // Put focus back to active element after closing
+    backFocus : true,
+
+    // Do not let user to focus on element outside modal content
+    trapFocus : true,
+
+
+    // Module specific options
+    // =======================
+
+    fullScreen : {
+        autoStart : false,
+    },
+
+    // Set `touch: false` to disable dragging/swiping
+    touch : {
+        vertical : true,  // Allow to drag content vertically
+        momentum : true   // Continue movement after releasing mouse/touch when panning
+    },
+
+    // Hash value when initializing manually,
+    // set `false` to disable hash change
+    hash : null,
+
+    // Customize or add new media types
+    // Example:
+    /*
+    media : {
+        youtube : {
+            params : {
+                autoplay : 0
+            }
+        }
+    }
+    */
+    media : {},
+
+    slideShow : {
+        autoStart : false,
+        speed     : 4000
+    },
+
+    thumbs : {
+        autoStart   : false,   // Display thumbnails on opening
+        hideOnClose : true     // Hide thumbnail grid when closing animation starts
+    },
+
+    // Callbacks
+    //==========
+
+    // See Documentation/API/Events for more information
+    // Example:
+    /*
+        afterShow: function( instance, current ) {
+             console.info( 'Clicked element:' );
+             console.info( current.opts.$orig );
+        }
+    */
+
+    onInit       : $.noop,  // When instance has been initialized
+
+    beforeLoad   : $.noop,  // Before the content of a slide is being loaded
+    afterLoad    : $.noop,  // When the content of a slide is done loading
+
+    beforeShow   : $.noop,  // Before open animation starts
+    afterShow    : $.noop,  // When content is done loading and animating
+
+    beforeClose  : $.noop,  // Before the instance attempts to close. Return false to cancel the close.
+    afterClose   : $.noop,  // After instance has been closed
+
+    onActivate   : $.noop,  // When instance is brought to front
+    onDeactivate : $.noop,  // When other instance has been activated
+
+
+    // Interaction
+    // ===========
+
+    // Use options below to customize taken action when user clicks or double clicks on the fancyBox area,
+    // each option can be string or method that returns value.
+    //
+    // Possible values:
+    //   &quot;close&quot;           - close instance
+    //   &quot;next&quot;            - move to next gallery item
+    //   &quot;nextOrClose&quot;     - move to next gallery item or close if gallery has only one item
+    //   &quot;toggleControls&quot;  - show/hide controls
+    //   &quot;zoom&quot;            - zoom image (if loaded)
+    //   false             - do nothing
+
+    // Clicked on the content
+    clickContent : function( current, event ) {
+        return current.type === 'image' ? 'zoom' : false;
+    },
+
+    // Clicked on the slide
+    clickSlide : 'close',
+
+    // Clicked on the background (backdrop) element
+    clickOutside : 'close',
+
+    // Same as previous two, but for double click
+    dblclickContent : false,
+    dblclickSlide   : false,
+    dblclickOutside : false,
+
+
+    // Custom options when mobile device is detected
+    // =============================================
+
+    mobile : {
+        clickContent : function( current, event ) {
+            return current.type === 'image' ? 'toggleControls' : false;
+        },
+        clickSlide : function( current, event ) {
+            return current.type === 'image' ? 'toggleControls' : 'close';
+        },
+        dblclickContent : function( current, event ) {
+            return current.type === 'image' ? 'zoom' : false;
+        },
+        dblclickSlide : function( current, event ) {
+            return current.type === 'image' ? 'zoom' : false;
+        }
+    },
+
+
+    // Internationalization
+    // ============
+
+    lang : 'en',
+    i18n : {
+        'en' : {
+            CLOSE       : 'Close',
+            NEXT        : 'Next',
+            PREV        : 'Previous',
+            ERROR       : 'The requested content cannot be loaded. &lt;br/&gt; Please try again later.',
+            PLAY_START  : 'Start slideshow',
+            PLAY_STOP   : 'Pause slideshow',
+            FULL_SCREEN : 'Full screen',
+            THUMBS      : 'Thumbnails'
+        },
+        'de' : {
+            CLOSE       : 'Schliessen',
+            NEXT        : 'Weiter',
+            PREV        : 'Zurück',
+            ERROR       : 'Die angeforderten Daten konnten nicht geladen werden. &lt;br/&gt; Bitte versuchen Sie es später nochmal.',
+            PLAY_START  : 'Diaschau starten',
+            PLAY_STOP   : 'Diaschau beenden',
+            FULL_SCREEN : 'Vollbild',
+            THUMBS      : 'Vorschaubilder'
+        }
+    }
 
 }
 </pre>
@@ -1599,9 +1602,13 @@ FAQ
 ===
 
 -->
-				<h2 id="faq">FAQ</h2>
+			</div>
 
-				<h3>Opening/closing causes fixed element to jump</h3>
+			<div class="article" id="faq">
+
+				<h2>FAQ</h2>
+
+				<h3 id="faq-1">1. Opening/closing causes fixed element to jump</h3>
 
 				<p>
 					Simply add <code>compensate-for-scrollbar</code> CSS class to your fixed positioned elements.
@@ -1627,7 +1634,7 @@ FAQ
 	right: 0;
 }</code></pre>
 
-				<h3>How to customize caption</h3>
+				<h3 id="faq-2">2. How to customize caption</h3>
 
 				<p>
 					You can use <code>caption</code> option that accepts a function and is called for each group element. Example of appending image download link:
@@ -1681,7 +1688,7 @@ FAQ
 				</p>
 
 
-				<h3>How to create custom button in the toolbar</h3>
+				<h3 id="faq-3">3. How to create custom button in the toolbar</h3>
 
 				<p>
 					Example of creating reusable button and changing <code>href</code> property dynamically
@@ -1711,15 +1718,36 @@ $( '[data-fancybox]' ).fancybox({
 					<a href="https://codepen.io/fancyapps/pen/JJPYLL" target="_blank">View demo on CodePen</a>
 				</p>
 
-				<h3>How to reposition thumbnail grid</h3>
+				<h3 id="faq-4">4. How to reposition thumbnail grid</h3>
 
 				<p>
 					There is currenty no JS option to change thumbnail grid position.
 					But fancyBox is designed so that you can use CSS to change position or dimension for each block
 					(e.g., content area, caption or thumbnail grid).
 					This gives you freedom to completely change the look and feel of the modal window, if needed.
+
 					<a href="https://codepen.io/fancyapps/pen/PjYPMw" target="_blank">View demo on CodePen</a>
 				</p>
+
+				<h3 id="faq-5">5. How to disable touch gestures/swiping</h3>
+
+				<p>
+					When you want to make your content selectable or clickable, you have two options:
+				</p>
+
+				<ul>
+					<li>
+						 disable touch gestures completely by setting <code>touch:false</code>
+					</li>
+					<li>
+						add <code>data-selectable="true"</code> attribute to your html element.
+					</li>
+				</ul>
+
+				<p>
+					<a href="https://codepen.io/fancyapps/pen/NjXbXw" target="_blank">View demo on CodePen</a>
+				</p>
+
 
 			</div>
 
@@ -1751,11 +1779,9 @@ $( '[data-fancybox]' ).fancybox({
 				self.targets = [];
 
 				// Get current top position of sticky element
-
 				self.stickyTop = self.$sticky.css( 'position', 'relative' ).offset().top;
 
 				// Cache all targets and their top positions
-
 				self.$sticky.find( 'a' ).map(function () {
 					var $el		= $( this ),
 						href	= $el.data('target') || $el.attr( 'href' ),
@@ -1780,7 +1806,6 @@ $( '[data-fancybox]' ).fancybox({
 				var currentIndex    = 0;
 
 				// Toggle fixed position depending on visibility
-
 				if ( $(window).width() < 800 || self.stickyTop > windowTop ) {
 					stickyPosition = 'relative';
 
@@ -1799,7 +1824,6 @@ $( '[data-fancybox]' ).fancybox({
 				self.$sticky.css( 'position', stickyPosition );
 
 				$stickyLinks.eq( currentIndex ).addClass( 'active' );
-
 			},
 
 			init : function() {

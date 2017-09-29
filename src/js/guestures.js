@@ -66,7 +66,7 @@
 
 	var isClickable = function( $el ) {
 
-		if ( $el.is('a,button,input,select,textarea') || $.isFunction( $el.get(0).onclick ) || $el.data('selectable') ) {
+		if ( $el.is('a,button,input,select,textarea,label') || $.isFunction( $el.get(0).onclick ) || $el.data('selectable') ) {
 			return true;
 		}
 

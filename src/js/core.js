@@ -26,7 +26,7 @@
         // Enable infinite gallery navigation
         loop : false,
 
-        // Space around image, ignored if zoomed-in or viewport smaller than 800px
+        // Space around image, ignored if zoomed-in or viewport width is smaller than 800px
         margin : [44, 0],
 
         // Horizontal space between slides
@@ -217,6 +217,7 @@
             autoStart : false,
         },
 
+        // Set `touch: false` to disable dragging/swiping
         touch : {
             vertical : true,  // Allow to drag content vertically
             momentum : true   // Continue movement after releasing mouse/touch when panning
@@ -315,7 +316,7 @@
                 return current.type === 'image' ? 'toggleControls' : false;
             },
             clickSlide : function( current, event ) {
-                return current.type === 'image' ? 'toggleControls' : "close";
+                return current.type === 'image' ? 'toggleControls' : 'close';
             },
             dblclickContent : function( current, event ) {
                 return current.type === 'image' ? 'zoom' : false;
@@ -1806,11 +1807,11 @@
 
                 $slide.on('refresh.fb', function() {
                     var $wrap = slide.$content,
-                        $contents,
-                        $body,
+                        frameWidth  = opts.css.width,
+                        frameHeight = opts.css.height,
                         scrollWidth,
-                        frameWidth,
-                        frameHeight;
+                        $contents,
+                        $body;
 
                     if ( $iframe[0].isReady !== 1 ) {
                         return;
@@ -1826,19 +1827,28 @@
                     } catch (ignore) {}
 
                     // Calculate dimensions for the wrapper
-                    if ( $body && $body.length && !( opts.css.width !== undefined && opts.css.height !== undefined ) ) {
+                    if ( $body && $body.length ) {
 
-                        scrollWidth = $iframe[0].contentWindow.document.documentElement.scrollWidth;
+                        if ( frameWidth === undefined ) {
+                            scrollWidth = $iframe[0].contentWindow.document.documentElement.scrollWidth;
 
-                        frameWidth	= Math.ceil( $body.outerWidth(true) + ( $wrap.width() - scrollWidth ) );
-                        frameHeight	= Math.ceil( $body.outerHeight(true) );
+                            frameWidth = Math.ceil( $body.outerWidth(true) + ( $wrap.width() - scrollWidth ) );
+                            frameWidth += $wrap.outerWidth() - $wrap.innerWidth();
+                        }
+
+                        if ( frameHeight === undefined ) {
+                            frameHeight = Math.ceil( $body.outerHeight(true) );
+                            frameHeight += $wrap.outerHeight() - $wrap.innerHeight();
+                        }
 
                         // Resize wrapper to fit iframe content
-                        $wrap.css({
-                            'width'  : opts.css.width  === undefined ? frameWidth  + ( $wrap.outerWidth()  - $wrap.innerWidth() )  : opts.css.width,
-                            'height' : opts.css.height === undefined ? frameHeight + ( $wrap.outerHeight() - $wrap.innerHeight() ) : opts.css.height
-                        });
+                        if ( frameWidth ) {
+                            $wrap.width( frameWidth );
+                        }
 
+                        if ( frameHeight ) {
+                            $wrap.height( frameHeight );
+                        }
                     }
 
                     $wrap.removeClass( 'fancybox-is-hidden' );
@@ -2246,7 +2256,7 @@
 
                     $.fancybox.stop( slide.$slide );
 
-                    slide.$slide.unbind().remove();
+                    slide.$slide.off().remove();
                 }
             });
 
@@ -2300,8 +2310,16 @@
                 return;
             }
 
-            // Skip for images and iframes
-            $el = current && current.isComplete ? current.$slide.find('button,:input,[tabindex],a').filter(':not([disabled]):visible:first') : null;
+            if ( current && current.isComplete ) {
+
+                // Look for first input with autofocus attribute
+                $el = current.$slide.find('input[autofocus]:enabled:visible:first');
+
+                if ( !$el.length ) {
+                    $el = current.$slide.find('button,:input,[tabindex],a').filter(':enabled:visible:first');
+                }
+            }
+
             $el = $el && $el.length ? $el : this.$refs.container;
 
             $el.focus();
@@ -2485,7 +2503,6 @@
                 instance.activate();
 
             } else {
-
                 $W.scrollTop( self.scrollTop ).scrollLeft( self.scrollLeft );
 
                 $( 'html' ).removeClass( 'fancybox-enabled' );
