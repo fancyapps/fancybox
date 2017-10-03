@@ -77,7 +77,7 @@
 
 			this.$list.find('img').hide().one('load', function() {
 
-				var $parent		= $(this).parent().removeClass('fancybox-thumbs-loading'),
+				var $parent		= $(this).parent().removeClass( 'fancybox-thumbs-loading' ),
 					thumbWidth	= $parent.outerWidth(),
 					thumbHeight	= $parent.outerHeight(),
 					width,
@@ -88,12 +88,12 @@
 				width  = this.naturalWidth	|| this.width;
 				height = this.naturalHeight	|| this.height;
 
-				//Calculate thumbnail width/height and center it
+				// Calculate thumbnail width/height and center it
 
 				widthRatio  = width  / thumbWidth;
 				heightRatio = height / thumbHeight;
 
-				if (widthRatio >= 1 && heightRatio >= 1) {
+				if ( widthRatio >= 1 && heightRatio >= 1 ) {
 					if (widthRatio > heightRatio) {
 						width  = width / heightRatio;
 						height = thumbHeight;
@@ -123,9 +123,9 @@
 			if ( this.instance.current ) {
 				this.$list
 					.children()
-					.removeClass('fancybox-thumbs-active')
-					.filter('[data-index="' + this.instance.current.index  + '"]')
-					.addClass('fancybox-thumbs-active')
+					.removeClass( 'fancybox-thumbs-active' )
+					.filter( '[data-index="' + this.instance.current.index  + '"]' )
+					.addClass( 'fancybox-thumbs-active' )
 					.focus();
 			}
 
@@ -198,7 +198,7 @@
 				return;
 			}
 
-			if ( firstRun && instance.opts.thumbs.autoStart === true ) {
+			if ( firstRun && item.opts.thumbs.autoStart === true ) {
 				Thumbs.show();
 			}
 

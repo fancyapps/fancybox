@@ -2913,12 +2913,11 @@
         var target	= e.currentTarget,
             opts	= e.data ? e.data.options : {},
             items	= opts.selector ? $( opts.selector ) : ( e.data ? e.data.items : [] ),
-            value	= $(target).attr( 'data-fancybox' ) || '',
+            value	= $( target ).attr( 'data-fancybox' ) || '',
             index	= 0,
             active  = $.fancybox.getInstance();
 
         e.preventDefault();
-        e.stopPropagation();
 
         // Avoid opening multiple times
         if ( active && active.current.opts.$orig.is( target ) ) {
