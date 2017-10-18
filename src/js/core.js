@@ -612,6 +612,10 @@
                         opts.image = { srcset : data.srcset };
                     }
 
+                    if ( 'srcdoc' in data ) {
+                        opts.iframe = { srcdoc : data.srcdoc };
+                    }
+
                     opts.$orig = $item;
 
                     if ( !obj.type && !obj.src ) {
@@ -1862,6 +1866,10 @@
             }
 
             $iframe.attr( 'src', slide.src );
+
+            if ( 'srcdoc' in slide.opts.iframe ) {
+                $iframe.attr( 'srcdoc', slide.opts.iframe.srcdoc );
+            }
 
             if ( slide.opts.smallBtn === true ) {
                 slide.$content.prepend( self.translate( slide, slide.opts.btnTpl.smallBtn ) );
