@@ -175,7 +175,9 @@
 
 	$(document).on(fn.fullscreenchange, function() {
 		var instance = $.fancybox.getInstance();
-
+		if ( instance === false ) {
+			return; // there is no fancybox instance, so do not continue
+		}
 		// If image is zooming, then force to stop and reposition properly
 		if ( instance.current && instance.current.type === 'image' && instance.isAnimating ) {
 			instance.current.$content.css( 'transition', 'none' );
