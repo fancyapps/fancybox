@@ -1,0 +1,53 @@
+/* Share */
+
+.fancybox-share {
+    padding: 30px;
+    border-radius: 3px;
+    background: #f4f4f4;
+    max-width: 90%;
+}
+
+.fancybox-share h1 {
+    color: #222;
+    margin: 0 0 20px 0;
+    font-size: 33px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.fancybox-share p {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+.fancybox-share_button {
+    display: inline-block;
+    text-decoration: none;
+    margin: 0 10px 10px 0;
+    padding: 10px 20px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    border-radius: 3px;
+    background: #fff;
+    white-space: nowrap;
+    font-size: 16px;
+    line-height: 23px;
+    user-select: none;
+    min-width: 140px;
+    color: #888;
+    transition: all .2s;
+}
+
+.fancybox-share_button:focus,
+.fancybox-share_button:hover {
+    box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    text-decoration: none;
+    color: #555;
+}
+
+.fancybox-share_button svg {
+    margin-right: 5px;
+    width: 23px;
+    height: 23px;
+    vertical-align: top;
+}

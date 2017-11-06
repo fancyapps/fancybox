@@ -66,7 +66,7 @@
 
 	var isClickable = function( $el ) {
 
-		if ( $el.is('a,button,input,select,textarea,label') || $.isFunction( $el.get(0).onclick ) || $el.data('selectable') ) {
+		if ( $el.is('a,area,button,[role="button"],input,label,select,summary,textarea') || $.isFunction( $el.get(0).onclick ) || $el.data('selectable') ) {
 			return true;
 		}
 
@@ -177,13 +177,14 @@
 		self.$target  = $target;
 		self.$content = $content;
 		self.canTap   = true;
+		self.opts     = current.opts.touch;
 
 		$(document).off( '.fb.touch' );
 
 		$(document).on( isTouchDevice ? 'touchend.fb.touch touchcancel.fb.touch' : 'mouseup.fb.touch mouseleave.fb.touch',  $.proxy(self, "ontouchend"));
 		$(document).on( isTouchDevice ? 'touchmove.fb.touch' : 'mousemove.fb.touch',  $.proxy(self, "ontouchmove"));
 
-		if ( !(instance.current.opts.touch || instance.canPan() ) || !( $target.is( self.$stage ) || self.$stage.find( $target ).length ) ) {
+		if ( !(self.opts || instance.canPan() ) || !( $target.is( self.$stage ) || self.$stage.find( $target ).length ) ) {
 
 			// Prevent ghosting
 			if ( $target.is('img') ) {
@@ -267,7 +268,7 @@
 			return;
 		}
 
-		if ( !( self.instance.current.opts.touch || self.instance.canPan() ) || !self.newPoints || !self.newPoints.length ) {
+		if ( !( self.opts || self.instance.canPan() ) || !self.newPoints || !self.newPoints.length ) {
 			return;
 		}
 
@@ -314,10 +315,10 @@
 
 				self.canTap = false;
 
-				if ( self.instance.group.length < 2 && self.instance.opts.touch.vertical ) {
+				if ( self.instance.group.length < 2 && self.opts.vertical ) {
 					self.isSwiping  = 'y';
 
-				} else if ( self.instance.isSliding || self.instance.opts.touch.vertical === false || ( self.instance.opts.touch.vertical === 'auto' && $( window ).width() > 800 ) ) {
+				} else if ( self.instance.isSliding || self.opts.vertical === false || ( self.opts.vertical === 'auto' && $( window ).width() > 800 ) ) {
 					self.isSwiping  = 'x';
 
 				} else {
@@ -692,7 +693,7 @@
 			return;
 		}
 
-		if ( self.instance.current.opts.touch.momentum === false ) {
+		if ( self.opts.momentum === false ) {
 			newOffsetX = self.contentLastPos.left;
 			newOffsetY = self.contentLastPos.top;
 
@@ -918,4 +919,4 @@
 	});
 
 
-}(window, document, window.jQuery));
+}( window, document, window.jQuery || jQuery ));

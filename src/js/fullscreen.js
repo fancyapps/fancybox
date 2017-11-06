@@ -124,13 +124,25 @@
 		}
 	};
 
+	$.extend(true, $.fancybox.defaults, {
+		btnTpl : {
+			fullScreen :
+				'<button data-fancybox-fullscreen class="fancybox-button fancybox-button--fullscreen" title="{{FULL_SCREEN}}">' +
+					'<svg viewBox="0 0 40 40">' +
+						'<path d="M9,12 h22 v16 h-22 v-16 v16 h22 v-16 Z" />' +
+					'</svg>' +
+				'</button>'
+		},
+		fullScreen : {
+			autoStart : false
+		}
+	});
+
 	$(document).on({
 		'onInit.fb' : function(e, instance) {
 			var $container;
 
-			var $button = instance.$refs.toolbar.find('[data-fancybox-fullscreen]');
-
-			if ( instance && !instance.FullScreen && instance.group[ instance.currIndex ].opts.fullScreen ) {
+			if ( instance && instance.group[ instance.currIndex ].opts.fullScreen ) {
 				$container = instance.$refs.container;
 
 				$container.on('click.fb-fullscreen', '[data-fancybox-fullscreen]', function(e) {
@@ -149,8 +161,8 @@
 				// Expose API
 				instance.FullScreen = FullScreen;
 
-			} else {
-				$button.hide();
+			} else if ( instance ) {
+				instance.$refs.toolbar.find('[data-fancybox-fullscreen]').hide();
 			}
 
 		},
@@ -174,19 +186,25 @@
 	});
 
 	$(document).on(fn.fullscreenchange, function() {
-		var instance = $.fancybox.getInstance();
+		var isFullscreen = FullScreen.isFullscreen(),
+			instance = $.fancybox.getInstance();
 
-		// If image is zooming, then force to stop and reposition properly
-		if ( instance.current && instance.current.type === 'image' && instance.isAnimating ) {
-			instance.current.$content.css( 'transition', 'none' );
+		if ( instance ) {
 
-			instance.isAnimating = false;
+			// If image is zooming, then force to stop and reposition properly
+			if ( instance.current && instance.current.type === 'image' && instance.isAnimating ) {
+				instance.current.$content.css( 'transition', 'none' );
 
-			instance.update( true, true, 0 );
+				instance.isAnimating = false;
+
+				instance.update( true, true, 0 );
+			}
+
+			instance.trigger( 'onFullscreenChange', isFullscreen );
+
+			instance.$refs.container.toggleClass( 'fancybox-is-fullscreen', isFullscreen );
 		}
-
-		instance.trigger('onFullscreenChange', FullScreen.isFullscreen() );
 
 	});
 
-}(document, window.jQuery));
+}( document, window.jQuery || jQuery ));

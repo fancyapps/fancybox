@@ -95,129 +95,119 @@
 		return opts.hash || ( opts.$orig ? opts.$orig.data( 'fancybox' ) : ''  );
 	}
 
-	// Star when DOM becomes ready
+	// Start when DOM becomes ready
     $(function() {
 
-		// Small delay is used to allow other scripts to process "dom ready" event
-		setTimeout(function() {
+		// Update hash when opening/closing fancyBox
+	    $(document).on({
+			'onInit.fb' : function( e, instance ) {
+				var url, gallery;
 
-			// Check if this module is not disabled
-			if ( $.fancybox.defaults.hash === false ) {
-				return;
-			}
+				if ( instance.group[ instance.currIndex ].opts.hash === false ) {
+					return;
+				}
 
-			// Update hash when opening/closing fancyBox
-		    $(document).on({
-				'onInit.fb' : function( e, instance ) {
-					var url, gallery;
+				url     = parseUrl();
+				gallery = getGalleryID( instance );
 
-					if ( instance.group[ instance.currIndex ].opts.hash === false ) {
-						return;
-					}
+				// Make sure gallery start index matches index from hash
+				if ( gallery && url.gallery && gallery == url.gallery ) {
+					instance.currIndex = url.index - 1;
+				}
 
-					url     = parseUrl();
-					gallery = getGalleryID( instance );
+			},
 
-					// Make sure gallery start index matches index from hash
-					if ( gallery && url.gallery && gallery == url.gallery ) {
-						instance.currIndex = url.index - 1;
-					}
+			'beforeShow.fb' : function( e, instance, current ) {
+				var gallery;
 
-				},
+				if ( !current || current.opts.hash === false ) {
+					return;
+				}
 
-				'beforeShow.fb' : function( e, instance, current ) {
-					var gallery;
+	            gallery = getGalleryID( instance );
 
-					if ( !current || current.opts.hash === false ) {
-						return;
-					}
+	            // Update window hash
+	            if ( gallery && gallery !== '' ) {
 
-		            gallery = getGalleryID( instance );
+					if ( window.location.hash.indexOf( gallery ) < 0 ) {
+		                instance.opts.origHash = window.location.hash;
+		            }
 
-		            // Update window hash
-		            if ( gallery && gallery !== '' ) {
+					currentHash = gallery + ( instance.group.length > 1 ? '-' + ( current.index + 1 ) : '' );
 
-						if ( window.location.hash.indexOf( gallery ) < 0 ) {
-			                instance.opts.origHash = window.location.hash;
-			            }
-
-						currentHash = gallery + ( instance.group.length > 1 ? '-' + ( current.index + 1 ) : '' );
-
-						if ( 'replaceState' in window.history ) {
-							if ( timerID ) {
-								clearTimeout( timerID );
-							}
-
-							timerID = setTimeout(function() {
-								window.history[ shouldCreateHistory ? 'pushState' : 'replaceState' ]( {} , document.title, window.location.pathname + window.location.search + '#' +  currentHash );
-
-								timerID = null;
-
-								shouldCreateHistory = false;
-
-							}, 300);
-
-						} else {
-							window.location.hash = currentHash;
+					if ( 'replaceState' in window.history ) {
+						if ( timerID ) {
+							clearTimeout( timerID );
 						}
 
-		            }
+						timerID = setTimeout(function() {
+							window.history[ shouldCreateHistory ? 'pushState' : 'replaceState' ]( {} , document.title, window.location.pathname + window.location.search + '#' +  currentHash );
 
-		        },
+							timerID = null;
 
-				'beforeClose.fb' : function( e, instance, current ) {
-					var gallery, origHash;
+							shouldCreateHistory = false;
 
-					if ( timerID ) {
-						clearTimeout( timerID );
+						}, 300);
+
+					} else {
+						window.location.hash = currentHash;
 					}
 
-					if ( current.opts.hash === false ) {
-						return;
-					}
+	            }
 
-					gallery  = getGalleryID( instance );
-					origHash = instance && instance.opts.origHash ? instance.opts.origHash : '';
+	        },
 
-		            // Remove hash from location bar
-		            if ( gallery && gallery !== '' ) {
+			'beforeClose.fb' : function( e, instance, current ) {
+				var gallery, origHash;
 
-		                if ( 'replaceState' in history ) {
-							window.history.replaceState( {} , document.title, window.location.pathname + window.location.search + origHash );
-
-		                } else {
-							window.location.hash = origHash;
-
-							// Keep original scroll position
-							$( window ).scrollTop( instance.scrollTop ).scrollLeft( instance.scrollLeft );
-		                }
-		            }
-
-					currentHash = null;
-		        }
-		    });
-
-			// Check if need to close after url has changed
-			$(window).on('hashchange.fb', function() {
-				var url = parseUrl();
-
-				if ( $.fancybox.getInstance() ) {
-					if ( currentHash && currentHash !== url.gallery + '-' + url.index && !( url.index === 1 && currentHash == url.gallery ) ) {
-						currentHash = null;
-
-						$.fancybox.close();
-					}
-
-				} else if ( url.gallery !== '' ) {
-					triggerFromUrl( url );
+				if ( timerID ) {
+					clearTimeout( timerID );
 				}
-			});
 
-			// Check current hash and trigger click event on matching element to start fancyBox, if needed
-			triggerFromUrl( parseUrl() );
+				if ( current.opts.hash === false ) {
+					return;
+				}
 
-		}, 50);
+				gallery  = getGalleryID( instance );
+				origHash = instance && instance.opts.origHash ? instance.opts.origHash : '';
+
+	            // Remove hash from location bar
+	            if ( gallery && gallery !== '' ) {
+
+	                if ( 'replaceState' in history ) {
+						window.history.replaceState( {} , document.title, window.location.pathname + window.location.search + origHash );
+
+	                } else {
+						window.location.hash = origHash;
+
+						// Keep original scroll position
+						$( window ).scrollTop( instance.scrollTop ).scrollLeft( instance.scrollLeft );
+	                }
+	            }
+
+				currentHash = null;
+	        }
+	    });
+
+		// Check if need to close after url has changed
+		$(window).on('hashchange.fb', function() {
+			var url = parseUrl();
+
+			if ( $.fancybox.getInstance() ) {
+				if ( currentHash && currentHash !== url.gallery + '-' + url.index && !( url.index === 1 && currentHash == url.gallery ) ) {
+					currentHash = null;
+
+					$.fancybox.close();
+				}
+
+			} else if ( url.gallery !== '' ) {
+				triggerFromUrl( url );
+			}
+		});
+
+		// Check current hash and trigger click event on matching element to start fancyBox, if needed
+		triggerFromUrl( parseUrl() );
 
     });
 
-}(document, window, window.jQuery));
+}( document, window, window.jQuery || jQuery ));

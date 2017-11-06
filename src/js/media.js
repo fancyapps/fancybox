@@ -210,7 +210,7 @@
 					item.opts.slideClass += ' fancybox-slide--' + ( provider == 'gmap_place' || provider == 'gmap_search' ? 'map' : 'video' );
 				}
 
-			} else {
+			} else if ( url ) {
 
 				// If no content type is found, then set it to `image` as fallback
 				item.type = 'image';
@@ -220,4 +220,4 @@
 
 	});
 
-}(window.jQuery));
+}( window.jQuery || jQuery ));
