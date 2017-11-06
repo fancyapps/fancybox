@@ -91,10 +91,6 @@
 			border-bottom: 1px solid #eee;
 		}
 
-		h2:first-of-type {
-			margin-top: 0;
-		}
-
 		h3 {
 			margin-top: 2em;
 			font-size: 1.25em;
@@ -402,7 +398,8 @@
 				<li>If you already have jQuery on your page, you shouldn't include it second time</li>
 				<li>Do not include both fancybox.js and fancybox.min.js files</li>
 				<li>
-					Some functionality (ajax, iframes, etc) will not work when you're opening local files on your computer,
+					Some functionality (ajax, iframes, etc) will not work
+					when you're opening local file directly on your browser,
 					the code must be running on a web server
 				</li>
 			</ul>
@@ -422,11 +419,11 @@
 				fancyBox can also be installed via Bower or npm.
 			</p>
 
-<pre><code># Bower
-bower install fancybox --save
-
-# NPM
+<pre><code># NPM
 npm install @fancyapps/fancybox --save
+
+# Bower
+bower install fancybox --save
 </code></pre>
 
 
@@ -449,6 +446,10 @@ npm install @fancyapps/fancybox --save
 	&lt;img src="thumbnail.jpg" alt="" /&gt;
 &lt;/a&gt;</pre>
 
+			<p class="demo">
+				<a href="https://codepen.io/fancyapps/pen/rYLzBR?editors=1000" target="_blank">View demo on CodePen</a>
+			</p>
+
 			<p>
 				If you choose this method, default settings will be applied.
 				See <a href="#options">Options</a> section for examples how to customize by changing defaults or using <code>data-options</code> attribute.
@@ -466,6 +467,9 @@ npm install @fancyapps/fancybox --save
 	});
 &lt;/script&gt;</code></pre>
 
+			<p class="demo">
+				<a href="https://codepen.io/fancyapps/pen/JOKyYo?editors=1010" target="_blank">View demo on CodePen</a>
+			</p>
 
 			<p>
 				Using this method, click event handler is attached only to the currently selected elements.
@@ -479,7 +483,7 @@ npm install @fancyapps/fancybox --save
 });</code></pre>
 
 			<p class="demo">
-				<a href="https://codepen.io/fancyapps/pen/gWvorB?editors=1010" target="_blank">View demo on CodePen</a>
+				<a href="https://codepen.io/fancyapps/pen/zPBEdz?editors=1010" target="_blank">View demo on CodePen</a>
 			</p>
 
 			<h3>Manual calling of fancyBox</h3>
@@ -491,6 +495,10 @@ npm install @fancyapps/fancybox --save
 			</p>
 
 			<pre><code>$.fancybox.open('&lt;div class=&quot;message&quot;&gt;&lt;h2&gt;Hello!&lt;/h2&gt;&lt;p&gt;You are awesome!&lt;/p&gt;&lt;/div&gt;');</code></pre>
+
+			<p class="demo">
+				<a href="https://codepen.io/fancyapps/pen/xPOLVb?editors=1010" target="_blank">View demo on CodePen</a>
+			</p>
 
 			<p>
 				See <a href="#api">API</a> section for more information and examples.
@@ -512,15 +520,18 @@ npm install @fancyapps/fancybox --save
 &lt;/a&gt;
 </pre>
 
+			<p class="demo">
+				<a href="https://codepen.io/fancyapps/pen/qVNXrZ?editors=1000" target="_blank">View demo on CodePen</a>
+			</p>
 
-<h4 class="important">Important</h4>
+			<h4 class="important">Important</h4>
 
-<p>
-	fancyBox attempts to automatically detect the type of content based on the given url.
+			<p>
+				fancyBox attempts to automatically detect the type of content based on the given url.
 
-	If it cannot be detected, the type can also be set manually using <code>data-type</code> attribute:
+				If it cannot be detected, the type can also be set manually using <code>data-type</code> attribute:
 
-	<pre>&lt;a href="images.php?id=123" data-type="image" data-caption="Caption"&gt;
+				<pre>&lt;a href="images.php?id=123" data-type="image" data-caption="Caption"&gt;
 	Show image
 &lt;/a&gt;</pre>
 </p>
@@ -547,7 +558,7 @@ npm install @fancyapps/fancybox --save
 &lt;/a&gt;</code></pre>
 
 			<p class="demo">
-				<a href="https://codepen.io/fancyapps/pen/WjVXyx?editors=1000" target="_blank">View demo on CodePen</a>
+				<a href="https://codepen.io/fancyapps/pen/mqEMGX?editors=1000" target="_blank">View demo on CodePen</a>
 			</p>
 
 			<p>
@@ -566,7 +577,7 @@ npm install @fancyapps/fancybox --save
     &lt;img src=&quot;thumbnail.jpg&quot; /&gt;
 &lt;/a&gt;</code></pre>
 			<p class="demo">
-				<a href="https://codepen.io/fancyapps/pen/JNgggo?editors=1000" target="_blank">View demo on CodePen</a>
+				<a href="https://codepen.io/fancyapps/pen/JOKywE?editors=1000" target="_blank">View demo on CodePen</a>
 			</p>
 
 			<p>
@@ -578,7 +589,7 @@ npm install @fancyapps/fancybox --save
 	&lt;img src=&quot;thumbnail.jpg&quot; /&gt;
 &lt;/a&gt;</code></pre>
 			<p class="demo">
-				<a href="https://codepen.io/fancyapps/pen/YQKKYx?editors=1000" target="_blank">View demo on CodePen</a>
+				<a href="https://codepen.io/fancyapps/pen/gXMxJj?editors=1000" target="_blank">View demo on CodePen</a>
 			</p>
 
 			<p>
@@ -591,7 +602,7 @@ npm install @fancyapps/fancybox --save
 });</code></pre>
 
 			<p class="demo">
-				<a href="https://codepen.io/fancyapps/pen/jwNNZJ" target="_blank">View demo on CodePen</a>
+				<a href="https://codepen.io/fancyapps/pen/rYLGBe" target="_blank">View demo on CodePen</a>
 			</p>
 
 			<h3 id="inline">Inline HTML</h3>
@@ -610,10 +621,10 @@ npm install @fancyapps/fancybox --save
 			</p>
 
 			<pre><code>&lt;a data-fancybox data-src=&quot;#hidden-content&quot; href=&quot;javascript:;&quot;&gt;
-	Hidden div
+	Trigger the fancyBox
 &lt;/a&gt;</code></pre>
 			<p class="demo">
-				<a href="https://codepen.io/fancyapps/pen/NjXbXw" target="_blank">View demo on CodePen</a>
+				<a href="https://codepen.io/fancyapps/pen/OOXxLa" target="_blank">View demo on CodePen</a>
 			</p>
 
 			<p>
@@ -631,7 +642,7 @@ npm install @fancyapps/fancybox --save
 	AJAX content
 &lt;/a&gt;</code></pre>
 			<p class="demo">
-				<a href="https://codepen.io/fancyapps/pen/RgbwrY?editors=1100" target="_blank">View demo on CodePen</a>
+				<a href="https://codepen.io/fancyapps/pen/qVNPEX?editors=1100" target="_blank">View demo on CodePen</a>
 			</p>
 
 			<p>
@@ -643,7 +654,7 @@ npm install @fancyapps/fancybox --save
 &lt;/a&gt;
 </code></pre>
 			<p class="demo">
-				<a href="https://codepen.io/fancyapps/pen/xrKxXp?editors=1100" target="_blank">View demo on CodePen</a>
+				<a href="https://codepen.io/fancyapps/pen/QOEqwe?editors=1100" target="_blank">View demo on CodePen</a>
 			</p>
 
 			<h3 id="iframe">Iframe</h3>
@@ -662,7 +673,7 @@ npm install @fancyapps/fancybox --save
 &lt;/a&gt;
 </code></pre>
 			<p class="demo">
-				<a href="https://codepen.io/fancyapps/pen/LLPYXg?editors=1000" target="_blank">View demo on CodePen</a>
+				<a href="https://codepen.io/fancyapps/pen/dZXVoJ?editors=1000" target="_blank">View demo on CodePen</a>
 			</p>
 
 
@@ -723,7 +734,7 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 })
 </code></pre>
 			<p class="demo">
-				<a href="https://codepen.io/fancyapps/pen/eRzwye?editors=1010" target="_blank">View demo on CodePen</a>
+				<a href="https://codepen.io/fancyapps/pen/rYLGeM?editors=1010" target="_blank">View demo on CodePen</a>
 			</p>
 
 
@@ -755,7 +766,7 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 	Instagram photo
 &lt;/a&gt;</code></pre>
 			<p class="demo">
-				<a href="https://codepen.io/fancyapps/pen/pwzvvr?editors=1000" target="_blank">View demo on CodePen</a>
+				<a href="https://codepen.io/fancyapps/pen/zPBEBN?editors=1000" target="_blank">View demo on CodePen</a>
 			</p>
 
 			<h3>Video dimensions</h3>
@@ -771,7 +782,7 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 	max-height : 80%;
 }</code></pre>
 			<p class="demo">
-				<a href="https://codepen.io/fancyapps/pen/zzOrBL?editors=1100" target="_blank">View demo on CodePen</a>
+				<a href="https://codepen.io/fancyapps/pen/YEWrWL?editors=1100" target="_blank">View demo on CodePen</a>
 			</p>
 
 			<p>
@@ -796,7 +807,7 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
   Vimeo video - custom color
 &lt;/a&gt;</code></pre>
 			<p class="demo">
-				<a href="http://codepen.io/fancyapps/pen/mRVNyO?editors=1000" target="_blank">View demo on CodePen</a>
+				<a href="http://codepen.io/fancyapps/pen/ooLGzE?editors=1000" target="_blank">View demo on CodePen</a>
 			</p>
 
 
@@ -814,7 +825,7 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 	}
 });</code></pre>
 			<p class="demo">
-				<a href="http://codepen.io/fancyapps/pen/Qdyeyr?editors=1010" target="_blank">View demo on CodePen</a>
+				<a href="http://codepen.io/fancyapps/pen/xPOXRL?editors=1010" target="_blank">View demo on CodePen</a>
 			</p>
 
 <!--
@@ -829,7 +840,7 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 				Quick reference for all default options as defined in the source:
 			</p>
 
-			<pre>defaults = {
+			<pre>var defaults = {
 
     // Enable infinite gallery navigation
     loop : false,
@@ -847,7 +858,7 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
     arrows : true,
 
     // Should display infobar (counter and arrows at the top)
-    infobar : false,
+    infobar : true,
 
     // Should display toolbar (buttons at the top)
     toolbar : true,
@@ -859,6 +870,8 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
         'slideShow',
         'fullScreen',
         'thumbs',
+        //'download',
+        'share',
         'close'
     ],
 
@@ -881,7 +894,7 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
         // Wait for images to load before displaying
         // Requires predefined image dimensions
         // If 'auto' - will zoom in thumbnail if 'width' and 'height' attributes are found
-        preload : &quot;auto&quot;,
+        preload : &quot;auto&quot;
 
     },
 
@@ -930,7 +943,7 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
     animationEffect : &quot;zoom&quot;,
 
     // Duration in ms for open/close animation
-    animationDuration : 366,
+    animationDuration : 500,
 
     // Should image change opacity while zooming
     // If opacity is 'auto', then opacity will be changed if image and thumbnail have different aspect ratios
@@ -964,23 +977,12 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
             '&lt;div class=&quot;fancybox-bg&quot;&gt;&lt;/div&gt;' +
             '&lt;div class=&quot;fancybox-inner&quot;&gt;' +
                 '&lt;div class=&quot;fancybox-infobar&quot;&gt;' +
-                    '&lt;button data-fancybox-prev title=&quot;{{PREV}}&quot; class=&quot;fancybox-button fancybox-button--left&quot;&gt;&lt;/button&gt;' +
-                    '&lt;div class=&quot;fancybox-infobar__body&quot;&gt;' +
-                        '&lt;span data-fancybox-index&gt;&lt;/span&gt;&amp;nbsp;/&amp;nbsp;&lt;span data-fancybox-count&gt;&lt;/span&gt;' +
-                    '&lt;/div&gt;' +
-                    '&lt;button data-fancybox-next title=&quot;{{NEXT}}&quot; class=&quot;fancybox-button fancybox-button--right&quot;&gt;&lt;/button&gt;' +
+                    '&lt;span data-fancybox-index&gt;&lt;/span&gt;&amp;nbsp;/&amp;nbsp;&lt;span data-fancybox-count&gt;&lt;/span&gt;' +
                 '&lt;/div&gt;' +
-                '&lt;div class=&quot;fancybox-toolbar&quot;&gt;' +
-                    '{{BUTTONS}}' +
-                '&lt;/div&gt;' +
-                '&lt;div class=&quot;fancybox-navigation&quot;&gt;' +
-                    '&lt;button data-fancybox-prev title=&quot;{{PREV}}&quot; class=&quot;fancybox-arrow fancybox-arrow--left&quot; /&gt;' +
-                    '&lt;button data-fancybox-next title=&quot;{{NEXT}}&quot; class=&quot;fancybox-arrow fancybox-arrow--right&quot; /&gt;' +
-                '&lt;/div&gt;' +
+                '&lt;div class=&quot;fancybox-toolbar&quot;&gt;{{buttons}}&lt;/div&gt;' +
+                '&lt;div class=&quot;fancybox-navigation&quot;&gt;{{arrows}}&lt;/div&gt;' +
                 '&lt;div class=&quot;fancybox-stage&quot;&gt;&lt;/div&gt;' +
-                '&lt;div class=&quot;fancybox-caption-wrap&quot;&gt;' +
-                    '&lt;div class=&quot;fancybox-caption&quot;&gt;&lt;/div&gt;' +
-                '&lt;/div&gt;' +
+                '&lt;div class=&quot;fancybox-caption-wrap&quot;&gt;&lt;div class=&quot;fancybox-caption&quot;&gt;&lt;/div&gt;&lt;/div&gt;' +
             '&lt;/div&gt;' +
         '&lt;/div&gt;',
 
@@ -991,14 +993,35 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
     errorTpl : '&lt;div class=&quot;fancybox-error&quot;&gt;&lt;p&gt;{{ERROR}}&lt;p&gt;&lt;/div&gt;',
 
     btnTpl : {
-        slideShow  : '&lt;button data-fancybox-play class=&quot;fancybox-button fancybox-button--play&quot; title=&quot;{{PLAY_START}}&quot;&gt;&lt;/button&gt;',
-        fullScreen : '&lt;button data-fancybox-fullscreen class=&quot;fancybox-button fancybox-button--fullscreen&quot; title=&quot;{{FULL_SCREEN}}&quot;&gt;&lt;/button&gt;',
-        thumbs     : '&lt;button data-fancybox-thumbs class=&quot;fancybox-button fancybox-button--thumbs&quot; title=&quot;{{THUMBS}}&quot;&gt;&lt;/button&gt;',
-        close      : '&lt;button data-fancybox-close class=&quot;fancybox-button fancybox-button--close&quot; title=&quot;{{CLOSE}}&quot;&gt;&lt;/button&gt;',
+
+        download   : '&lt;a download data-fancybox-download class=&quot;fancybox-button fancybox-button--download&quot; title=&quot;{{DOWNLOAD}}&quot;&gt;' +
+                        '&lt;svg viewBox=&quot;0 0 40 40&quot;&gt;' +
+                            '&lt;path d=&quot;M20,23 L20,8 L20,23 L13,16 L20,23 L27,16 L20,23 M9,28 L31,28&quot; /&gt;' +
+                        '&lt;/svg&gt;' +
+                    '&lt;/a&gt;',
+
+        close      : '&lt;button data-fancybox-close class=&quot;fancybox-button fancybox-button--close&quot; title=&quot;{{CLOSE}}&quot;&gt;' +
+                        '&lt;svg viewBox=&quot;0 0 40 40&quot;&gt;' +
+                            '&lt;path d=&quot;M10,10 L30,30 M30,10 L10,30&quot; /&gt;' +
+                        '&lt;/svg&gt;' +
+                    '&lt;/button&gt;',
 
         // This small close button will be appended to your html/inline/ajax content by default,
         // if &quot;smallBtn&quot; option is not set to false
-        smallBtn   : '&lt;button data-fancybox-close class=&quot;fancybox-close-small&quot; title=&quot;{{CLOSE}}&quot;&gt;&lt;/button&gt;'
+        smallBtn   : '&lt;button data-fancybox-close class=&quot;fancybox-close-small&quot; title=&quot;{{CLOSE}}&quot;&gt;&lt;/button&gt;',
+
+        // Arrows
+        arrowLeft : '&lt;button data-fancybox-prev class=&quot;fancybox-button fancybox-button--arrow_left&quot; title=&quot;{{PREV}}&quot;&gt;' +
+                        '&lt;svg viewBox=&quot;0 0 40 40&quot;&gt;' +
+                          '&lt;path d=&quot;M10,20 L30,20 L10,20 L18,28 L10,20 L18,12 L10,20&quot;&gt;&lt;/path&gt;' +
+                        '&lt;/svg&gt;' +
+                      '&lt;/button&gt;',
+
+        arrowRight : '&lt;button data-fancybox-next class=&quot;fancybox-button fancybox-button--arrow_right&quot; title=&quot;{{NEXT}}&quot;&gt;' +
+                      '&lt;svg viewBox=&quot;0 0 40 40&quot;&gt;' +
+                        '&lt;path d=&quot;M30,20 L10,20 L30,20 L22,28 L30,20 L22,12 L30,20&quot;&gt;&lt;/path&gt;' +
+                      '&lt;/svg&gt;' +
+                    '&lt;/button&gt;',
     },
 
     // Container is injected into this element
@@ -1009,7 +1032,7 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
     // ==============
 
     // Try to focus on the first focusable element after opening
-    autoFocus : true,
+    autoFocus : false,
 
     // Put focus back to active element after closing
     backFocus : true,
@@ -1148,7 +1171,9 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
             PLAY_START  : 'Start slideshow',
             PLAY_STOP   : 'Pause slideshow',
             FULL_SCREEN : 'Full screen',
-            THUMBS      : 'Thumbnails'
+            THUMBS      : 'Thumbnails',
+            DOWNLOAD    : 'Download',
+            SHARE       : 'Share'
         },
         'de' : {
             CLOSE       : 'Schliessen',
@@ -1158,11 +1183,13 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
             PLAY_START  : 'Diaschau starten',
             PLAY_STOP   : 'Diaschau beenden',
             FULL_SCREEN : 'Vollbild',
-            THUMBS      : 'Vorschaubilder'
+            THUMBS      : 'Vorschaubilder',
+            DOWNLOAD    : 'Herunterladen',
+            SHARE       : 'Teilen'
         }
     }
 
-}
+};
 </pre>
 
 
@@ -1196,7 +1223,7 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 &lt;/a&gt;
 </code></pre>
 				<p class="demo">
-					<a href="https://codepen.io/fancyapps/pen/vZxLyb?editors=1000" target="_blank">View demo on CodePen</a>
+					<a href="https://codepen.io/fancyapps/pen/zPBEww?editors=1000" target="_blank">View demo on CodePen</a>
 				</p>
 
 
@@ -1231,7 +1258,7 @@ $.fancybox.open( items, opts, index );
 
 
 				<p>
-					Gallery items can be collection of jQuery objects or array containing plain objects. This can be used, for example, to create content filter.
+					Gallery items can be collection of jQuery objects or array containing plain objects. This can be used, for example, to create custom click event.
 				</p>
 
 				<pre><code>var $links = $('.fancybox');
@@ -1244,9 +1271,7 @@ $links.on('click', function() {
 
 	return false;
 });</code></pre>
-			<p class="demo">
-				<a href="https://codepen.io/fancyapps/pen/YQKPYX?editors=1010" target="_blank">View demo on CodePen</a>
-			</p>
+
 
 
 
@@ -1263,7 +1288,7 @@ $links.on('click', function() {
 
 
 				<p>
-					Example of opening image gallery:
+					Example of opening image gallery programmatically:
 				</p>
 
 				<pre><code>$.fancybox.open([
@@ -1283,7 +1308,7 @@ $links.on('click', function() {
 	loop : false
 });</code></pre>
 				<p class="demo">
-					<a href="https://codepen.io/fancyapps/pen/GEKgjp?editors=1010" target="_blank">View demo on CodePen</a>
+					<a href="https://codepen.io/fancyapps/pen/WXxZMv?editors=1010" target="_blank">View demo on CodePen</a>
 				</p>
 
 				<p>
@@ -1301,7 +1326,7 @@ $links.on('click', function() {
 });
 </code></pre>
 				<p class="demo">
-					<a href="https://codepen.io/fancyapps/pen/ZyzYXR?editors=1010" target="_blank">View demo on CodePen</a>
+					<a href="https://codepen.io/fancyapps/pen/mqEqgr?editors=1010" target="_blank">View demo on CodePen</a>
 				</p>
 
 				<p>
@@ -1311,7 +1336,7 @@ $links.on('click', function() {
 
 				<pre><code>$.fancybox.open('&lt;div class=&quot;message&quot;&gt;&lt;h2&gt;Hello!&lt;/h2&gt;&lt;p&gt;You are awesome!&lt;/p&gt;&lt;/div&gt;');</code></pre>
 				<p class="demo">
-					<a href="https://codepen.io/fancyapps/pen/QgLbQY" target="_blank">View demo on CodePen</a>
+					<a href="https://codepen.io/fancyapps/pen/JOKOgP" target="_blank">View demo on CodePen</a>
 				</p>
 
 
@@ -1549,7 +1574,7 @@ thumbs : {
 	}
 })</code></pre>
 				<p class="demo">
-					<a href="https://codepen.io/fancyapps/pen/WOeQMQ?editors=1010" target="_blank">View demo on CodePen</a>
+					<a href="https://codepen.io/fancyapps/pen/QOEaWr?editors=1010" target="_blank">View demo on CodePen</a>
 				</p>
 
 				<p>
@@ -1621,6 +1646,10 @@ FAQ
 	&lt;/div&gt;
 &lt;/nav&gt;</code></pre>
 
+				<p class="demo">
+					<a href="https://codepen.io/fancyapps/pen/xPOpZx?editors=1000" target="_blank">View demo on CodePen</a>
+				</p>
+
 				<p>
 					The script measures width of the scrollbar and creates <code>compensate-for-scrollbar</code> CSS class
 					that uses this value for <code>margin-right</code> property.
@@ -1640,19 +1669,19 @@ FAQ
 					You can use <code>caption</code> option that accepts a function and is called for each group element. Example of appending image download link:
 				</p>
 
-				<pre><code>$( '[data-fancybox]' ).fancybox({
-	caption : function( instance, item ) {
-		var caption = $(this).data('caption') || '';
+				<pre><code>$( '[data-fancybox=&quot;images&quot;]' ).fancybox({
+    caption : function( instance, item ) {
+        var caption = $(this).data('caption') || '';
 
-		if ( item.type === 'image' ) {
-			caption = (caption.length ? caption + '&lt;br /&gt;' : '') + '&lt;a href=&quot;' + item.src + '&quot;&gt;Download image&lt;/a&gt;' ;
-		}
+        if ( item.type === 'image' ) {
+            caption = (caption.length ? caption + '&lt;br /&gt;' : '') + '&lt;a href=&quot;' + item.src + '&quot;&gt;Download image&lt;/a&gt;' ;
+        }
 
-		return caption;
-	}
+        return caption;
+    }
 });</code></pre>
 				<p class="demo">
-					<a href="https://codepen.io/fancyapps/pen/jwNbaW?editors=1010" target="_blank">View demo on CodePen</a>
+					<a href="https://codepen.io/fancyapps/pen/jarYdo?editors=1010" target="_blank">View demo on CodePen</a>
 				</p>
 
 
@@ -1660,16 +1689,16 @@ FAQ
 					Add current image index and image count (the total number of images in the gallery) right in the caption:
 				</p>
 
-				<pre><code>$( '[data-fancybox]' ).fancybox({
-	caption : function( instance, item ) {
-		var caption = $(this).data('caption') || '';
+				<pre><code>$( '[data-fancybox=&quot;images&quot;]' ).fancybox({
+    infobar : false,
+    caption : function( instance, item ) {
+        var caption = $(this).data('caption') || '';
 
-		return '(&lt;span data-fancybox-index&gt;&lt;/span&gt;/&lt;span data-fancybox-count&gt;&lt;/span&gt;)' + ( caption.length ? ' ' + caption : '' );
-	}
-});
-</code></pre>
+        return ( caption.length ? caption + '&lt;br /&gt;' : '' ) + 'Image &lt;span data-fancybox-index&gt;&lt;/span&gt; of &lt;span data-fancybox-count&gt;&lt;/span&gt;';
+    }
+});</code></pre>
 								<p class="demo">
-									<a href="https://codepen.io/fancyapps/pen/LLWpgO?editors=1010" target="_blank">View demo on CodePen</a>
+									<a href="https://codepen.io/fancyapps/pen/EbyQMQ?editors=1010" target="_blank">View demo on CodePen</a>
 								</p>
 
 
@@ -1684,38 +1713,39 @@ FAQ
 	}
 });</code></pre>
 				<p class="demo">
-					<a href="https://codepen.io/fancyapps/pen/bRbVaG?editors=1010" target="_blank">View demo on CodePen</a>
+					<a href="https://codepen.io/fancyapps/pen/EbyQzE?editors=1010" target="_blank">View demo on CodePen</a>
 				</p>
 
 
 				<h3 id="faq-3">3. How to create custom button in the toolbar</h3>
 
 				<p>
-					Example of creating reusable button and changing <code>href</code> property dynamically
+					Example of creating reusable button:
 				</p>
 
-				<pre><code>// Create template for download button
-$.fancybox.defaults.btnTpl.download = '&lt;a download class=&quot;fancybox-button fancybox-download&quot;&gt;&lt;/a&gt;';
+				<pre><code>// Create template for zoom button
+$.fancybox.defaults.btnTpl.zoom = '&lt;button data-fancybox-zoom class=&quot;fancybox-button fancybox-button--zoom&quot; title=&quot;Zoom&quot;&gt;' +
+        '&lt;svg viewBox=&quot;0 0 40 40&quot;&gt;' +
+            '&lt;path d=&quot;M 18,17 m -8, 0 a 8,8 0 1,0 16,0 a 8,8 0 1,0 -16,0 M25,23 L31,29 L25,23&quot;&gt;&lt;/path&gt;' +
+        '&lt;/svg&gt;' +
+    '&lt;/button&gt;';
 
-// Choose what buttons to display by default
-$.fancybox.defaults.buttons = [
-  'slideShow',
-  'fullScreen',
-  'thumbs',
-  'download',
-  'close'
-];
+// Make it clickable using event delegation
+$('body').on('click', '[data-fancybox-zoom]', function() {
+    var f = $.fancybox.getInstance();
 
-// Dynamically update download url
-$( '[data-fancybox]' ).fancybox({
-	beforeShow : function( instance, current ) {
-		$('.fancybox-download').attr('href', current.src);
-	}
+    if ( f ) {
+        f[ f.isScaledDown() ? 'scaleToActual' : 'scaleToFit' ]();
+    }
 });
-</code></pre>
+
+// Customize buttons
+$( '[data-fancybox=&quot;images&quot;]' ).fancybox({
+    buttons : ['zoom', 'close']
+});</code></pre>
 
 				<p class="demo">
-					<a href="https://codepen.io/fancyapps/pen/JJPYLL" target="_blank">View demo on CodePen</a>
+					<a href="https://codepen.io/fancyapps/pen/LOZdmK" target="_blank">View demo on CodePen</a>
 				</p>
 
 				<h3 id="faq-4">4. How to reposition thumbnail grid</h3>
@@ -1726,7 +1756,7 @@ $( '[data-fancybox]' ).fancybox({
 					(e.g., content area, caption or thumbnail grid).
 					This gives you freedom to completely change the look and feel of the modal window, if needed.
 
-					<a href="https://codepen.io/fancyapps/pen/PjYPMw" target="_blank">View demo on CodePen</a>
+					<a href="https://codepen.io/fancyapps/pen/RjRQzm" target="_blank">View demo on CodePen</a>
 				</p>
 
 				<h3 id="faq-5">5. How to disable touch gestures/swiping</h3>
@@ -1740,12 +1770,12 @@ $( '[data-fancybox]' ).fancybox({
 						 disable touch gestures completely by setting <code>touch:false</code>
 					</li>
 					<li>
-						add <code>data-selectable="true"</code> attribute to your html element.
+						add <code>data-selectable="true"</code> attribute to your html element
 					</li>
 				</ul>
 
 				<p>
-					<a href="https://codepen.io/fancyapps/pen/NjXbXw" target="_blank">View demo on CodePen</a>
+					<a href="https://codepen.io/fancyapps/pen/OOXxLa" target="_blank">View demo on CodePen</a>
 				</p>
 
 
