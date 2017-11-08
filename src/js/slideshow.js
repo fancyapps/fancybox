@@ -54,7 +54,9 @@
 			// Check if reached last element
 			if ( self.instance && self.instance.current && (force === true || self.instance.current.opts.loop || self.instance.currIndex < self.instance.group.length - 1 )) {
 				self.timer = setTimeout(function() {
-					self.instance.jumpTo( (self.instance.currIndex + 1) % self.instance.group.length );
+					if ( self.isActive ) {
+						self.instance.jumpTo( (self.instance.currIndex + 1) % self.instance.group.length );
+					}
 
 				}, self.instance.current.opts.slideShow.speed);
 
@@ -63,7 +65,6 @@
 				self.instance.idleSecondsCounter = 0;
 				self.instance.showControls();
 			}
-
 		},
 
 		clear : function() {

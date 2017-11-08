@@ -17,9 +17,10 @@
 				'</button>'
 		},
 		thumbs : {
-			autoStart   : false,
-            hideOnClose : true
-		}
+			autoStart   : false,                 // Display thumbnails on opening
+			hideOnClose : true,                  // Hide thumbnail grid when closing animation starts
+			parentEl    : '.fancybox-container'  // Container is injected into this element
+        }
 	});
 
 	var FancyThumbs = function( instance ) {
@@ -35,44 +36,53 @@
 		isVisible	: false,
 
 		init : function() {
-			var self = this;
+			var self = this,
+				instance = self.instance;
 
-			var first  = self.instance.group[0],
-				second = self.instance.group[1];
+			// Enable thumbs if at least two group items have thumbnails
+			var first  = instance.group[0],
+				second = instance.group[1];
 
-			self.$button = self.instance.$refs.toolbar.find( '[data-fancybox-thumbs]' );
+			self.opts = instance.group[ instance.currIndex ].opts.thumbs;
 
-			if ( self.instance.group.length > 1 && self.instance.group[ self.instance.currIndex ].opts.thumbs && (
+			self.$button = instance.$refs.toolbar.find( '[data-fancybox-thumbs]' );
+
+			if ( self.opts && first && second && (
 		    		( first.type == 'image'  || first.opts.thumb  || first.opts.$thumb ) &&
 		    		( second.type == 'image' || second.opts.thumb || second.opts.$thumb )
 			)) {
 
-				self.$button.on('click', function() {
+				self.$button.show().on('click', function() {
 					self.toggle();
 				});
 
 				self.isActive = true;
+
+				if ( self.opts.autoStart === true ) {
+					self.show();
+				}
 
 			} else {
 				self.$button.hide();
 
 				self.isActive = false;
 			}
-
 		},
 
 		create : function() {
-			var instance = this.instance,
+			var self = this,
+				instance = self.instance,
+				parentEl = self.opts.parentEl,
 				list,
 				src;
 
-			this.$grid = $('<div class="fancybox-thumbs"></div>').appendTo( instance.$refs.container );
+			self.$grid = $('<div class="fancybox-thumbs"></div>').appendTo( instance.$refs.container.find( parentEl ).addBack().filter( parentEl ) );
 
+			// Build list HTML
 			list = '<ul>';
 
 			$.each(instance.group, function( i, item ) {
-
-				src = item.opts.thumb || ( item.opts.$thumb ? item.opts.$thumb.attr('src') : null );
+				src = item.opts.thumb || ( item.opts.$thumb ? item.opts.$thumb.attr( 'src' ) : null );
 
 				if ( !src && item.type === 'image' ) {
 					src = item.src;
@@ -81,17 +91,15 @@
 				if ( src && src.length ) {
 					list += '<li data-index="' + i + '"  tabindex="0" class="fancybox-thumbs-loading"><img data-src="' + src + '" /></li>';
 				}
-
 			});
 
 			list += '</ul>';
 
-			this.$list = $( list ).appendTo( this.$grid ).on('click', 'li', function() {
+			self.$list = $( list ).appendTo( self.$grid ).on('click', 'li', function() {
 				instance.jumpTo( $(this).data('index') );
 			});
 
-			this.$list.find('img').hide().one('load', function() {
-
+			self.$list.find( 'img' ).hide().one('load', function() {
 				var $parent		= $(this).parent().removeClass( 'fancybox-thumbs-loading' ),
 					thumbWidth	= $parent.outerWidth(),
 					thumbHeight	= $parent.outerHeight(),
@@ -103,12 +111,11 @@
 				width  = this.naturalWidth	|| this.width;
 				height = this.naturalHeight	|| this.height;
 
-				// Calculate thumbnail width/height and center it
-
+				// Calculate thumbnail dimensions; center vertically and horizontally
 				widthRatio  = width  / thumbWidth;
 				heightRatio = height / thumbHeight;
 
-				if ( widthRatio >= 1 && heightRatio >= 1 ) {
+				if (widthRatio >= 1 && heightRatio >= 1) {
 					if (widthRatio > heightRatio) {
 						width  = width / heightRatio;
 						height = thumbHeight;
@@ -130,39 +137,41 @@
 			.each(function() {
 				this.src = $( this ).data( 'src' );
 			});
-
 		},
 
-		focus : function() {
+		focus : function( duration ) {
+			var $list = this.$list;
+			var thumb, thumbPos;
 
 			if ( this.instance.current ) {
-				this.$list
-					.children()
+				thumb = $list.children()
 					.removeClass( 'fancybox-thumbs-active' )
-					.filter( '[data-index="' + this.instance.current.index  + '"]' )
-					.addClass( 'fancybox-thumbs-active' )
-					.focus();
+					.filter('[data-index="' + this.instance.current.index  + '"]')
+					.addClass('fancybox-thumbs-active');
+
+				thumbPos = thumb.position();
+
+				// Check if need to scroll to make current thumb visible
+				if ( thumbPos.top < 0 || thumbPos.top > $list.height() - thumb.outerHeight() ) {
+					$list.stop().animate({ 'scrollTop' : $list.scrollTop() + thumbPos.top }, duration);
+
+				} else if ( thumbPos.left < 0 || thumbPos.left > $list.width() - thumb.outerWidth() ) {
+					$list.stop().animate({ 'scrollLeft' : $list.scrollLeft() + thumbPos.left }, duration);
+				}
 			}
-
-		},
-
-		close : function() {
-			this.$grid.hide();
 		},
 
 		update : function() {
-
 			this.instance.$refs.container.toggleClass( 'fancybox-show-thumbs', this.isVisible );
 
 			if ( this.isVisible ) {
-
 				if ( !this.$grid ) {
 					this.create();
 				}
 
 				this.instance.trigger( 'onThumbsShow' );
 
-				this.focus();
+				this.focus( 0 );
 
 			} else if ( this.$grid ) {
 				this.instance.trigger( 'onThumbsHide' );
@@ -170,7 +179,6 @@
 
 			// Update content position
 			this.instance.update();
-
 		},
 
 		hide : function() {
@@ -187,38 +195,23 @@
 			this.isVisible = !this.isVisible;
 			this.update();
 		}
-
 	});
 
 	$(document).on({
 
 		'onInit.fb' : function(e, instance) {
+			var Thumbs;
+
 			if ( instance && !instance.Thumbs ) {
-				instance.Thumbs = new FancyThumbs( instance );
+				Thumbs = instance.Thumbs = new FancyThumbs( instance );
 			}
 		},
 
 		'beforeShow.fb' : function(e, instance, item, firstRun) {
 			var Thumbs = instance && instance.Thumbs;
 
-			if ( !Thumbs || !Thumbs.isActive ) {
-				return;
-			}
-
-			if ( item.modal ) {
-				Thumbs.$button.hide();
-
-				Thumbs.hide();
-
-				return;
-			}
-
-			if ( firstRun && item.opts.thumbs.autoStart === true ) {
-				Thumbs.show();
-			}
-
-			if ( Thumbs.isVisible ) {
-				Thumbs.focus();
+			if ( Thumbs && Thumbs.isVisible ) {
+				Thumbs.focus( firstRun ? 0 : 250 );
 			}
 		},
 
@@ -236,11 +229,11 @@
 		'beforeClose.fb' : function( e, instance ) {
 			var Thumbs = instance && instance.Thumbs;
 
-			if ( Thumbs && Thumbs.isVisible && instance.opts.thumbs.hideOnClose !== false ) {
-				Thumbs.close();
+			if ( Thumbs && Thumbs.isVisible && Thumbs.opts.hideOnClose !== false ) {
+				Thumbs.$grid.hide();
 			}
 		}
 
 	});
 
-}( document, window.jQuery || jQuery ));
+}(document, window.jQuery));

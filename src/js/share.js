@@ -39,11 +39,18 @@
 
 	$(document).on('click', '[data-fancybox-share]', function() {
 
-		var f = $.fancybox.getInstance();
+		var f = $.fancybox.getInstance(),
+			tpl;
 
 		if ( f ) {
+			tpl = f.current.opts.share.tpl.replace( /\{\{src\}\}/g, encodeURIComponent( f.current.opts.hash === false ? f.current.src : window.location ) );
+
+			if ( f.$caption ) {
+				tpl = tpl.replace( /\{\{descr\}\}/g, encodeURIComponent( f.$caption.text() ) );
+			}
+
 			$.fancybox.open({
-				src  : f.translate( f, f.current.opts.share.tpl.replace( /\{\{src\}\}/g, encodeURI( f.current.src ) ).replace( /\{\{descr\}\}/g, encodeURI( f.current.opts.caption || '' ) ) ),
+				src  : f.translate( f, tpl ),
 				type : 'html',
 				opts : {
 					autoFocus : false,

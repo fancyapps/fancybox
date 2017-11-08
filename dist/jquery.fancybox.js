@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.2.0
+// fancyBox v3.2.1
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -23,7 +23,9 @@
 
     if ( $.fn.fancybox ) {
 
-        'console' in window && console.log( 'fancyBox already initialized' );
+        if ( 'console' in window ) {
+            console.log( 'fancyBox already initialized' );
+        }
 
         return;
     }
@@ -61,8 +63,8 @@
             'slideShow',
             'fullScreen',
             'thumbs',
-            //'download',
             'share',
+            //'download',
             'close'
         ],
 
@@ -123,6 +125,9 @@
             }
 
         },
+
+        // Default content type if cannot be detected automatically
+        defaultType : 'image',
 
         // Open/close animation type
         // Possible values:
@@ -268,8 +273,9 @@
         },
 
         thumbs : {
-            autoStart   : false,   // Display thumbnails on opening
-            hideOnClose : true     // Hide thumbnail grid when closing animation starts
+            autoStart   : false,                 // Display thumbnails on opening
+            hideOnClose : true,                  // Hide thumbnail grid when closing animation starts
+            parentEl    : '.fancybox-container'  // Container is injected into this element
         },
 
         // Callbacks
@@ -334,6 +340,8 @@
         // =============================================
 
         mobile : {
+            margin : 0,
+
             clickContent : function( current, event ) {
                 return current.type === 'image' ? 'toggleControls' : false;
             },
@@ -485,8 +493,7 @@
         // Collection of gallery objects
         self.slides = {};
 
-        self.init( content );
-
+        self.init();
     };
 
     $.extend(FancyBox.prototype, {
@@ -496,12 +503,12 @@
 
         init : function() {
             var self = this,
-             firstItem = self.group[ self.currIndex ],
-             firstItemOpts  = firstItem.opts,
-             scrollbarWidth = $.fancybox.scrollbarWidth,
-             $scrollDiv,
-             $container,
-             buttonStr;
+                firstItem      = self.group[ self.currIndex ],
+                firstItemOpts  = firstItem.opts,
+                scrollbarWidth = $.fancybox.scrollbarWidth,
+                $scrollDiv,
+                $container,
+                buttonStr;
 
             self.scrollTop  = $D.scrollTop();
             self.scrollLeft = $D.scrollLeft();
@@ -564,20 +571,20 @@
                 .addClass( 'fancybox-is-hidden' )
                 .addClass( firstItemOpts.baseClass )
                 .data( 'FancyBox', self )
-                .prependTo( firstItemOpts.parentEl );
+                .appendTo( firstItemOpts.parentEl );
 
             // Create object holding references to jQuery wrapped nodes
             self.$refs = {
                 container : $container
             };
 
-            [ 'bg', 'inner', 'infobar', 'toolbar', 'stage', 'caption' ].forEach(function(item) {
+            [ 'bg', 'inner', 'infobar', 'toolbar', 'stage', 'caption', 'navigation' ].forEach(function(item) {
                 self.$refs[ item ] = $container.find( '.fancybox-' + item );
             });
 
             self.trigger( 'onInit' );
 
-            // Bring to front and enable events
+            // Enable events, deactive previous instances
             self.activate();
 
             // Build slides, load and reveal content
@@ -614,7 +621,6 @@
             $.each(items, function( i, item ) {
                 var obj  = {},
                     opts = {},
-                    data = [],
                     $item,
                     type,
                     src,
@@ -690,7 +696,12 @@
                     }
                 }
 
-                obj.type = type;
+                if ( type ) {
+                    obj.type = type;
+
+                } else {
+                    self.trigger( 'objectNeedsType', obj );
+                }
 
 
                 // Step 3 - Some adjustments
@@ -717,7 +728,7 @@
                 }
 
                 // Make sure we have caption as a string or jQuery object
-                if ( !obj.opts.caption instanceof jQuery ) {
+                if ( !( obj.opts.caption instanceof $ ) ) {
                     obj.opts.caption = obj.opts.caption === undefined ? '' : obj.opts.caption + '';
                 }
 
@@ -929,7 +940,6 @@
                 });
 
                 self.idleInterval = window.setInterval(function() {
-
                     self.idleSecondsCounter++;
 
                     if ( self.idleSecondsCounter >= self.group[ self.currIndex ].opts.idleTime ) {
@@ -948,7 +958,7 @@
         // Remove events added by the core
         // ===============================
 
-        removeEvents : function () {
+        removeEvents : function() {
             var self = this;
 
             $W.off( 'orientationchange.fb resize.fb' );
@@ -1322,10 +1332,6 @@
 
             if ( margin.length == 2 ) {
                 margin = [ margin[0], margin[1], margin[0], margin[1] ];
-            }
-
-            if ( $W.width() < 800 ) {
-                margin = [ 0, 0, 0, 0 ];
             }
 
             // We can not use $slide width here, because it can have different diemensions while in transiton
@@ -1995,10 +2001,6 @@
 
             slide.$content = $( content ).appendTo( slide.$slide );
 
-            if ( slide.opts.smallBtn && !slide.$smallBtn ) {
-                slide.$smallBtn = $( self.translate( slide, slide.opts.btnTpl.smallBtn ) ).appendTo( slide.$content.filter('div').first() );
-            }
-
             this.afterLoad( slide );
         },
 
@@ -2066,6 +2068,10 @@
             self.trigger( 'afterLoad', slide );
 
             self.hideLoading( slide );
+
+            if ( slide.opts.smallBtn && !slide.$smallBtn ) {
+                slide.$smallBtn = $( self.translate( slide, slide.opts.btnTpl.smallBtn ) ).appendTo( slide.$content.filter('div,form').first() );
+            }
 
             if ( slide.opts.protect && slide.$content && !slide.hasError ) {
 
@@ -2371,15 +2377,17 @@
                 // Skip self and closing instances
                 if (instance && instance.id !== self.id && !instance.isClosing) {
                     instance.trigger( 'onDeactivate' );
+
+                    instance.removeEvents();
+
+                    instance.isVisible = false;
                 }
 
             });
 
-            if ( self.current || self.isIdle ) {
-                if ( self.$refs.container.index() > 0 ) {
-                    self.$refs.container.prependTo( document.body );
-                }
+            self.isVisible = true;
 
+            if ( self.current || self.isIdle ) {
                 self.update();
 
                 self.updateControls();
@@ -2388,7 +2396,6 @@
             self.trigger( 'onActivate' );
 
             self.addEvents();
-
         },
 
 
@@ -2583,7 +2590,7 @@
                 return rez;
             }
 
-            if ( name === 'afterClose' ) {
+            if ( name === 'afterClose' || !self.$refs ) {
                 $D.trigger( name + '.fb', args );
 
             } else {
@@ -2603,7 +2610,8 @@
             var current  = self.current,
                 index    = current.index,
                 caption  = current.opts.caption,
-                $caption = self.$refs.caption;
+                $container = self.$refs.container,
+                $caption   = self.$refs.caption;
 
             // Recalculate content dimensions
             current.$slide.trigger( 'refresh' );
@@ -2615,16 +2623,16 @@
             }
 
             // Update info and navigation elements
-            $('[data-fancybox-count]').html( self.group.length );
-            $('[data-fancybox-index]').html( index + 1 );
+            $container.find('[data-fancybox-count]').html( self.group.length );
+            $container.find('[data-fancybox-index]').html( index + 1 );
 
-            $('[data-fancybox-prev]').prop( 'disabled', ( !current.opts.loop && index <= 0 ) );
-            $('[data-fancybox-next]').prop( 'disabled', ( !current.opts.loop && index >= self.group.length - 1 ) );
+            $container.find('[data-fancybox-prev]').prop( 'disabled', ( !current.opts.loop && index <= 0 ) );
+            $container.find('[data-fancybox-next]').prop( 'disabled', ( !current.opts.loop && index >= self.group.length - 1 ) );
 
             if ( current.type === 'image' ) {
-                $('[data-fancybox-download]').attr( 'href', current.opts.image.src || current.src );
+                $container.find('[data-fancybox-download]').attr( 'href', current.opts.image.src || current.src );
             } else {
-                $('[data-fancybox-download]').hide();
+                $container.find('[data-fancybox-download]').hide();
             }
         },
 
@@ -2682,7 +2690,7 @@
 
     $.fancybox = {
 
-        version  : "3.2.0",
+        version  : "3.2.1",
         defaults : defaults,
 
 
@@ -2699,7 +2707,7 @@
         // ======================================================
 
         getInstance : function ( command ) {
-            var instance = $('.fancybox-container:not(".fancybox-is-closing"):first').data( 'FancyBox' );
+            var instance = $('.fancybox-container:not(".fancybox-is-closing"):last').data( 'FancyBox' );
             var args     = Array.prototype.slice.call(arguments, 1);
 
             if ( instance instanceof FancyBox ) {
@@ -2881,8 +2889,6 @@
         // =============================
 
         animate : function ( $el, to, duration, callback, leaveAnimationName ) {
-            var event = transitionEnd || 'transitionend';
-
             if ( $.isFunction( duration ) ) {
                 callback = duration;
                 duration = null;
@@ -2892,14 +2898,14 @@
                 $el.removeAttr('style');
             }
 
-            $el.on( event, function(e) {
+            $el.on( ( transitionEnd || 'transitionend' ), function(e) {
 
                 // Skip events from child elements and z-index change
                 if ( e && e.originalEvent && ( !$el.is( e.originalEvent.target ) || e.originalEvent.propertyName == 'z-index' ) ) {
                     return;
                 }
 
-                $el.off( event );
+                $.fancybox.stop( $el );
 
                 if ( $.isPlainObject( to ) ) {
 
@@ -2936,6 +2942,10 @@
                 $el.addClass( to );
             }
 
+            if ( to.scaleX && $el.hasClass( 'fancybox-image-wrap' ) ) {
+                $el.parent().addClass( 'fancybox-is-scaling' );
+            }
+
             $el.data("timer", setTimeout(function() {
                 $el.trigger( 'transitionend' );
             }, duration + 16));
@@ -2945,7 +2955,11 @@
         stop : function( $el ) {
             clearTimeout( $el.data("timer") );
 
-            $el.off( transitionEnd );
+            $el.off( transitionEnd || 'transitionend' );
+
+            if ( $el.hasClass( 'fancybox-image-wrap' ) ) {
+                $el.parent().removeClass( 'fancybox-is-scaling' );
+            }
         }
 
     };
@@ -2970,7 +2984,7 @@
 
         // Get all related items and find index for clicked one
         if ( value ) {
-            items = opts.selector ? $( opts.selector ) : ( e.data ? e.data.items : [] ),
+            items = opts.selector ? $( opts.selector ) : ( e.data ? e.data.items : [] );
             items = items.length ? items.filter( '[data-fancybox="' + value + '"]' ) : $( '[data-fancybox="' + value + '"]' );
 
             index = items.index( $target );
@@ -3148,101 +3162,89 @@
 		}
 	};
 
-	$(document).on('onInit.fb', function (e, instance) {
+	$(document).on('objectNeedsType.fb', function (e, instance, item) {
 
-		$.each(instance.group, function( i, item ) {
+		var url	 = item.src || '',
+			type = false,
+			media,
+			thumb,
+			rez,
+			params,
+			urlParams,
+			paramObj,
+			provider;
 
-			var url	 = item.src || '',
-				type = false,
-				media,
-				thumb,
-				rez,
-				params,
-				urlParams,
-				o,
-				provider;
+		media = $.extend( true, {}, defaults, item.opts.media );
 
-			// Skip items that already have content type
-			if ( item.type ) {
+		// Look for any matching media type
+		$.each(media, function ( providerName, providerOpts ) {
+			rez = url.match( providerOpts.matcher );
+
+			if ( !rez ) {
 				return;
 			}
 
-			media = $.extend( true, {}, defaults, item.opts.media );
+			type     = providerOpts.type;
+			paramObj = {};
 
-			// Look for any matching media type
-			$.each(media, function ( n, el ) {
-				rez = url.match(el.matcher);
-				o   = {};
-				provider = n;
+			if ( providerOpts.paramPlace && rez[ providerOpts.paramPlace ] ) {
+				urlParams = rez[ providerOpts.paramPlace ];
 
-				if (!rez) {
-					return;
+				if ( urlParams[ 0 ] == '?' ) {
+					urlParams = urlParams.substring(1);
 				}
 
-				type = el.type;
+				urlParams = urlParams.split('&');
 
-				if ( el.paramPlace && rez[ el.paramPlace ] ) {
-					urlParams = rez[ el.paramPlace ];
+				for ( var m = 0; m < urlParams.length; ++m ) {
+					var p = urlParams[ m ].split('=', 2);
 
-					if ( urlParams[ 0 ] == '?' ) {
-						urlParams = urlParams.substring(1);
-					}
-
-					urlParams = urlParams.split('&');
-
-					for ( var m = 0; m < urlParams.length; ++m ) {
-						var p = urlParams[ m ].split('=', 2);
-
-						if ( p.length == 2 ) {
-							o[ p[0] ] = decodeURIComponent( p[1].replace(/\+/g, " ") );
-						}
+					if ( p.length == 2 ) {
+						paramObj[ p[0] ] = decodeURIComponent( p[1].replace(/\+/g, " ") );
 					}
 				}
-
-				params = $.extend( true, {}, el.params, item.opts[ n ], o );
-
-				url   = $.type(el.url) === "function" ? el.url.call(this, rez, params, item) : format(el.url, rez, params);
-				thumb = $.type(el.thumb) === "function" ? el.thumb.call(this, rez, params, item) : format(el.thumb, rez);
-
-				if ( provider === 'vimeo' ) {
-					url = url.replace('&%23', '#');
-				}
-
-				return false;
-			});
-
-			// If it is found, then change content type and update the url
-
-			if ( type ) {
-				item.src  = url;
-				item.type = type;
-
-				if ( !item.opts.thumb && !( item.opts.$thumb && item.opts.$thumb.length ) ) {
-					item.opts.thumb = thumb;
-				}
-
-				if ( type === 'iframe' ) {
-					$.extend(true, item.opts, {
-						iframe : {
-							preload : false,
-							attr : {
-								scrolling : "no"
-							}
-						}
-					});
-
-					item.contentProvider = provider;
-
-					item.opts.slideClass += ' fancybox-slide--' + ( provider == 'gmap_place' || provider == 'gmap_search' ? 'map' : 'video' );
-				}
-
-			} else if ( url ) {
-
-				// If no content type is found, then set it to `image` as fallback
-				item.type = 'image';
 			}
 
+			params = $.extend( true, {}, providerOpts.params, item.opts[ providerName ], paramObj );
+
+			url   = $.type( providerOpts.url ) === "function" ? providerOpts.url.call( this, rez, params, item ) : format( providerOpts.url, rez, params );
+			thumb = $.type( providerOpts.thumb ) === "function" ? providerOpts.thumb.call( this, rez, params, item ) : format( providerOpts.thumb, rez );
+
+			if ( providerName === 'vimeo' ) {
+				url = url.replace('&%23', '#');
+			}
+
+			return false;
 		});
+
+		// If it is found, then change content type and update the url
+
+		if ( type ) {
+			item.src  = url;
+			item.type = type;
+
+			if ( !item.opts.thumb && !( item.opts.$thumb && item.opts.$thumb.length ) ) {
+				item.opts.thumb = thumb;
+			}
+
+			if ( type === 'iframe' ) {
+				$.extend(true, item.opts, {
+					iframe : {
+						preload : false,
+						attr : {
+							scrolling : "no"
+						}
+					}
+				});
+
+				item.contentProvider = provider;
+
+				item.opts.slideClass += ' fancybox-slide--' + ( provider == 'gmap_place' || provider == 'gmap_search' ? 'map' : 'video' );
+			}
+
+		} else if ( url ) {
+			item.type = item.opts.defaultType;
+		}
 
 	});
 
@@ -4227,7 +4229,9 @@
 			// Check if reached last element
 			if ( self.instance && self.instance.current && (force === true || self.instance.current.opts.loop || self.instance.currIndex < self.instance.group.length - 1 )) {
 				self.timer = setTimeout(function() {
-					self.instance.jumpTo( (self.instance.currIndex + 1) % self.instance.group.length );
+					if ( self.isActive ) {
+						self.instance.jumpTo( (self.instance.currIndex + 1) % self.instance.group.length );
+					}
 
 				}, self.instance.current.opts.slideShow.speed);
 
@@ -4236,7 +4240,6 @@
 				self.instance.idleSecondsCounter = 0;
 				self.instance.showControls();
 			}
-
 		},
 
 		clear : function() {
@@ -4586,9 +4589,10 @@
 				'</button>'
 		},
 		thumbs : {
-			autoStart   : false,
-            hideOnClose : true
-		}
+			autoStart   : false,                 // Display thumbnails on opening
+			hideOnClose : true,                  // Hide thumbnail grid when closing animation starts
+			parentEl    : '.fancybox-container'  // Container is injected into this element
+        }
 	});
 
 	var FancyThumbs = function( instance ) {
@@ -4604,44 +4608,53 @@
 		isVisible	: false,
 
 		init : function() {
-			var self = this;
+			var self = this,
+				instance = self.instance;
 
-			var first  = self.instance.group[0],
-				second = self.instance.group[1];
+			// Enable thumbs if at least two group items have thumbnails
+			var first  = instance.group[0],
+				second = instance.group[1];
 
-			self.$button = self.instance.$refs.toolbar.find( '[data-fancybox-thumbs]' );
+			self.opts = instance.group[ instance.currIndex ].opts.thumbs;
 
-			if ( self.instance.group.length > 1 && self.instance.group[ self.instance.currIndex ].opts.thumbs && (
+			self.$button = instance.$refs.toolbar.find( '[data-fancybox-thumbs]' );
+
+			if ( self.opts && first && second && (
 		    		( first.type == 'image'  || first.opts.thumb  || first.opts.$thumb ) &&
 		    		( second.type == 'image' || second.opts.thumb || second.opts.$thumb )
 			)) {
 
-				self.$button.on('click', function() {
+				self.$button.show().on('click', function() {
 					self.toggle();
 				});
 
 				self.isActive = true;
+
+				if ( self.opts.autoStart === true ) {
+					self.show();
+				}
 
 			} else {
 				self.$button.hide();
 
 				self.isActive = false;
 			}
-
 		},
 
 		create : function() {
-			var instance = this.instance,
+			var self = this,
+				instance = self.instance,
+				parentEl = self.opts.parentEl,
 				list,
 				src;
 
-			this.$grid = $('<div class="fancybox-thumbs"></div>').appendTo( instance.$refs.container );
+			self.$grid = $('<div class="fancybox-thumbs"></div>').appendTo( instance.$refs.container.find( parentEl ).addBack().filter( parentEl ) );
 
+			// Build list HTML
 			list = '<ul>';
 
 			$.each(instance.group, function( i, item ) {
-
-				src = item.opts.thumb || ( item.opts.$thumb ? item.opts.$thumb.attr('src') : null );
+				src = item.opts.thumb || ( item.opts.$thumb ? item.opts.$thumb.attr( 'src' ) : null );
 
 				if ( !src && item.type === 'image' ) {
 					src = item.src;
@@ -4650,17 +4663,15 @@
 				if ( src && src.length ) {
 					list += '<li data-index="' + i + '"  tabindex="0" class="fancybox-thumbs-loading"><img data-src="' + src + '" /></li>';
 				}
-
 			});
 
 			list += '</ul>';
 
-			this.$list = $( list ).appendTo( this.$grid ).on('click', 'li', function() {
+			self.$list = $( list ).appendTo( self.$grid ).on('click', 'li', function() {
 				instance.jumpTo( $(this).data('index') );
 			});
 
-			this.$list.find('img').hide().one('load', function() {
-
+			self.$list.find( 'img' ).hide().one('load', function() {
 				var $parent		= $(this).parent().removeClass( 'fancybox-thumbs-loading' ),
 					thumbWidth	= $parent.outerWidth(),
 					thumbHeight	= $parent.outerHeight(),
@@ -4672,12 +4683,11 @@
 				width  = this.naturalWidth	|| this.width;
 				height = this.naturalHeight	|| this.height;
 
-				// Calculate thumbnail width/height and center it
-
+				// Calculate thumbnail dimensions; center vertically and horizontally
 				widthRatio  = width  / thumbWidth;
 				heightRatio = height / thumbHeight;
 
-				if ( widthRatio >= 1 && heightRatio >= 1 ) {
+				if (widthRatio >= 1 && heightRatio >= 1) {
 					if (widthRatio > heightRatio) {
 						width  = width / heightRatio;
 						height = thumbHeight;
@@ -4699,39 +4709,41 @@
 			.each(function() {
 				this.src = $( this ).data( 'src' );
 			});
-
 		},
 
-		focus : function() {
+		focus : function( duration ) {
+			var $list = this.$list;
+			var thumb, thumbPos;
 
 			if ( this.instance.current ) {
-				this.$list
-					.children()
+				thumb = $list.children()
 					.removeClass( 'fancybox-thumbs-active' )
-					.filter( '[data-index="' + this.instance.current.index  + '"]' )
-					.addClass( 'fancybox-thumbs-active' )
-					.focus();
+					.filter('[data-index="' + this.instance.current.index  + '"]')
+					.addClass('fancybox-thumbs-active');
+
+				thumbPos = thumb.position();
+
+				// Check if need to scroll to make current thumb visible
+				if ( thumbPos.top < 0 || thumbPos.top > $list.height() - thumb.outerHeight() ) {
+					$list.stop().animate({ 'scrollTop' : $list.scrollTop() + thumbPos.top }, duration);
+
+				} else if ( thumbPos.left < 0 || thumbPos.left > $list.width() - thumb.outerWidth() ) {
+					$list.stop().animate({ 'scrollLeft' : $list.scrollLeft() + thumbPos.left }, duration);
+				}
 			}
-
-		},
-
-		close : function() {
-			this.$grid.hide();
 		},
 
 		update : function() {
-
 			this.instance.$refs.container.toggleClass( 'fancybox-show-thumbs', this.isVisible );
 
 			if ( this.isVisible ) {
-
 				if ( !this.$grid ) {
 					this.create();
 				}
 
 				this.instance.trigger( 'onThumbsShow' );
 
-				this.focus();
+				this.focus( 0 );
 
 			} else if ( this.$grid ) {
 				this.instance.trigger( 'onThumbsHide' );
@@ -4739,7 +4751,6 @@
 
 			// Update content position
 			this.instance.update();
-
 		},
 
 		hide : function() {
@@ -4756,38 +4767,23 @@
 			this.isVisible = !this.isVisible;
 			this.update();
 		}
-
 	});
 
 	$(document).on({
 
 		'onInit.fb' : function(e, instance) {
+			var Thumbs;
+
 			if ( instance && !instance.Thumbs ) {
-				instance.Thumbs = new FancyThumbs( instance );
+				Thumbs = instance.Thumbs = new FancyThumbs( instance );
 			}
 		},
 
 		'beforeShow.fb' : function(e, instance, item, firstRun) {
 			var Thumbs = instance && instance.Thumbs;
 
-			if ( !Thumbs || !Thumbs.isActive ) {
-				return;
-			}
-
-			if ( item.modal ) {
-				Thumbs.$button.hide();
-
-				Thumbs.hide();
-
-				return;
-			}
-
-			if ( firstRun && item.opts.thumbs.autoStart === true ) {
-				Thumbs.show();
-			}
-
-			if ( Thumbs.isVisible ) {
-				Thumbs.focus();
+			if ( Thumbs && Thumbs.isVisible ) {
+				Thumbs.focus( firstRun ? 0 : 250 );
 			}
 		},
 
@@ -4805,14 +4801,14 @@
 		'beforeClose.fb' : function( e, instance ) {
 			var Thumbs = instance && instance.Thumbs;
 
-			if ( Thumbs && Thumbs.isVisible && instance.opts.thumbs.hideOnClose !== false ) {
-				Thumbs.close();
+			if ( Thumbs && Thumbs.isVisible && Thumbs.opts.hideOnClose !== false ) {
+				Thumbs.$grid.hide();
 			}
 		}
 
 	});
 
-}( document, window.jQuery || jQuery ));
+}(document, window.jQuery));
 
 //// ==========================================================================
 //
@@ -4855,11 +4851,18 @@
 
 	$(document).on('click', '[data-fancybox-share]', function() {
 
-		var f = $.fancybox.getInstance();
+		var f = $.fancybox.getInstance(),
+			tpl;
 
 		if ( f ) {
+			tpl = f.current.opts.share.tpl.replace( /\{\{src\}\}/g, encodeURIComponent( f.current.opts.hash === false ? f.current.src : window.location ) );
+
+			if ( f.$caption ) {
+				tpl = tpl.replace( /\{\{descr\}\}/g, encodeURIComponent( f.$caption.text() ) );
+			}
+
 			$.fancybox.open({
-				src  : f.translate( f, f.current.opts.share.tpl.replace( /\{\{src\}\}/g, encodeURI( f.current.src ) ).replace( /\{\{descr\}\}/g, encodeURI( f.current.opts.caption || '' ) ) ),
+				src  : f.translate( f, tpl ),
 				type : 'html',
 				opts : {
 					autoFocus : false,
@@ -4972,6 +4975,11 @@
 	// Start when DOM becomes ready
     $(function() {
 
+		// Check if user has disabled this module
+		if ( $.fancybox.defaults.hash === false ) {
+			return;
+		}
+
 		// Update hash when opening/closing fancyBox
 	    $(document).on({
 			'onInit.fb' : function( e, instance ) {
@@ -4988,7 +4996,6 @@
 				if ( gallery && url.gallery && gallery == url.gallery ) {
 					instance.currIndex = url.index - 1;
 				}
-
 			},
 
 			'beforeShow.fb' : function( e, instance, current ) {
@@ -5080,8 +5087,9 @@
 		});
 
 		// Check current hash and trigger click event on matching element to start fancyBox, if needed
-		triggerFromUrl( parseUrl() );
-
+		setTimeout(function() {
+			triggerFromUrl( parseUrl() );
+		}, 50);
     });
 
 }( document, window, window.jQuery || jQuery ));

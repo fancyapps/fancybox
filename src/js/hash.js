@@ -98,6 +98,11 @@
 	// Start when DOM becomes ready
     $(function() {
 
+		// Check if user has disabled this module
+		if ( $.fancybox.defaults.hash === false ) {
+			return;
+		}
+
 		// Update hash when opening/closing fancyBox
 	    $(document).on({
 			'onInit.fb' : function( e, instance ) {
@@ -114,7 +119,6 @@
 				if ( gallery && url.gallery && gallery == url.gallery ) {
 					instance.currIndex = url.index - 1;
 				}
-
 			},
 
 			'beforeShow.fb' : function( e, instance, current ) {
@@ -206,8 +210,9 @@
 		});
 
 		// Check current hash and trigger click event on matching element to start fancyBox, if needed
-		triggerFromUrl( parseUrl() );
-
+		setTimeout(function() {
+			triggerFromUrl( parseUrl() );
+		}, 50);
     });
 
 }( document, window, window.jQuery || jQuery ));

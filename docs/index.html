@@ -870,13 +870,13 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
         'slideShow',
         'fullScreen',
         'thumbs',
-        //'download',
         'share',
+        //'download',
         'close'
     ],
 
     // Detect &quot;idle&quot; time in seconds
-    idleTime : 4,
+    idleTime : 3,
 
     // Should display buttons at top right corner of the content
     // If 'auto' - they will be created for content having type 'html', 'inline' or 'ajax'
@@ -932,6 +932,9 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
         }
 
     },
+
+    // Default content type if cannot be detected automatically
+    defaultType : 'image',
 
     // Open/close animation type
     // Possible values:
@@ -1077,8 +1080,9 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
     },
 
     thumbs : {
-        autoStart   : false,   // Display thumbnails on opening
-        hideOnClose : true     // Hide thumbnail grid when closing animation starts
+        autoStart   : false,                 // Display thumbnails on opening
+        hideOnClose : true,                  // Hide thumbnail grid when closing animation starts
+        parentEl    : '.fancybox-container'  // Container is injected into this element
     },
 
     // Callbacks
@@ -1558,8 +1562,9 @@ slideShow : {
 },
 
 thumbs : {
-	autoStart   : false, // Display thumbnails on opening
-	hideOnClose : true   // Hide thumbnail grid when closing animation starts
+	autoStart   : false,                // Display thumbnails on opening
+	hideOnClose : true,                 // Hide thumbnail grid when closing animation starts
+	parentEl    : '.fancybox-container' // Container is injected into this element
 }
 
 </code></pre>

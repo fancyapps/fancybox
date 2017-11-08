@@ -21,16 +21,11 @@ body.fancybox-iosfix {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	z-index: 99993;
+	z-index: 99992;
 	-webkit-tap-highlight-color: rgba(0,0,0,0);
 	backface-visibility: hidden;
 	transform: translateZ(0);
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-}
-
-/* Make sure that the first one is on the top */
-.fancybox-container ~ .fancybox-container {
-	z-index: 99992;
 }
 
 .fancybox-outer,
@@ -283,21 +278,6 @@ body.fancybox-iosfix {
 	line-height: 20px;
 }
 
-.fancybox-slide--iframe .fancybox-close-small {
-	top : 0;
-	right : -44px;
-}
-
-.fancybox-slide--iframe .fancybox-close-small:after {
-	font-size: 35px;
-	color: #aaa;
-}
-
-.fancybox-slide--iframe .fancybox-close-small:hover:after {
-	color: #fff;
-	background: transparent;
-}
-
 
 /* Buttons */
 
@@ -392,7 +372,6 @@ body.fancybox-iosfix {
 	right: 0;
 }
 
-
 /* Close button on the top right corner of html content */
 
 .fancybox-close-small {
@@ -442,6 +421,28 @@ body.fancybox-iosfix {
 	background: #eee;
 }
 
+.fancybox-slide--image .fancybox-close-small,
+.fancybox-slide--iframe .fancybox-close-small {
+	top : 0;
+	right : -44px;
+}
+
+.fancybox-slide--image .fancybox-close-small:after,
+.fancybox-slide--iframe .fancybox-close-small:after {
+	font-size: 35px;
+	color: #aaa;
+}
+
+.fancybox-slide--image .fancybox-close-small:hover:after,
+.fancybox-slide--iframe .fancybox-close-small:hover:after {
+	color: #fff;
+	background: transparent;
+}
+
+.fancybox-is-scaling .fancybox-close-small,
+.fancybox-is-zoomable.fancybox-can-drag .fancybox-close-small {
+	display: none;
+}
 
 /* Caption */
 
