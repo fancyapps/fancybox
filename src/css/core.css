@@ -292,18 +292,23 @@ body.fancybox-iosfix {
     border: 0;
     border-radius: 0;
     background: rgba(30,30,30,0.6);
-    color: #ccc;
     transition: color .3s ease;
     cursor: pointer;
+}
+
+.fancybox-button,
+.fancybox-button:visited,
+.fancybox-button:link {
+	color: #ccc;
+}
+
+.fancybox-button:hover:not([disabled]) {
+	color: #fff;
 }
 
 .fancybox-button[disabled] {
 	cursor: default;
     opacity: 0.6;
-}
-
-.fancybox-button:hover:not([disabled]) {
-	color: #fff;
 }
 
 .fancybox-button svg {

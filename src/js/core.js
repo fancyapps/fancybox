@@ -55,6 +55,7 @@
             'thumbs',
             'share',
             //'download',
+            //'zoom',
             'close'
         ],
 
@@ -180,17 +181,23 @@
 
         btnTpl : {
 
-            download   : '<a download data-fancybox-download class="fancybox-button fancybox-button--download" title="{{DOWNLOAD}}">' +
-                            '<svg viewBox="0 0 40 40">' +
-                                '<path d="M20,23 L20,8 L20,23 L13,16 L20,23 L27,16 L20,23 M9,28 L31,28" />' +
-                            '</svg>' +
-                        '</a>',
+            download : '<a download data-fancybox-download class="fancybox-button fancybox-button--download" title="{{DOWNLOAD}}">' +
+                    '<svg viewBox="0 0 40 40">' +
+                        '<path d="M20,23 L20,8 L20,23 L13,16 L20,23 L27,16 L20,23 M9,28 L31,28" />' +
+                    '</svg>' +
+                '</a>',
 
-            close      : '<button data-fancybox-close class="fancybox-button fancybox-button--close" title="{{CLOSE}}">' +
-                            '<svg viewBox="0 0 40 40">' +
-                                '<path d="M10,10 L30,30 M30,10 L10,30" />' +
-                            '</svg>' +
-                        '</button>',
+            zoom : '<button data-fancybox-zoom class="fancybox-button fancybox-button--zoom" title="{{ZOOM}}">' +
+                    '<svg viewBox="0 0 40 40">' +
+                        '<path d="M 18,17 m -8, 0 a 8,8 0 1,0 16,0 a 8,8 0 1,0 -16,0 M25,23 L31,29 L25,23"></path>' +
+                    '</svg>' +
+                '</button>',
+
+            close : '<button data-fancybox-close class="fancybox-button fancybox-button--close" title="{{CLOSE}}">' +
+                '<svg viewBox="0 0 40 40">' +
+                    '<path d="M10,10 L30,30 M30,10 L10,30" />' +
+                '</svg>' +
+            '</button>',
 
             // This small close button will be appended to your html/inline/ajax content by default,
             // if "smallBtn" option is not set to false
@@ -207,7 +214,7 @@
                           '<svg viewBox="0 0 40 40">' +
                             '<path d="M30,20 L10,20 L30,20 L22,28 L30,20 L22,12 L30,20"></path>' +
                           '</svg>' +
-                        '</button>',
+                        '</button>'
         },
 
         // Container is injected into this element
@@ -362,7 +369,8 @@
                 FULL_SCREEN : 'Full screen',
                 THUMBS      : 'Thumbnails',
                 DOWNLOAD    : 'Download',
-                SHARE       : 'Share'
+                SHARE       : 'Share',
+                ZOOM        : 'Zoom'
             },
             'de' : {
                 CLOSE       : 'Schliessen',
@@ -374,7 +382,8 @@
                 FULL_SCREEN : 'Vollbild',
                 THUMBS      : 'Vorschaubilder',
                 DOWNLOAD    : 'Herunterladen',
-                SHARE       : 'Teilen'
+                SHARE       : 'Teilen',
+                ZOOM        : 'Maßstab'
             }
         }
 
@@ -825,6 +834,9 @@
 
                 self.next();
 
+            }).on( 'click.fb', '[data-fancybox-zoom]', function(e) {
+                // Click handler for zoom button
+                self[ self.isScaledDown() ? 'scaleToActual' : 'scaleToFit' ]();
             });
 
 
@@ -2620,9 +2632,12 @@
             $container.find('[data-fancybox-next]').prop( 'disabled', ( !current.opts.loop && index >= self.group.length - 1 ) );
 
             if ( current.type === 'image' ) {
-                $container.find('[data-fancybox-download]').attr( 'href', current.opts.image.src || current.src );
+
+                // Update download button source
+                $container.find('[data-fancybox-download]').attr( 'href', current.opts.image.src || current.src ).show();
+
             } else {
-                $container.find('[data-fancybox-download]').hide();
+                $container.find('[data-fancybox-download],[data-fancybox-zoom]').hide();
             }
         },
 
@@ -2758,7 +2773,7 @@
         // Try to detect mobile devices
         // ============================
 
-        isMobile : document.createTouch !== undefined && /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent),
+        isMobile : document.createTouch !== undefined && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
 
 
         // Detect if 'translate3d' support is available

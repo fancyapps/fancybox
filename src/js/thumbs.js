@@ -39,6 +39,8 @@
 			var self = this,
 				instance = self.instance;
 
+			instance.Thumbs = self;
+
 			// Enable thumbs if at least two group items have thumbnails
 			var first  = instance.group[0],
 				second = instance.group[1];
@@ -129,8 +131,8 @@
 				$(this).css({
 					width         : Math.floor(width),
 					height        : Math.floor(height),
-					'margin-top'  : Math.min( 0, Math.floor(thumbHeight * 0.3 - height * 0.3 ) ),
-					'margin-left' : Math.min( 0, Math.floor(thumbWidth  * 0.5 - width  * 0.5 ) )
+					'margin-top'  : height > thumbHeight ? ( Math.floor(thumbHeight * 0.3 - height * 0.3 ) ) : Math.floor(thumbHeight * 0.5 - height * 0.5 ),
+					'margin-left' : Math.floor(thumbWidth * 0.5 - width * 0.5 )
 				}).show();
 
 			})
@@ -200,10 +202,8 @@
 	$(document).on({
 
 		'onInit.fb' : function(e, instance) {
-			var Thumbs;
-
 			if ( instance && !instance.Thumbs ) {
-				Thumbs = instance.Thumbs = new FancyThumbs( instance );
+				new FancyThumbs( instance );
 			}
 		},
 

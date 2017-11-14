@@ -278,16 +278,20 @@ body.fancybox-iosfix {
   border: 0;
   border-radius: 0;
   background: rgba(30, 30, 30, 0.6);
-  color: #ccc;
   transition: color .3s ease;
   cursor: pointer; }
+
+.fancybox-button,
+.fancybox-button:visited,
+.fancybox-button:link {
+  color: #ccc; }
+
+.fancybox-button:hover:not([disabled]) {
+  color: #fff; }
 
 .fancybox-button[disabled] {
   cursor: default;
   opacity: 0.6; }
-
-.fancybox-button:hover:not([disabled]) {
-  color: #fff; }
 
 .fancybox-button svg {
   display: block;
@@ -644,6 +648,18 @@ body.fancybox-iosfix {
   font-size: 0;
   white-space: nowrap; }
 
+.fancybox-thumbs > ul::-webkit-scrollbar {
+  width: 7px; }
+
+.fancybox-thumbs > ul::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3); }
+
+.fancybox-thumbs > ul::-webkit-scrollbar-thumb {
+  background: #2a2a2a;
+  border-radius: 10px; }
+
 .fancybox-thumbs > ul > li {
   float: left;
   overflow: hidden;
@@ -668,8 +684,6 @@ li.fancybox-thumbs-loading {
   position: absolute;
   top: 0;
   left: 0;
-  min-width: 100%;
-  min-height: 100%;
   max-width: none;
   max-height: none;
   -webkit-touch-callout: none;
