@@ -21,33 +21,50 @@
     text-align: center;
 }
 
+.fancybox-share p:first-of-type {
+    margin-right: -10px;
+}
+
 .fancybox-share_button {
     display: inline-block;
     text-decoration: none;
     margin: 0 10px 10px 0;
     padding: 10px 20px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    border: 0;
     border-radius: 3px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16);
     background: #fff;
     white-space: nowrap;
     font-size: 16px;
     line-height: 23px;
     user-select: none;
     min-width: 140px;
-    color: #888;
+    color: #707070;
     transition: all .2s;
 }
 
 .fancybox-share_button:focus,
 .fancybox-share_button:hover {
-    box-shadow: 0 1px 2px rgba(0,0,0,0.5);
     text-decoration: none;
-    color: #555;
+    color: #333;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.3);
 }
 
 .fancybox-share_button svg {
     margin-right: 5px;
-    width: 23px;
-    height: 23px;
-    vertical-align: top;
+    width: 20px;
+    height: 20px;
+    vertical-align: text-bottom;
+}
+
+.fancybox-share input {
+    margin: 5px 0 0 0;
+    padding: 10px 15px;
+    border: 1px solid #d7d7d7;
+    border-radius: 3px;
+    background: #ebebeb;
+    width: 100%;
+    color: #5d5b5b;
+    font-size: 14px;
+    outline: none;
 }

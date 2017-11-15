@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.2.2
+// fancyBox v3.2.3
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -280,10 +280,11 @@
         },
 
         thumbs : {
-            autoStart   : false,                 // Display thumbnails on opening
-            hideOnClose : true,                  // Hide thumbnail grid when closing animation starts
-            parentEl    : '.fancybox-container'  // Container is injected into this element
-        },
+			autoStart   : false,                  // Display thumbnails on opening
+			hideOnClose : true,                   // Hide thumbnail grid when closing animation starts
+			parentEl    : '.fancybox-container',  // Container is injected into this element
+			axis        : 'y'                     // Vertical (y) or horizontal (x)
+		},
 
         // Callbacks
         //==========
@@ -467,7 +468,7 @@
     var FancyBox = function( content, opts, index ) {
         var self = this;
 
-        self.opts = $.extend( true, { index : index }, defaults, opts || {} );
+        self.opts = $.extend( true, { index : index }, $.fancybox.defaults, opts || {} );
 
         if ( $.fancybox.isMobile ) {
             self.opts = $.extend( true, {}, self.opts, self.opts.mobile );
@@ -2705,7 +2706,7 @@
 
     $.fancybox = {
 
-        version  : "3.2.2",
+        version  : "3.2.3",
         defaults : defaults,
 
 
@@ -4594,25 +4595,26 @@
 ;(function (document, $) {
 	'use strict';
 
-	$.extend(true, $.fancybox.defaults, {
+	// Make sure there are default values
+	$.fancybox.defaults = $.extend(true, {
 		btnTpl : {
 			thumbs :
-				'<button data-fancybox-thumbs class="fancybox-button fancybox-button--thumbs" title="{{THUMBS}}">' +
-					'<svg viewBox="0 0 120 120">' +
-						'<path d="M30,30 h14 v14 h-14 Z M50,30 h14 v14 h-14 Z M70,30 h14 v14 h-14 Z M30,50 h14 v14 h-14 Z M50,50 h14 v14 h-14 Z M70,50 h14 v14 h-14 Z M30,70 h14 v14 h-14 Z M50,70 h14 v14 h-14 Z M70,70 h14 v14 h-14 Z" />' +
-					'</svg>' +
-				'</button>'
+			'<button data-fancybox-thumbs class="fancybox-button fancybox-button--thumbs" title="{{THUMBS}}">' +
+				'<svg viewBox="0 0 120 120">' +
+					'<path d="M30,30 h14 v14 h-14 Z M50,30 h14 v14 h-14 Z M70,30 h14 v14 h-14 Z M30,50 h14 v14 h-14 Z M50,50 h14 v14 h-14 Z M70,50 h14 v14 h-14 Z M30,70 h14 v14 h-14 Z M50,70 h14 v14 h-14 Z M70,70 h14 v14 h-14 Z" />' +
+				'</svg>' +
+			'</button>'
 		},
 		thumbs : {
-			autoStart   : false,                 // Display thumbnails on opening
-			hideOnClose : true,                  // Hide thumbnail grid when closing animation starts
-			parentEl    : '.fancybox-container'  // Container is injected into this element
-        }
-	});
+			autoStart   : false,                  // Display thumbnails on opening
+			hideOnClose : true,                   // Hide thumbnail grid when closing animation starts
+			parentEl    : '.fancybox-container',  // Container is injected into this element
+			axis        : 'y'                     // Vertical (y) or horizontal (x)
+		}
+	}, $.fancybox.defaults);
 
 	var FancyThumbs = function( instance ) {
-		this.instance = instance;
-		this.init();
+		this.init( instance );
 	};
 
 	$.extend( FancyThumbs.prototype, {
@@ -4621,10 +4623,12 @@
 		$grid		: null,
 		$list		: null,
 		isVisible	: false,
+		isActive	: false,
 
-		init : function() {
-			var self = this,
-				instance = self.instance;
+		init : function( instance ) {
+			var self = this;
+
+			self.instance = instance;
 
 			instance.Thumbs = self;
 
@@ -4647,14 +4651,8 @@
 
 				self.isActive = true;
 
-				if ( self.opts.autoStart === true ) {
-					self.show();
-				}
-
 			} else {
 				self.$button.hide();
-
-				self.isActive = false;
 			}
 		},
 
@@ -4665,7 +4663,7 @@
 				list,
 				src;
 
-			self.$grid = $('<div class="fancybox-thumbs"></div>').appendTo( instance.$refs.container.find( parentEl ).addBack().filter( parentEl ) );
+			self.$grid = $('<div class="fancybox-thumbs fancybox-thumbs-' + self.opts.axis + '"></div>').appendTo( instance.$refs.container.find( parentEl ).addBack().filter( parentEl ) );
 
 			// Build list HTML
 			list = '<ul>';
@@ -4726,26 +4724,36 @@
 			.each(function() {
 				this.src = $( this ).data( 'src' );
 			});
+
+			if ( self.opts.axis === 'x' ) {
+				self.$list.width( parseInt( self.$grid.css("padding-right") ) + ( instance.group.length * self.$list.children().eq(0).outerWidth(true) ) + 'px' );
+			}
 		},
 
 		focus : function( duration ) {
-			var $list = this.$list;
-			var thumb, thumbPos;
+			var self = this,
+				$list = self.$list,
+				thumb,
+				thumbPos;
 
-			if ( this.instance.current ) {
+			if ( self.instance.current ) {
 				thumb = $list.children()
 					.removeClass( 'fancybox-thumbs-active' )
-					.filter('[data-index="' + this.instance.current.index  + '"]')
+					.filter('[data-index="' + self.instance.current.index  + '"]')
 					.addClass('fancybox-thumbs-active');
 
 				thumbPos = thumb.position();
 
 				// Check if need to scroll to make current thumb visible
-				if ( thumbPos.top < 0 || thumbPos.top > $list.height() - thumb.outerHeight() ) {
+				if ( self.opts.axis === 'y' && ( thumbPos.top < 0 || thumbPos.top > ( $list.height() - thumb.outerHeight() ) ) ) {
 					$list.stop().animate({ 'scrollTop' : $list.scrollTop() + thumbPos.top }, duration);
 
-				} else if ( thumbPos.left < 0 || thumbPos.left > $list.width() - thumb.outerWidth() ) {
-					$list.stop().animate({ 'scrollLeft' : $list.scrollLeft() + thumbPos.left }, duration);
+				} else if ( self.opts.axis === 'x' && (
+						thumbPos.left < $list.parent().scrollLeft() ||
+						thumbPos.left > ( $list.parent().scrollLeft() + ( $list.parent().width() - thumb.outerWidth() ) )
+					)
+				) {
+					$list.parent().stop().animate({ 'scrollLeft' : thumbPos.left }, duration);
 				}
 			}
 		},
@@ -4789,8 +4797,14 @@
 	$(document).on({
 
 		'onInit.fb' : function(e, instance) {
+			var Thumbs;
+
 			if ( instance && !instance.Thumbs ) {
-				new FancyThumbs( instance );
+				Thumbs = new FancyThumbs( instance );
+
+				if ( Thumbs.isActive && Thumbs.opts.autoStart === true ) {
+					Thumbs.show();
+				}
 			}
 		},
 
@@ -4833,6 +4847,7 @@
 // ==========================================================================
 ;(function (document, $) {
 	'use strict';
+
 	$.extend(true, $.fancybox.defaults, {
 		btnTpl : {
 			share :
@@ -4860,6 +4875,7 @@
 							'<span>Twitter</span>' +
 						'</a>' +
 					'</p>' +
+					'<p><input type="text" value="{{src_raw}}" onfocus="this.select()" /></p>' +
 				'</div>'
 		}
 	});
@@ -4867,21 +4883,22 @@
 	$(document).on('click', '[data-fancybox-share]', function() {
 
 		var f = $.fancybox.getInstance(),
+			url,
 			tpl;
 
 		if ( f ) {
-			tpl = f.current.opts.share.tpl.replace( /\{\{src\}\}/g, encodeURIComponent( f.current.opts.hash === false ? f.current.src : window.location ) );
-
-			if ( f.$caption ) {
-				tpl = tpl.replace( /\{\{descr\}\}/g, encodeURIComponent( f.$caption.text() ) );
-			}
+			url = f.current.opts.hash === false ? f.current.src : window.location;
+			tpl = f.current.opts.share.tpl
+					.replace( /\{\{src\}\}/g, encodeURIComponent( url ) )
+					.replace( /\{\{src_raw\}\}/g, url )
+					.replace( /\{\{descr\}\}/g, f.$caption ? encodeURIComponent( f.$caption.text() ) : '' );
 
 			$.fancybox.open({
 				src  : f.translate( f, tpl ),
 				type : 'html',
 				opts : {
-					autoFocus : false,
-					animationEffect : 'fade'
+					animationEffect   : "fade",
+					animationDuration : 250
 				}
 			});
 		}

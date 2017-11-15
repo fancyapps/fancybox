@@ -6,6 +6,7 @@
 // ==========================================================================
 ;(function (document, $) {
 	'use strict';
+
 	$.extend(true, $.fancybox.defaults, {
 		btnTpl : {
 			share :
@@ -33,6 +34,7 @@
 							'<span>Twitter</span>' +
 						'</a>' +
 					'</p>' +
+					'<p><input type="text" value="{{src_raw}}" onfocus="this.select()" /></p>' +
 				'</div>'
 		}
 	});
@@ -40,21 +42,22 @@
 	$(document).on('click', '[data-fancybox-share]', function() {
 
 		var f = $.fancybox.getInstance(),
+			url,
 			tpl;
 
 		if ( f ) {
-			tpl = f.current.opts.share.tpl.replace( /\{\{src\}\}/g, encodeURIComponent( f.current.opts.hash === false ? f.current.src : window.location ) );
-
-			if ( f.$caption ) {
-				tpl = tpl.replace( /\{\{descr\}\}/g, encodeURIComponent( f.$caption.text() ) );
-			}
+			url = f.current.opts.hash === false ? f.current.src : window.location;
+			tpl = f.current.opts.share.tpl
+					.replace( /\{\{src\}\}/g, encodeURIComponent( url ) )
+					.replace( /\{\{src_raw\}\}/g, url )
+					.replace( /\{\{descr\}\}/g, f.$caption ? encodeURIComponent( f.$caption.text() ) : '' );
 
 			$.fancybox.open({
 				src  : f.translate( f, tpl ),
 				type : 'html',
 				opts : {
-					autoFocus : false,
-					animationEffect : 'fade'
+					animationEffect   : "fade",
+					animationDuration : 250
 				}
 			});
 		}

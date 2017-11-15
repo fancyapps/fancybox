@@ -270,10 +270,11 @@
         },
 
         thumbs : {
-            autoStart   : false,                 // Display thumbnails on opening
-            hideOnClose : true,                  // Hide thumbnail grid when closing animation starts
-            parentEl    : '.fancybox-container'  // Container is injected into this element
-        },
+			autoStart   : false,                  // Display thumbnails on opening
+			hideOnClose : true,                   // Hide thumbnail grid when closing animation starts
+			parentEl    : '.fancybox-container',  // Container is injected into this element
+			axis        : 'y'                     // Vertical (y) or horizontal (x)
+		},
 
         // Callbacks
         //==========
@@ -457,7 +458,7 @@
     var FancyBox = function( content, opts, index ) {
         var self = this;
 
-        self.opts = $.extend( true, { index : index }, defaults, opts || {} );
+        self.opts = $.extend( true, { index : index }, $.fancybox.defaults, opts || {} );
 
         if ( $.fancybox.isMobile ) {
             self.opts = $.extend( true, {}, self.opts, self.opts.mobile );

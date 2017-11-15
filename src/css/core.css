@@ -109,6 +109,10 @@ body.fancybox-iosfix {
 	-webkit-transform: translate3d(0, 0, 0);
 }
 
+.fancybox-is-closing .fancybox-stage {
+  overflow: visible;
+}
+
 .fancybox-slide {
 	position: absolute;
 	top: 0;
@@ -294,6 +298,7 @@ body.fancybox-iosfix {
     background: rgba(30,30,30,0.6);
     transition: color .3s ease;
     cursor: pointer;
+	outline: none;
 }
 
 .fancybox-button,
@@ -335,6 +340,10 @@ body.fancybox-iosfix {
 
 .fancybox-button--pause svg path:nth-child(1) {
     display: none;
+}
+
+.fancybox-button--zoom svg path {
+	fill: transparent;
 }
 
 
