@@ -182,22 +182,22 @@
         btnTpl : {
 
             download : '<a download data-fancybox-download class="fancybox-button fancybox-button--download" title="{{DOWNLOAD}}">' +
-                    '<svg viewBox="0 0 40 40">' +
-                        '<path d="M20,23 L20,8 L20,23 L13,16 L20,23 L27,16 L20,23 M9,28 L31,28" />' +
-                    '</svg>' +
-                '</a>',
+                        '<svg viewBox="0 0 40 40">' +
+                            '<path d="M20,23 L20,8 L20,23 L13,16 L20,23 L27,16 L20,23 M26,28 L13,28 L27,28 L14,28" />' +
+                        '</svg>' +
+                    '</a>',
 
             zoom : '<button data-fancybox-zoom class="fancybox-button fancybox-button--zoom" title="{{ZOOM}}">' +
-                    '<svg viewBox="0 0 40 40">' +
-                        '<path d="M 18,17 m -8, 0 a 8,8 0 1,0 16,0 a 8,8 0 1,0 -16,0 M25,23 L31,29 L25,23"></path>' +
-                    '</svg>' +
-                '</button>',
+                        '<svg viewBox="0 0 40 40">' +
+                            '<path d="M 18,17 m -8, 0 a 8,8 0 1,0 16,0 a 8,8 0 1,0 -16,0 M25,23 L31,29 L25,23" />' +
+                        '</svg>' +
+                    '</button>',
 
             close : '<button data-fancybox-close class="fancybox-button fancybox-button--close" title="{{CLOSE}}">' +
-                '<svg viewBox="0 0 40 40">' +
-                    '<path d="M10,10 L30,30 M30,10 L10,30" />' +
-                '</svg>' +
-            '</button>',
+                        '<svg viewBox="0 0 40 40">' +
+                            '<path d="M10,10 L30,30 M30,10 L10,30" />' +
+                        '</svg>' +
+                    '</button>',
 
             // This small close button will be appended to your html/inline/ajax content by default,
             // if "smallBtn" option is not set to false
@@ -273,7 +273,7 @@
 			autoStart   : false,                  // Display thumbnails on opening
 			hideOnClose : true,                   // Hide thumbnail grid when closing animation starts
 			parentEl    : '.fancybox-container',  // Container is injected into this element
-			axis        : 'y'                     // Vertical (y) or horizontal (x)
+			axis        : 'y'                     // Vertical (y) or horizontal (x) scrolling
 		},
 
         // Callbacks
@@ -722,7 +722,11 @@
                     delete obj.opts.$thumb;
                 }
 
-                // Caption is a "special" option, it can be passed as a method
+                // "caption" is a "special" option, it can be used to customize caption per gallery item ..
+                if ( $.type( obj.opts.caption ) === 'function' ) {
+                    obj.opts.caption = obj.opts.caption.apply( item, [ self, obj ] );
+                }
+
                 if ( $.type( self.opts.caption ) === 'function' ) {
                     obj.opts.caption = self.opts.caption.apply( item, [ self, obj ] );
                 }

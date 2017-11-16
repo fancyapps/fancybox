@@ -290,10 +290,12 @@ body.fancybox-iosfix {
 .fancybox-button:link {
   color: #ccc; }
 
-.fancybox-button:hover:not([disabled]) {
+.fancybox-button:focus,
+.fancybox-button:hover {
   color: #fff; }
 
 .fancybox-button[disabled] {
+  color: #ccc;
   cursor: default;
   opacity: 0.6; }
 
@@ -624,12 +626,13 @@ body.fancybox-iosfix {
   vertical-align: text-bottom; }
 
 .fancybox-share input {
+  box-sizing: border-box;
+  width: 100%;
   margin: 5px 0 0 0;
   padding: 10px 15px;
   border: 1px solid #d7d7d7;
   border-radius: 3px;
   background: #ebebeb;
-  width: 100%;
   color: #5d5b5b;
   font-size: 14px;
   outline: none; }

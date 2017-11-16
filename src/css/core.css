@@ -307,11 +307,13 @@ body.fancybox-iosfix {
 	color: #ccc;
 }
 
-.fancybox-button:hover:not([disabled]) {
+.fancybox-button:focus,
+.fancybox-button:hover {
 	color: #fff;
 }
 
 .fancybox-button[disabled] {
+	color: #ccc;
 	cursor: default;
     opacity: 0.6;
 }

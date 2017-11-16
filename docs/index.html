@@ -872,6 +872,7 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
         'thumbs',
         'share',
         //'download',
+        //'zoom',
         'close'
     ],
 
@@ -997,17 +998,23 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 
     btnTpl : {
 
-        download   : '&lt;a download data-fancybox-download class=&quot;fancybox-button fancybox-button--download&quot; title=&quot;{{DOWNLOAD}}&quot;&gt;' +
-                        '&lt;svg viewBox=&quot;0 0 40 40&quot;&gt;' +
-                            '&lt;path d=&quot;M20,23 L20,8 L20,23 L13,16 L20,23 L27,16 L20,23 M9,28 L31,28&quot; /&gt;' +
-                        '&lt;/svg&gt;' +
-                    '&lt;/a&gt;',
+        download : '&lt;a download data-fancybox-download class=&quot;fancybox-button fancybox-button--download&quot; title=&quot;{{DOWNLOAD}}&quot;&gt;' +
+                '&lt;svg viewBox=&quot;0 0 40 40&quot;&gt;' +
+                    '&lt;path d=&quot;M20,23 L20,8 L20,23 L13,16 L20,23 L27,16 L20,23 M26,28 L13,28 L27,28 L14,28&quot;&gt;&lt;/path&gt;' +
+                '&lt;/svg&gt;' +
+            '&lt;/a&gt;',
 
-        close      : '&lt;button data-fancybox-close class=&quot;fancybox-button fancybox-button--close&quot; title=&quot;{{CLOSE}}&quot;&gt;' +
-                        '&lt;svg viewBox=&quot;0 0 40 40&quot;&gt;' +
-                            '&lt;path d=&quot;M10,10 L30,30 M30,10 L10,30&quot; /&gt;' +
-                        '&lt;/svg&gt;' +
-                    '&lt;/button&gt;',
+        zoom : '&lt;button data-fancybox-zoom class=&quot;fancybox-button fancybox-button--zoom&quot; title=&quot;{{ZOOM}}&quot;&gt;' +
+                '&lt;svg viewBox=&quot;0 0 40 40&quot;&gt;' +
+                    '&lt;path d=&quot;M 18,17 m -8, 0 a 8,8 0 1,0 16,0 a 8,8 0 1,0 -16,0 M25,23 L31,29 L25,23&quot;&gt;&lt;/path&gt;' +
+                '&lt;/svg&gt;' +
+            '&lt;/button&gt;',
+
+        close : '&lt;button data-fancybox-close class=&quot;fancybox-button fancybox-button--close&quot; title=&quot;{{CLOSE}}&quot;&gt;' +
+            '&lt;svg viewBox=&quot;0 0 40 40&quot;&gt;' +
+                '&lt;path d=&quot;M10,10 L30,30 M30,10 L10,30&quot; /&gt;' +
+            '&lt;/svg&gt;' +
+        '&lt;/button&gt;',
 
         // This small close button will be appended to your html/inline/ajax content by default,
         // if &quot;smallBtn&quot; option is not set to false
@@ -1024,7 +1031,7 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
                       '&lt;svg viewBox=&quot;0 0 40 40&quot;&gt;' +
                         '&lt;path d=&quot;M30,20 L10,20 L30,20 L22,28 L30,20 L22,12 L30,20&quot;&gt;&lt;/path&gt;' +
                       '&lt;/svg&gt;' +
-                    '&lt;/button&gt;',
+                    '&lt;/button&gt;'
     },
 
     // Container is injected into this element
@@ -1080,9 +1087,10 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
     },
 
     thumbs : {
-        autoStart   : false,                 // Display thumbnails on opening
-        hideOnClose : true,                  // Hide thumbnail grid when closing animation starts
-        parentEl    : '.fancybox-container'  // Container is injected into this element
+        autoStart   : false,                  // Display thumbnails on opening
+        hideOnClose : true,                   // Hide thumbnail grid when closing animation starts
+        parentEl    : '.fancybox-container',  // Container is injected into this element
+        axis        : 'y'                     // Vertical (y) or horizontal (x) scrolling
     },
 
     // Callbacks
@@ -1147,6 +1155,8 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
     // =============================================
 
     mobile : {
+        margin : 0,
+
         clickContent : function( current, event ) {
             return current.type === 'image' ? 'toggleControls' : false;
         },
@@ -1177,7 +1187,8 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
             FULL_SCREEN : 'Full screen',
             THUMBS      : 'Thumbnails',
             DOWNLOAD    : 'Download',
-            SHARE       : 'Share'
+            SHARE       : 'Share',
+            ZOOM        : 'Zoom'
         },
         'de' : {
             CLOSE       : 'Schliessen',
@@ -1189,7 +1200,8 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
             FULL_SCREEN : 'Vollbild',
             THUMBS      : 'Vorschaubilder',
             DOWNLOAD    : 'Herunterladen',
-            SHARE       : 'Teilen'
+            SHARE       : 'Teilen',
+            ZOOM        : 'Maßstab'
         }
     }
 
@@ -1562,9 +1574,10 @@ slideShow : {
 },
 
 thumbs : {
-	autoStart   : false,                // Display thumbnails on opening
-	hideOnClose : true,                 // Hide thumbnail grid when closing animation starts
-	parentEl    : '.fancybox-container' // Container is injected into this element
+	autoStart   : false,                  // Display thumbnails on opening
+	hideOnClose : true,                   // Hide thumbnail grid when closing animation starts
+	parentEl    : '.fancybox-container',  // Container is injected into this element
+	axis        : 'y'                     // Vertical (y) or horizontal (x) scrolling
 }
 
 </code></pre>
@@ -1728,29 +1741,28 @@ FAQ
 					Example of creating reusable button:
 				</p>
 
-				<pre><code>// Create template for zoom button
-$.fancybox.defaults.btnTpl.zoom = '&lt;button data-fancybox-zoom class=&quot;fancybox-button fancybox-button--zoom&quot; title=&quot;Zoom&quot;&gt;' +
-        '&lt;svg viewBox=&quot;0 0 40 40&quot;&gt;' +
-            '&lt;path d=&quot;M 18,17 m -8, 0 a 8,8 0 1,0 16,0 a 8,8 0 1,0 -16,0 M25,23 L31,29 L25,23&quot;&gt;&lt;/path&gt;' +
-        '&lt;/svg&gt;' +
-    '&lt;/button&gt;';
+				<pre><code>// Create template for the button
+$.fancybox.defaults.btnTpl.fb = '&lt;button data-fancybox-fb class=&quot;fancybox-button fancybox-button--fb&quot; title=&quot;Facebook&quot;&gt;' +
+    '&lt;svg viewBox=&quot;0 0 24 24&quot;&gt;' +
+        '&lt;path d=&quot;M22.676 0H1.324C.594 0 0 .593 0 1.324v21.352C0 23.408.593 24 1.324 24h11.494v-9.294h-3.13v-3.62h3.13V8.41c0-3.1 1.894-4.785 4.66-4.785 1.324 0 2.463.097 2.795.14v3.24h-1.92c-1.5 0-1.793.722-1.793 1.772v2.31h3.584l-.465 3.63h-3.12V24h6.115c.733 0 1.325-.592 1.325-1.324V1.324C24 .594 23.408 0 22.676 0&quot;/&gt;' +
+    '&lt;/svg&gt;' +
+'&lt;/button&gt;';
 
-// Make it clickable using event delegation
-$('body').on('click', '[data-fancybox-zoom]', function() {
-    var f = $.fancybox.getInstance();
-
-    if ( f ) {
-        f[ f.isScaledDown() ? 'scaleToActual' : 'scaleToFit' ]();
-    }
+// Make button clickable using event delegation
+$('body').on('click', '[data-fancybox-fb]', function() {
+  window.open(&quot;https://www.facebook.com/sharer/sharer.php?u=&quot;+encodeURIComponent(window.location.href)+&quot;&amp;t=&quot;+encodeURIComponent(document.title), '','left=0,top=0,width=600,height=300,menubar=no,toolbar=no,resizable=yes,scrollbars=yes');
 });
 
 // Customize buttons
 $( '[data-fancybox=&quot;images&quot;]' ).fancybox({
-    buttons : ['zoom', 'close']
+  buttons : [
+    'fb',
+    'close'
+  ]
 });</code></pre>
 
 				<p class="demo">
-					<a href="https://codepen.io/fancyapps/pen/LOZdmK" target="_blank">View demo on CodePen</a>
+					<a href="https://codepen.io/fancyapps/pen/MOEXmJ" target="_blank">View demo on CodePen</a>
 				</p>
 
 				<h3 id="faq-4">4. How to reposition thumbnail grid</h3>

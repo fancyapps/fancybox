@@ -58,12 +58,13 @@
 }
 
 .fancybox-share input {
+    box-sizing: border-box;
+    width: 100%;
     margin: 5px 0 0 0;
     padding: 10px 15px;
     border: 1px solid #d7d7d7;
     border-radius: 3px;
     background: #ebebeb;
-    width: 100%;
     color: #5d5b5b;
     font-size: 14px;
     outline: none;

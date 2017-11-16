@@ -39,8 +39,24 @@
 		}
 	});
 
-	$(document).on('click', '[data-fancybox-share]', function() {
+	function escapeHtml(string) {
+		var entityMap = {
+		  '&': '&amp;',
+		  '<': '&lt;',
+		  '>': '&gt;',
+		  '"': '&quot;',
+		  "'": '&#39;',
+		  '/': '&#x2F;',
+		  '`': '&#x60;',
+		  '=': '&#x3D;'
+		};
 
+		return String(string).replace(/[&<>"'`=\/]/g, function (s) {
+			return entityMap[s];
+		});
+	}
+
+	$(document).on('click', '[data-fancybox-share]', function() {
 		var f = $.fancybox.getInstance(),
 			url,
 			tpl;
@@ -49,7 +65,7 @@
 			url = f.current.opts.hash === false ? f.current.src : window.location;
 			tpl = f.current.opts.share.tpl
 					.replace( /\{\{src\}\}/g, encodeURIComponent( url ) )
-					.replace( /\{\{src_raw\}\}/g, url )
+					.replace( /\{\{src_raw\}\}/g, escapeHtml( url ) )
 					.replace( /\{\{descr\}\}/g, f.$caption ? encodeURIComponent( f.$caption.text() ) : '' );
 
 			$.fancybox.open({
