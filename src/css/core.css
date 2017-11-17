@@ -208,6 +208,7 @@ body.fancybox-iosfix {
 	background-repeat: no-repeat;
 	backface-visibility: hidden;
 	user-select: none;
+	transition-property: transform, opacity;
 }
 
 .fancybox-can-zoomOut .fancybox-image-wrap {

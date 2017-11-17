@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.2.4
+// fancyBox v3.2.5
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -143,8 +143,8 @@
         animationDuration : 500,
 
         // Should image change opacity while zooming
-        // If opacity is 'auto', then opacity will be changed if image and thumbnail have different aspect ratios
-        zoomOpacity : 'auto',
+        // If opacity is "auto", then opacity will be changed if image and thumbnail have different aspect ratios
+        zoomOpacity : "auto",
 
         // Transition effect between slides
         //
@@ -199,7 +199,7 @@
 
             zoom : '<button data-fancybox-zoom class="fancybox-button fancybox-button--zoom" title="{{ZOOM}}">' +
                         '<svg viewBox="0 0 40 40">' +
-                            '<path d="M 18,17 m -8, 0 a 8,8 0 1,0 16,0 a 8,8 0 1,0 -16,0 M25,23 L31,29 L25,23" />' +
+                            '<path d="M 18,17 m-8,0 a 8,8 0 1,0 16,0 a 8,8 0 1,0 -16,0 M25,23 L31,29 L25,23" />' +
                         '</svg>' +
                     '</button>',
 
@@ -450,6 +450,8 @@
                 return transitions[t];
             }
         }
+
+        return 'transitionend';
     })();
 
 
@@ -1227,7 +1229,7 @@
             var newImgWidth  = current.width;
             var newImgHeight = current.height;
 
-            if ( !( current.type == 'image' && !current.hasError) || !$what || self.isAnimating) {
+            if ( !( current.type == 'image' && !current.hasError) || !$what || self.isAnimating ) {
                 return;
             }
 
@@ -1394,6 +1396,8 @@
             var $what = slide.$content;
 
             if ( $what && ( slide.width || slide.height ) ) {
+                self.isAnimating = false;
+                
                 $.fancybox.stop( $what );
 
                 $.fancybox.setTranslate( $what, self.getFitPos( slide ) );
@@ -2177,7 +2181,6 @@
                 return;
             }
 
-
             self.updateSlide( slide );
 
 
@@ -2510,6 +2513,8 @@
 
                 $.fancybox.setTranslate( current.$content, start );
 
+                forceRedraw( current.$content );
+
                 $.fancybox.animate( current.$content, end, duration, done );
 
                 return true;
@@ -2568,7 +2573,6 @@
                 $body.removeClass( 'fancybox-active compensate-for-scrollbar' );
 
                 if ( $body.hasClass( 'fancybox-iosfix' ) ) {
-
                     offset = parseInt(document.body.style.top, 10);
 
                     $body.removeClass( 'fancybox-iosfix' ).css( 'top', '' ).scrollTop( offset * -1 );
@@ -2710,7 +2714,7 @@
 
     $.fancybox = {
 
-        version  : "3.2.4",
+        version  : "3.2.5",
         defaults : defaults,
 
 
@@ -2918,7 +2922,7 @@
                 $el.removeAttr('style');
             }
 
-            $el.on( ( transitionEnd || 'transitionend' ), function(e) {
+            $el.on( transitionEnd, function(e) {
 
                 // Skip events from child elements and z-index change
                 if ( e && e.originalEvent && ( !$el.is( e.originalEvent.target ) || e.originalEvent.propertyName == 'z-index' ) ) {
@@ -2930,7 +2934,7 @@
                 if ( $.isPlainObject( to ) ) {
 
                     if ( to.scaleX !== undefined && to.scaleY !== undefined ) {
-                        $el.css( 'transition-duration', '0ms' );
+                        $el.css( 'transition-duration', '' );
 
                         to.width  = Math.round( $el.width()  * to.scaleX );
                         to.height = Math.round( $el.height() * to.scaleY );
@@ -2966,6 +2970,7 @@
                 $el.parent().addClass( 'fancybox-is-scaling' );
             }
 
+            // Make sure that `transitionend` callback gets fired
             $el.data("timer", setTimeout(function() {
                 $el.trigger( 'transitionend' );
             }, duration + 16));
@@ -2975,7 +2980,7 @@
         stop : function( $el ) {
             clearTimeout( $el.data("timer") );
 
-            $el.off( transitionEnd || 'transitionend' );
+            $el.off( 'transitionend' ).css( 'transition-duration', '' );
 
             if ( $el.hasClass( 'fancybox-image-wrap' ) ) {
                 $el.parent().removeClass( 'fancybox-is-scaling' );
