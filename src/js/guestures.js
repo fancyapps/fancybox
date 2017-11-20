@@ -221,12 +221,11 @@
 
 				$.fancybox.stop( self.$content );
 
-				self.$content.css( 'transition-duration', '0ms' );
+				self.$content.css( 'transition-duration', '' );
 
 				self.isPanning = true;
 
 			} else {
-
 				self.isSwiping = true;
 			}
 
@@ -241,7 +240,7 @@
 
 			$.fancybox.stop( self.$content );
 
-			self.$content.css( 'transition-duration', '0ms' );
+			self.$content.css( 'transition-duration', '' );
 
 			self.centerPointStartX = ( ( self.startPoints[0].x + self.startPoints[1].x ) * 0.5 ) - $(window).scrollLeft();
 			self.centerPointStartY = ( ( self.startPoints[0].y + self.startPoints[1].y ) * 0.5 ) - $(window).scrollTop();
@@ -303,11 +302,10 @@
 
 	Guestures.prototype.onSwipe = function() {
 
-		var self = this;
-
-		var swiping = self.isSwiping;
-		var left    = self.sliderStartPos.left || 0;
-		var angle;
+		var self = this,
+			swiping = self.isSwiping,
+			left    = self.sliderStartPos.left || 0,
+			angle;
 
 		if ( swiping === true ) {
 
@@ -335,7 +333,7 @@
 				$.each(self.instance.slides, function( index, slide ) {
 					$.fancybox.stop( slide.$slide );
 
-					slide.$slide.css( 'transition-duration', '0ms' );
+					slide.$slide.css( 'transition-duration', '' );
 
 					slide.inTransition = false;
 
@@ -344,68 +342,67 @@
 					}
 				});
 
-				//self.instance.current.isMoved = true;
-
 				// Stop slideshow
 				if ( self.instance.SlideShow && self.instance.SlideShow.isActive ) {
 					self.instance.SlideShow.stop();
 				}
 			}
 
-		} else {
-
-			if ( swiping == 'x' ) {
-
-				// Sticky edges
-				if ( self.distanceX > 0 && ( self.instance.group.length < 2 || ( self.instance.current.index === 0 && !self.instance.current.opts.loop ) ) ) {
-					left = left + Math.pow( self.distanceX, 0.8 );
-
-				} else if ( self.distanceX < 0 && ( self.instance.group.length < 2 || ( self.instance.current.index === self.instance.group.length - 1 && !self.instance.current.opts.loop ) ) ) {
-					left = left - Math.pow( -self.distanceX, 0.8 );
-
-				} else {
-					left = left + self.distanceX;
-				}
-
-			}
-
-			self.sliderLastPos = {
-				top  : swiping == 'x' ? 0 : self.sliderStartPos.top + self.distanceY,
-				left : left
-			};
-
-			if ( self.requestId ) {
-				cancelAFrame( self.requestId );
-
-				self.requestId = null;
-			}
-
-			self.requestId = requestAFrame(function() {
-
-				if ( self.sliderLastPos ) {
-					$.each(self.instance.slides, function( index, slide ) {
-						var pos = slide.pos - self.instance.currPos;
-
-						$.fancybox.setTranslate( slide.$slide, {
-							top  : self.sliderLastPos.top,
-							left : self.sliderLastPos.left + ( pos * self.canvasWidth ) + ( pos * slide.opts.gutter )
-						});
-					});
-
-					self.$container.addClass( 'fancybox-is-sliding' );
-				}
-
-			});
+			return;
 
 		}
+
+		if ( swiping == 'x' ) {
+
+			// Sticky edges
+			if ( self.distanceX > 0 && ( self.instance.group.length < 2 || ( self.instance.current.index === 0 && !self.instance.current.opts.loop ) ) ) {
+				left = left + Math.pow( self.distanceX, 0.8 );
+
+			} else if ( self.distanceX < 0 && ( self.instance.group.length < 2 || ( self.instance.current.index === self.instance.group.length - 1 && !self.instance.current.opts.loop ) ) ) {
+				left = left - Math.pow( -self.distanceX, 0.8 );
+
+			} else {
+				left = left + self.distanceX;
+			}
+
+		}
+
+		self.sliderLastPos = {
+			top  : swiping == 'x' ? 0 : self.sliderStartPos.top + self.distanceY,
+			left : left
+		};
+
+		if ( self.requestId ) {
+			cancelAFrame( self.requestId );
+
+			self.requestId = null;
+		}
+
+		self.requestId = requestAFrame(function() {
+
+			if ( self.sliderLastPos ) {
+				$.each(self.instance.slides, function( index, slide ) {
+					var pos = slide.pos - self.instance.currPos;
+
+					$.fancybox.setTranslate( slide.$slide, {
+						top  : self.sliderLastPos.top,
+						left : self.sliderLastPos.left + ( pos * self.canvasWidth ) + ( pos * slide.opts.gutter )
+					});
+				});
+
+				self.$container.addClass( 'fancybox-is-sliding' );
+			}
+
+		});
 
 	};
 
 	Guestures.prototype.onPan = function() {
 
-		var self = this;
-
-		var newOffsetX, newOffsetY, newPos;
+		var self = this,
+			newOffsetX,
+			newOffsetY,
+			newPos;
 
 		self.canTap = false;
 
@@ -895,7 +892,7 @@
 
 					process( 'click' + where );
 
-				}, 300);
+				}, 500);
 
 			} else {
 				process( 'click' + where );

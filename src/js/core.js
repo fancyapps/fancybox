@@ -1387,7 +1387,7 @@
 
             if ( $what && ( slide.width || slide.height ) ) {
                 self.isAnimating = false;
-                
+
                 $.fancybox.stop( $what );
 
                 $.fancybox.setTranslate( $what, self.getFitPos( slide ) );
@@ -1987,6 +1987,9 @@
 
             slide.$slide.one('onReset', function () {
 
+                // Pause all html5 video/audio
+                $(this).find("video,audio").each(function () { this.pause() });
+
                 // Put content back
                 if ( slide.$placeholder ) {
                     slide.$placeholder.after( content.hide() ).remove();
@@ -2312,6 +2315,13 @@
             self.updateCursor();
 
             self.trigger( 'afterShow' );
+
+            // Play first html5 video/audio
+            var media = current.$slide.find("video,audio").first();
+
+            if ( media.length ) {
+                media[0].play();
+            }
 
             // Try to focus on the first focusable element
             if ( $( document.activeElement ).is( '[disabled]' ) || ( current.opts.autoFocus && !( current.type == 'image' || current.type === 'iframe' ) ) ) {
