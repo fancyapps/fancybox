@@ -1988,7 +1988,7 @@
             slide.$slide.one('onReset', function () {
 
                 // Pause all html5 video/audio
-                $(this).find("video,audio").each(function () { this.pause() });
+                $(this).find("video,audio").each(function () { this.pause(); });
 
                 // Put content back
                 if ( slide.$placeholder ) {
