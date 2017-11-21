@@ -1093,6 +1093,10 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
         axis        : 'y'                     // Vertical (y) or horizontal (x) scrolling
     },
 
+    // Use mousewheel to navigate gallery
+    // If 'auto' - enabled for images only
+    wheel : 'auto',
+
     // Callbacks
     //==========
 
@@ -1155,7 +1159,8 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
     // =============================================
 
     mobile : {
-        margin : 0,
+        idleTime : false,
+        margin   : 0,
 
         clickContent : function( current, event ) {
             return current.type === 'image' ? 'toggleControls' : false;

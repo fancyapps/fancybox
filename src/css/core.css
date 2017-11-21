@@ -395,8 +395,8 @@ body.fancybox-iosfix {
 	position: absolute;
 	top: 0;
 	right: 0;
-	width: 44px;
-	height: 44px;
+	width: 40px;
+	height: 40px;
 	padding: 0;
 	margin: 0;
 	border: 0;
@@ -440,8 +440,8 @@ body.fancybox-iosfix {
 
 .fancybox-slide--image .fancybox-close-small,
 .fancybox-slide--iframe .fancybox-close-small {
-	top : 0;
-	right : -44px;
+	top: 0;
+	right: -40px;
 }
 
 .fancybox-slide--image .fancybox-close-small:after,

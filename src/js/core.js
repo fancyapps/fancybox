@@ -276,6 +276,10 @@
 			axis        : 'y'                     // Vertical (y) or horizontal (x) scrolling
 		},
 
+        // Use mousewheel to navigate gallery
+        // If 'auto' - enabled for images only
+        wheel : 'auto',
+
         // Callbacks
         //==========
 
@@ -338,7 +342,8 @@
         // =============================================
 
         mobile : {
-            margin : 0,
+            idleTime : false,
+            margin   : 0,
 
             clickContent : function( current, event ) {
                 return current.type === 'image' ? 'toggleControls' : false;
@@ -951,7 +956,7 @@
                 self.idleInterval = window.setInterval(function() {
                     self.idleSecondsCounter++;
 
-                    if ( self.idleSecondsCounter >= self.group[ self.currIndex ].opts.idleTime ) {
+                    if ( self.idleSecondsCounter >= self.group[ self.currIndex ].opts.idleTime && !self.isDragging ) {
                         self.isIdle = true;
                         self.idleSecondsCounter = 0;
 
@@ -1014,7 +1019,7 @@
 
             var groupLen = self.group.length;
 
-            if ( self.isSliding || self.isClosing || ( self.isAnimating && self.firstRun ) ) {
+            if ( self.isDragging || self.isClosing || ( self.isAnimating && self.firstRun ) ) {
                 return;
             }
 
@@ -1027,7 +1032,7 @@
 
             firstRun = self.firstRun = ( self.firstRun === null );
 
-            if ( groupLen < 2 && !firstRun && !!self.isSliding ) {
+            if ( groupLen < 2 && !firstRun && !!self.isDragging ) {
                 return;
             }
 

@@ -6,13 +6,18 @@
     $(document).on({
         'onInit.fb' : function( e, instance, current ) {
 			instance.$refs.stage.on('mousewheel DOMMouseScroll wheel MozMousePixelScroll', function(e) {
-				var currTime,
+				var current = instance.current,
+					currTime,
 					value,
 					delta,
 					isHorizontal,
 					isVertical;
 
-				if ( instance.current.$slide.hasClass( 'fancybox-animated' ) ) {
+				if ( current.opts.wheel === false || ( current.opts.wheel === 'auto' && current.type !== 'image' ) ) {
+					return;
+				}
+
+				if ( current.$slide.hasClass( 'fancybox-animated' ) ) {
 				    return;
 				}
 

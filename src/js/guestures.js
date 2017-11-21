@@ -65,7 +65,6 @@
 	};
 
 	var isClickable = function( $el ) {
-
 		if ( $el.is('a,area,button,[role="button"],input,label,select,summary,textarea') || $.isFunction( $el.get(0).onclick ) || $el.data('selectable') ) {
 			return true;
 		}
@@ -169,8 +168,7 @@
 
 		self.startPoints = pointers( e );
 
-		// Prevent zooming if already swiping
-		if ( !self.startPoints || ( self.startPoints.length > 1 && instance.isSliding ) ) {
+		if ( !self.startPoints ) {
 			return;
 		}
 
@@ -215,7 +213,7 @@
 		self.contentLastPos  = null;
 
 		if ( self.startPoints.length === 1 && !self.isZooming ) {
-			self.canTap = !instance.isSliding;
+			self.canTap = true;
 
 			if ( current.type === 'image' && ( self.contentStartPos.width > self.canvasWidth + 1 || self.contentStartPos.height > self.canvasHeight + 1 ) ) {
 
@@ -229,7 +227,7 @@
 				self.isSwiping = true;
 			}
 
-			self.$container.addClass('fancybox-controls--isGrabbing');
+			self.$container.addClass( 'fancybox-controls--isGrabbing' );
 		}
 
 		if ( self.startPoints.length === 2 && !instance.isAnimating && !current.hasError && current.type === 'image' && ( current.isLoaded || current.$ghost ) ) {
@@ -277,7 +275,7 @@
 		self.distance = distance( self.newPoints[0], self.startPoints[0] );
 
 		// Skip false ontouchmove events (Chrome)
-		if ( self.distance > 0 ) {
+		if ( self.distance > 0 && !self.tapped ) {
 
 			if ( !( self.$target.is( self.$stage ) || self.$stage.find( self.$target ).length ) ) {
 				return;
@@ -309,6 +307,7 @@
 
 		if ( swiping === true ) {
 
+			// We need at least 10px distance to correctly calculate an angle
 			if ( Math.abs( self.distance ) > 10 )  {
 
 				self.canTap = false;
@@ -316,7 +315,7 @@
 				if ( self.instance.group.length < 2 && self.opts.vertical ) {
 					self.isSwiping  = 'y';
 
-				} else if ( self.instance.isSliding || self.opts.vertical === false || ( self.opts.vertical === 'auto' && $( window ).width() > 800 ) ) {
+				} else if ( self.instance.isDragging || self.opts.vertical === false || ( self.opts.vertical === 'auto' && $( window ).width() > 800 ) ) {
 					self.isSwiping  = 'x';
 
 				} else {
@@ -325,7 +324,7 @@
 					self.isSwiping = ( angle > 45 && angle < 135 ) ? 'y' : 'x';
 				}
 
-				self.instance.isSliding = self.isSwiping;
+				self.instance.isDragging = self.isSwiping;
 
 				// Reset points to avoid jumping, because we dropped first swipes to calculate the angle
 				self.startPoints = self.newPoints;
@@ -619,6 +618,8 @@
 		self.isPanning = false;
 		self.isZooming = false;
 
+		self.instance.isDragging = false;
+
 		if ( self.canTap )  {
 			return self.onTap( e );
 		}
@@ -649,8 +650,7 @@
 		var self = this;
 		var ret = false;
 
-		self.instance.isSliding = false;
-		self.sliderLastPos      = null;
+		self.sliderLastPos = null;
 
 		// Close if swiped vertically / navigate if horizontally
 		if ( swiping == 'y' && Math.abs( self.distanceY ) > 50 ) {
@@ -840,11 +840,6 @@
 			return;
 		}
 
-		// Skip if current slide is not in the center
-		if ( instance.isSliding ) {
-			return;
-		}
-
 		// Skip if clicked on the scrollbar
 		if ( tapX > $target[0].clientWidth + $target.offset().left ) {
 			return;
@@ -872,7 +867,7 @@
 			self.tapped = null;
 
 			// Skip if distance between taps is too big
-			if ( Math.abs( tapX - self.tapX ) > 50 || Math.abs( tapY - self.tapY ) > 50 || instance.isSliding ) {
+			if ( Math.abs( tapX - self.tapX ) > 50 || Math.abs( tapY - self.tapY ) > 50 ) {
 				return this;
 			}
 
@@ -887,6 +882,7 @@
 			self.tapY = tapY;
 
 			if ( current.opts[ 'dblclick' + where ] && current.opts[ 'dblclick' + where ] !== current.opts[ 'click' + where ] ) {
+
 				self.tapped = setTimeout(function() {
 					self.tapped = null;
 
