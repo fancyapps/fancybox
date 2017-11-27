@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.2.8
+// fancyBox v3.2.9
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -1103,7 +1103,7 @@
 
                 self.loadSlide( current );
 
-                self.preload();
+                self.preload( 'image' );
 
                 return;
             }
@@ -1152,7 +1152,7 @@
                 self.loadSlide( current );
             }
 
-            self.preload();
+            self.preload( 'image' );
 
             if ( previous.pos === current.pos ) {
                 return;
@@ -1378,27 +1378,24 @@
         },
 
 
-        // Update position and content of all slides
-        // =========================================
+        // Update content size and position for all slides
+        // ==============================================
 
         update : function() {
-
             var self = this;
 
             $.each( self.slides, function( key, slide ) {
                 self.updateSlide( slide );
             });
-
         },
 
 
-        // Update slide position and scale content to fit
-        // ==============================================
+        // Update slide content position and size
+        // ======================================
 
-        updateSlide : function( slide ) {
-
-            var self  = this;
-            var $what = slide.$content;
+        updateSlide : function( slide, duration ) {
+            var self  = this,
+                $what = slide && slide.$content;
 
             if ( $what && ( slide.width || slide.height ) ) {
                 self.isAnimating = false;
@@ -1417,6 +1414,26 @@
             self.trigger( 'onUpdate', slide );
 
         },
+
+
+        // Horizontally center slide
+        // =========================
+
+        centerSlide : function( slide, duration ) {
+            var self  = this, canvasWidth, pos;
+
+            if ( self.current ) {
+                canvasWidth = Math.round( slide.$slide.width() );
+                pos = slide.pos - self.current.pos;
+
+                $.fancybox.animate( slide.$slide, {
+                    top  : 0,
+                    left : ( pos * canvasWidth ) + ( pos * slide.opts.gutter ),
+                    opacity : 1
+                }, duration === undefined ? 0 : duration, null, false);
+            }
+        },
+
 
         // Update cursor style depending if content can be zoomed
         // ======================================================
@@ -1541,7 +1558,6 @@
             if ( $what ) {
                 rez = self.getFitPos( current );
                 rez = Math.abs( $what.width() - rez.width ) > 1  || Math.abs( $what.height() - rez.height ) > 1;
-
             }
 
             return rez;
@@ -1787,8 +1803,8 @@
                         return;
                     }
 
-                    slide.width  = this.naturalWidth;
-                    slide.height = this.naturalHeight;
+                    slide.width  = slide.opts.width  || this.naturalWidth;
+                    slide.height = slide.opts.height || this.naturalHeight;
 
                     if ( slide.opts.image.srcset ) {
                         $img.attr( 'sizes', '100vw' ).attr( 'srcset', slide.opts.image.srcset );
@@ -2003,7 +2019,7 @@
             slide.$slide.one('onReset', function () {
 
                 // Pause all html5 video/audio
-                $(this).find("video,audio").each(function () { this.pause(); });
+                $( this ).find( 'video,audio' ).trigger( 'pause' );
 
                 // Put content back
                 if ( slide.$placeholder ) {
@@ -2293,11 +2309,10 @@
         // ==================================================================
 
         complete : function() {
-
-            var self = this;
-
-            var current = self.current;
-            var slides  = {};
+            var self = this,
+                current = self.current,
+                slides  = {},
+                promise;
 
             if ( current.isMoved || !current.isLoaded || current.isComplete ) {
                 return;
@@ -2306,6 +2321,8 @@
             current.isComplete = true;
 
             current.$slide.siblings().trigger( 'onReset' );
+
+            self.preload( 'inline' );
 
             // Trigger any CSS3 transiton inside the slide
             forceRedraw( current.$slide );
@@ -2318,7 +2335,6 @@
                     slides[ slide.pos ] = slide;
 
                 } else if ( slide ) {
-
                     $.fancybox.stop( slide.$slide );
 
                     slide.$slide.off().remove();
@@ -2332,11 +2348,7 @@
             self.trigger( 'afterShow' );
 
             // Play first html5 video/audio
-            var media = current.$slide.find("video,audio").first();
-
-            if ( media.length ) {
-                media[0].play();
-            }
+            current.$slide.find( 'video,audio' ).first().trigger( 'play' );
 
             // Try to focus on the first focusable element
             if ( $( document.activeElement ).is( '[disabled]' ) || ( current.opts.autoFocus && !( current.type == 'image' || current.type === 'iframe' ) ) ) {
@@ -2349,25 +2361,18 @@
         // Preload next and previous slides
         // ================================
 
-        preload : function() {
-            var self = this;
-            var next, prev;
+        preload : function( type ) {
+            var self = this,
+                next = self.slides[ self.currPos + 1 ],
+                prev = self.slides[ self.currPos - 1 ];
 
-            if ( self.group.length < 2 ) {
-                return;
-            }
-
-            next  = self.slides[ self.currPos + 1 ];
-            prev  = self.slides[ self.currPos - 1 ];
-
-            if ( next && next.type === 'image' ) {
+            if ( next && next.type === type ) {
                 self.loadSlide( next );
             }
 
-            if ( prev && prev.type === 'image' ) {
+            if ( prev && prev.type === type ) {
                 self.loadSlide( prev );
             }
-
         },
 
 
@@ -2729,7 +2734,7 @@
 
     $.fancybox = {
 
-        version  : "3.2.8",
+        version  : "3.2.9",
         defaults : defaults,
 
 
@@ -2934,7 +2939,7 @@
             }
 
             if ( !$.isPlainObject( to ) ) {
-                $el.removeAttr('style');
+                $el.removeAttr( 'style' );
             }
 
             $el.on( transitionEnd, function(e) {
@@ -2958,6 +2963,10 @@
                         to.scaleY = 1;
 
                         $.fancybox.setTranslate( $el, to );
+                    }
+
+                    if ( leaveAnimationName === false ) {
+                        $el.removeAttr( 'style' );
                     }
 
                 } else if ( leaveAnimationName !== true ) {
@@ -3300,27 +3309,25 @@
 	'use strict';
 
 	var requestAFrame = (function () {
-        return window.requestAnimationFrame ||
-                window.webkitRequestAnimationFrame ||
-                window.mozRequestAnimationFrame ||
-                window.oRequestAnimationFrame ||
-                // if all else fails, use setTimeout
-                function (callback) {
-                    return window.setTimeout(callback, 1000 / 60);
-                };
-    })();
+		return window.requestAnimationFrame ||
+			window.webkitRequestAnimationFrame ||
+			window.mozRequestAnimationFrame ||
+			window.oRequestAnimationFrame ||
+			// if all else fails, use setTimeout
+			function (callback) {
+				return window.setTimeout(callback, 1000 / 60);
+			};
+	})();
 
-
-    var cancelAFrame = (function () {
-        return window.cancelAnimationFrame ||
-                window.webkitCancelAnimationFrame ||
-                window.mozCancelAnimationFrame ||
-                window.oCancelAnimationFrame ||
-                function (id) {
-                    window.clearTimeout(id);
-                };
-    })();
-
+	var cancelAFrame = (function () {
+		return window.cancelAnimationFrame ||
+			window.webkitCancelAnimationFrame ||
+			window.mozCancelAnimationFrame ||
+			window.oCancelAnimationFrame ||
+			function (id) {
+				window.clearTimeout(id);
+			};
+	})();
 
 	var pointers = function( e ) {
 		var result = [];
@@ -3363,10 +3370,10 @@
 
 		// Check for attributes like data-fancybox-next or data-fancybox-close
 		for ( var i = 0, atts = $el[0].attributes, n = atts.length; i < n; i++ ) {
-            if ( atts[i].nodeName.substr(0, 14) === 'data-fancybox-' ) {
-                return true;
-            }
-        }
+			if ( atts[i].nodeName.substr(0, 14) === 'data-fancybox-' ) {
+				return true;
+			}
+		}
 
 	 	return false;
 	};
@@ -3430,17 +3437,9 @@
 
 		var isTouchDevice = ( e.type == 'touchstart' );
 
-		// Do not respond to both events
+		// Do not respond to both (touch and mouse) events
 		if ( isTouchDevice ) {
-	        self.$container.off( 'mousedown.fb.touch' );
-	    }
-
-		// Ignore clicks while zooming or closing
-		if ( !current || self.instance.isAnimating || self.instance.isClosing ) {
-			e.stopPropagation();
-			e.preventDefault();
-
-			return;
+			self.$container.off( 'mousedown.fb.touch' );
 		}
 
 		// Ignore right click
@@ -3454,29 +3453,60 @@
 		}
 
 		// Ignore clicks on the scrollbar
-		if ( e.originalEvent.clientX > $target[0].clientWidth + $target.offset().left ) {
+		if ( !$target.is('img') && e.originalEvent.clientX > $target[0].clientWidth + $target.offset().left ) {
 			return;
 		}
 
-		self.startPoints = pointers( e );
+		// Ignore clicks while zooming or closing
+		if ( !current || self.instance.isAnimating || self.instance.isClosing ) {
+			e.stopPropagation();
+			e.preventDefault();
+
+			return;
+		}
+
+		self.realPoints = self.startPoints = pointers( e );
 
 		if ( !self.startPoints ) {
 			return;
 		}
 
+		e.stopPropagation();
+
+		self.startEvent = e;
+
+		self.canTap   = true;
 		self.$target  = $target;
 		self.$content = $content;
-		self.canTap   = true;
 		self.opts     = current.opts.touch;
 
-		$(document).off( '.fb.touch' );
+		self.isPanning   = false;
+		self.isSwiping   = false;
+		self.isZooming   = false;
+		self.isScrolling = false;
 
-		$(document).on( isTouchDevice ? 'touchend.fb.touch touchcancel.fb.touch' : 'mouseup.fb.touch mouseleave.fb.touch',  $.proxy(self, "ontouchend"));
-		$(document).on( isTouchDevice ? 'touchmove.fb.touch' : 'mousemove.fb.touch',  $.proxy(self, "ontouchmove"));
+		self.sliderStartPos  = self.sliderLastPos || { top: 0, left: 0 };
+		self.contentStartPos = $.fancybox.getTranslate( self.$content );
+		self.contentLastPos  = null;
+
+		self.startTime = new Date().getTime();
+		self.distanceX = self.distanceY = self.distance = 0;
+
+		self.canvasWidth  = Math.round( current.$slide[0].clientWidth );
+		self.canvasHeight = Math.round( current.$slide[0].clientHeight );
+
+		$(document)
+			.off( '.fb.touch' )
+			.on( isTouchDevice ? 'touchend.fb.touch touchcancel.fb.touch' : 'mouseup.fb.touch mouseleave.fb.touch', $.proxy(self, "ontouchend"))
+			.on( isTouchDevice ? 'touchmove.fb.touch' : 'mousemove.fb.touch', $.proxy(self, "ontouchmove"));
+
+		if ( $.fancybox.isMobile ) {
+			document.addEventListener('scroll', self.onscroll, true);
+		}
 
 		if ( !(self.opts || instance.canPan() ) || !( $target.is( self.$stage ) || self.$stage.find( $target ).length ) ) {
 
-			// Prevent ghosting
+			// Prevent image ghosting while dragging
 			if ( $target.is('img') ) {
 				e.preventDefault();
 			}
@@ -3484,31 +3514,12 @@
 			return;
 		}
 
-		e.stopPropagation();
-
-		if ( !( $.fancybox.isMobile && ( isScrollable( self.$target ) || isScrollable( self.$target.parent() ) ) ) ) {
+		if ( !( $.fancybox.isMobile && ( isScrollable( $target ) || isScrollable( $target.parent() ) ) ) ) {
 			e.preventDefault();
 		}
 
-		self.canvasWidth  = Math.round( current.$slide[0].clientWidth );
-		self.canvasHeight = Math.round( current.$slide[0].clientHeight );
-
-		self.startTime = new Date().getTime();
-		self.distanceX = self.distanceY = self.distance = 0;
-
-		self.isPanning = false;
-		self.isSwiping = false;
-		self.isZooming = false;
-
-		self.sliderStartPos  = self.sliderLastPos || { top: 0, left: 0 };
-		self.contentStartPos = $.fancybox.getTranslate( self.$content );
-		self.contentLastPos  = null;
-
-		if ( self.startPoints.length === 1 && !self.isZooming ) {
-			self.canTap = true;
-
+		if ( self.startPoints.length === 1 ) {
 			if ( current.type === 'image' && ( self.contentStartPos.width > self.canvasWidth + 1 || self.contentStartPos.height > self.canvasHeight + 1 ) ) {
-
 				$.fancybox.stop( self.$content );
 
 				self.$content.css( 'transition-duration', '' );
@@ -3523,10 +3534,11 @@
 		}
 
 		if ( self.startPoints.length === 2 && !instance.isAnimating && !current.hasError && current.type === 'image' && ( current.isLoaded || current.$ghost ) ) {
-			self.isZooming = true;
-
+			self.canTap    = false;
 			self.isSwiping = false;
 			self.isPanning = false;
+
+			self.isZooming = true;
 
 			$.fancybox.stop( self.$content );
 
@@ -3543,41 +3555,39 @@
 
 	};
 
+	Guestures.prototype.onscroll = function(e) {
+		self.isScrolling = true;
+	};
+
 	Guestures.prototype.ontouchmove = function( e ) {
+		var self = this,
+			$target = $(e.target);
 
-		var self = this;
-
-		self.newPoints = pointers( e );
-
-		if ( $.fancybox.isMobile && ( isScrollable( self.$target ) || isScrollable( self.$target.parent() ) ) ) {
-			e.stopPropagation();
-
+		if ( self.isScrolling || !( $target.is( self.$stage ) || self.$stage.find( $target ).length ) ) {
 			self.canTap = false;
 
 			return;
 		}
 
+		self.newPoints = pointers( e );
+
 		if ( !( self.opts || self.instance.canPan() ) || !self.newPoints || !self.newPoints.length ) {
 			return;
+		}
+
+		if ( !(self.isSwiping && self.isSwiping === true) ) {
+			e.preventDefault();
 		}
 
 		self.distanceX = distance( self.newPoints[0], self.startPoints[0], 'x' );
 		self.distanceY = distance( self.newPoints[0], self.startPoints[0], 'y' );
 
-		self.distance = distance( self.newPoints[0], self.startPoints[0] );
+		self.distance = distance( self.newPoints[0], self.startPoints[0] )
 
 		// Skip false ontouchmove events (Chrome)
-		if ( self.distance > 0 && !self.tapped ) {
-
-			if ( !( self.$target.is( self.$stage ) || self.$stage.find( self.$target ).length ) ) {
-				return;
-			}
-
-			e.stopPropagation();
-			e.preventDefault();
-
+		if ( self.distance > 0 ) {
 			if ( self.isSwiping ) {
-				self.onSwipe();
+				self.onSwipe(e);
 
 			} else if ( self.isPanning ) {
 				self.onPan();
@@ -3585,36 +3595,42 @@
 			} else if ( self.isZooming ) {
 				self.onZoom();
 			}
-
 		}
 
 	};
 
-	Guestures.prototype.onSwipe = function() {
-
+	Guestures.prototype.onSwipe = function(e) {
 		var self = this,
 			swiping = self.isSwiping,
 			left    = self.sliderStartPos.left || 0,
 			angle;
 
+		// If direction is not yet determined
 		if ( swiping === true ) {
 
 			// We need at least 10px distance to correctly calculate an angle
-			if ( Math.abs( self.distance ) > 10 )  {
-
+			if ( Math.abs( self.distance ) > 10 ) {
 				self.canTap = false;
 
 				if ( self.instance.group.length < 2 && self.opts.vertical ) {
-					self.isSwiping  = 'y';
+					self.isSwiping = 'y';
 
 				} else if ( self.instance.isDragging || self.opts.vertical === false || ( self.opts.vertical === 'auto' && $( window ).width() > 800 ) ) {
-					self.isSwiping  = 'x';
+					self.isSwiping = 'x';
 
 				} else {
 					angle = Math.abs( Math.atan2( self.distanceY, self.distanceX ) * 180 / Math.PI );
 
 					self.isSwiping = ( angle > 45 && angle < 135 ) ? 'y' : 'x';
 				}
+
+				self.canTap = false;
+
+				 if ( self.isSwiping === 'y' && $.fancybox.isMobile && ( isScrollable( self.$target ) || isScrollable( self.$target.parent() ) ) ) {
+					 self.isScrolling = true;
+
+					 return;
+				 }
 
 				self.instance.isDragging = self.isSwiping;
 
@@ -3640,12 +3656,10 @@
 			}
 
 			return;
-
 		}
 
+		// Sticky edges
 		if ( swiping == 'x' ) {
-
-			// Sticky edges
 			if ( self.distanceX > 0 && ( self.instance.group.length < 2 || ( self.instance.current.index === 0 && !self.instance.current.opts.loop ) ) ) {
 				left = left + Math.pow( self.distanceX, 0.8 );
 
@@ -3655,7 +3669,6 @@
 			} else {
 				left = left + self.distanceX;
 			}
-
 		}
 
 		self.sliderLastPos = {
@@ -3689,29 +3702,17 @@
 	};
 
 	Guestures.prototype.onPan = function() {
+		var self = this;
 
-		var self = this,
-			newOffsetX,
-			newOffsetY,
-			newPos;
+		// Sometimes, when tapping causally, image can move a bit and that breaks double tapping
+		if ( distance( self.newPoints[0], self.realPoints[0] ) < ($.fancybox.isMobile ? 10 : 5) ) {
+			self.startPoints = self.newPoints;
+			return;
+		}
 
 		self.canTap = false;
 
-		if ( self.contentStartPos.width > self.canvasWidth ) {
-			newOffsetX = self.contentStartPos.left + self.distanceX;
-
-		} else {
-			newOffsetX = self.contentStartPos.left;
-		}
-
-		newOffsetY = self.contentStartPos.top + self.distanceY;
-
-		newPos = self.limitMovement( newOffsetX, newOffsetY, self.contentStartPos.width, self.contentStartPos.height );
-
-		newPos.scaleX = self.contentStartPos.scaleX;
-		newPos.scaleY = self.contentStartPos.scaleY;
-
-		self.contentLastPos = newPos;
+		self.contentLastPos = self.limitMovement();
 
 		if ( self.requestId ) {
 			cancelAFrame( self.requestId );
@@ -3725,30 +3726,44 @@
 	};
 
 	// Make panning sticky to the edges
-	Guestures.prototype.limitMovement = function( newOffsetX, newOffsetY, newWidth, newHeight ) {
-
+	Guestures.prototype.limitMovement = function() {
 		var self = this;
-
-		var minTranslateX, minTranslateY, maxTranslateX, maxTranslateY;
 
 		var canvasWidth  = self.canvasWidth;
 		var canvasHeight = self.canvasHeight;
 
-		var currentOffsetX = self.contentStartPos.left;
-		var currentOffsetY = self.contentStartPos.top;
-
 		var distanceX = self.distanceX;
 		var distanceY = self.distanceY;
 
+		var contentStartPos = self.contentStartPos;
+
+		var currentOffsetX = contentStartPos.left;
+		var currentOffsetY = contentStartPos.top;
+
+		var currentWidth  = contentStartPos.width;
+		var currentHeight = contentStartPos.height;
+
+		var minTranslateX, minTranslateY,
+			maxTranslateX, maxTranslateY,
+			newOffsetX, newOffsetY;
+
+		if ( currentWidth > canvasWidth ) {
+			newOffsetX = currentOffsetX + distanceX;
+
+		} else {
+			newOffsetX = currentOffsetX;
+		}
+
+		newOffsetY = currentOffsetY + distanceY;
+
 		// Slow down proportionally to traveled distance
+		minTranslateX = Math.max( 0, canvasWidth  * 0.5 - currentWidth  * 0.5 );
+		minTranslateY = Math.max( 0, canvasHeight * 0.5 - currentHeight * 0.5 );
 
-		minTranslateX = Math.max(0, canvasWidth  * 0.5 - newWidth  * 0.5 );
-		minTranslateY = Math.max(0, canvasHeight * 0.5 - newHeight * 0.5 );
+		maxTranslateX = Math.min( canvasWidth  - currentWidth,  canvasWidth  * 0.5 - currentWidth  * 0.5 );
+		maxTranslateY = Math.min( canvasHeight - currentHeight, canvasHeight * 0.5 - currentHeight * 0.5 );
 
-		maxTranslateX = Math.min( canvasWidth  - newWidth,  canvasWidth  * 0.5 - newWidth  * 0.5 );
-		maxTranslateY = Math.min( canvasHeight - newHeight, canvasHeight * 0.5 - newHeight * 0.5 );
-
-		if ( newWidth > canvasWidth ) {
+		if ( currentWidth > canvasWidth ) {
 
 			//   ->
 			if ( distanceX > 0 && newOffsetX > minTranslateX ) {
@@ -3756,13 +3771,13 @@
 			}
 
 			//    <-
-			if ( distanceX  < 0 && newOffsetX < maxTranslateX ) {
+			if ( distanceX < 0 && newOffsetX < maxTranslateX ) {
 				newOffsetX = maxTranslateX + 1 - Math.pow( maxTranslateX - currentOffsetX - distanceX, 0.8 ) || 0;
 			}
 
 		}
 
-		if ( newHeight > canvasHeight ) {
+		if ( currentHeight > canvasHeight ) {
 
 			//   \/
 			if ( distanceY > 0 && newOffsetY > minTranslateY ) {
@@ -3777,15 +3792,15 @@
 		}
 
 		return {
-			top  : newOffsetY,
-			left : newOffsetX
+			top    : newOffsetY,
+			left   : newOffsetX,
+			scaleX : contentStartPos.scaleX,
+			scaleY : contentStartPos.scaleY
 		};
 
 	};
 
-
 	Guestures.prototype.limitPosition = function( newOffsetX, newOffsetY, newWidth, newHeight ) {
-
 		var self = this;
 
 		var canvasWidth  = self.canvasWidth;
@@ -3821,7 +3836,6 @@
 	};
 
 	Guestures.prototype.onZoom = function() {
-
 		var self = this;
 
 		// Calculate current distance between points to get pinch ratio and new width and height
@@ -3886,13 +3900,13 @@
 	};
 
 	Guestures.prototype.ontouchend = function( e ) {
-
 		var self = this;
 		var dMs  = Math.max( (new Date().getTime() ) - self.startTime, 1);
 
-		var swiping = self.isSwiping;
-		var panning = self.isPanning;
-		var zooming = self.isZooming;
+		var swiping   = self.isSwiping;
+		var panning   = self.isPanning;
+		var zooming   = self.isZooming;
+		var scrolling = self.isScrolling;
 
 		self.endPoints = pointers( e );
 
@@ -3900,19 +3914,22 @@
 
 		$(document).off( '.fb.touch' );
 
+		document.removeEventListener('scroll', self.onscroll, true);
+
 		if ( self.requestId ) {
 			cancelAFrame( self.requestId );
 
 			self.requestId = null;
 		}
 
-		self.isSwiping = false;
-		self.isPanning = false;
-		self.isZooming = false;
+		self.isSwiping   = false;
+		self.isPanning   = false;
+		self.isZooming   = false;
+		self.isScrolling = false;
 
 		self.instance.isDragging = false;
 
-		if ( self.canTap )  {
+		if ( self.canTap ) {
 			return self.onTap( e );
 		}
 
@@ -3931,21 +3948,21 @@
 			self.endZooming();
 
 		} else {
-			self.endSwiping( swiping );
+			self.endSwiping( swiping, scrolling );
 		}
 
 		return;
 	};
 
-	Guestures.prototype.endSwiping = function( swiping ) {
-
-		var self = this;
-		var ret = false;
+	Guestures.prototype.endSwiping = function( swiping, scrolling ) {
+		var self = this,
+			ret  = false,
+			len  = self.instance.group.length;
 
 		self.sliderLastPos = null;
 
 		// Close if swiped vertically / navigate if horizontally
-		if ( swiping == 'y' && Math.abs( self.distanceY ) > 50 ) {
+		if ( swiping == 'y' && !scrolling && Math.abs( self.distanceY ) > 50 ) {
 
 			// Continue vertical movement
 			$.fancybox.animate( self.instance.current.$slide, {
@@ -3955,15 +3972,19 @@
 
 			ret = self.instance.close( true, 300 );
 
-		} else if ( swiping == 'x' && self.distanceX > 50 && self.instance.group.length > 1 ) {
+		} else if ( swiping == 'x' && self.distanceX > 50 && len > 1 ) {
 			ret = self.instance.previous( self.speedX );
 
-		} else if ( swiping == 'x' && self.distanceX < -50  && self.instance.group.length > 1 ) {
+		} else if ( swiping == 'x' && self.distanceX < -50 && len > 1 ) {
 			ret = self.instance.next( self.speedX );
 		}
 
 		if ( ret === false && ( swiping == 'x' || swiping == 'y' ) ) {
-			self.instance.jumpTo( self.instance.current.index, 150 );
+			if ( scrolling || len < 2 ) {
+				self.instance.centerSlide( self.instance.current, 150 );
+			} else {
+				self.instance.jumpTo( self.instance.current.index );
+			}
 		}
 
 		self.$container.removeClass( 'fancybox-is-sliding' );
@@ -4003,7 +4024,6 @@
 
 
 	Guestures.prototype.endZooming = function() {
-
 		var self = this;
 
 		var current = self.instance.current;
@@ -4021,16 +4041,16 @@
 		newOffsetY = self.contentLastPos.top;
 
 		reset = {
-		   	top    : newOffsetY,
-		   	left   : newOffsetX,
-		   	width  : newWidth,
-		   	height : newHeight,
+			top    : newOffsetY,
+			left   : newOffsetX,
+			width  : newWidth,
+			height : newHeight,
 			scaleX : 1,
 			scaleY : 1
-	   };
+		};
 
-	   // Reset scalex/scaleY values; this helps for perfomance and does not break animation
-	   $.fancybox.setTranslate( self.$content, reset );
+		// Reset scalex/scaleY values; this helps for perfomance and does not break animation
+		$.fancybox.setTranslate( self.$content, reset );
 
 		if ( newWidth < self.canvasWidth && newHeight < self.canvasHeight ) {
 			self.instance.scaleToFit( 150 );
@@ -4133,7 +4153,7 @@
 		}
 
 		// Skip if clicked on the scrollbar
-		if ( tapX > $target[0].clientWidth + $target.offset().left ) {
+		if ( !$target.is('img') && tapX > $target[0].clientWidth + $target.offset().left ) {
 			return;
 		}
 
@@ -4144,7 +4164,7 @@
 		} else if ( $target.is( '.fancybox-slide' ) ) {
 			where = 'Slide';
 
-		} else if  ( instance.current.$content && instance.current.$content.has( e.target ).length ) {
+		} else if ( instance.current.$content && instance.current.$content.find( $target ).addBack().filter( $target ).length ) {
 		 	where = 'Content';
 
 		} else {
@@ -4196,13 +4216,6 @@
 			instance.Guestures = new Guestures( instance );
 		}
 	});
-
-	$(document).on('beforeClose.fb', function (e, instance) {
-		if ( instance && instance.Guestures ) {
-			instance.Guestures.destroy();
-		}
-	});
-
 
 }( window, document, window.jQuery || jQuery ));
 
@@ -4878,21 +4891,21 @@
 			tpl :
 				'<div class="fancybox-share">' +
 					'<h1>{{SHARE}}</h1>' +
-					'<p>' +
-						'<a href="https://www.facebook.com/sharer/sharer.php?u={{src}}" target="_blank" class="fancybox-share_button">' +
-							'<svg version="1.1" viewBox="0 0 32 32" fill="#3b5998"><path d="M27.6 3h-23.2c-.8 0-1.4.6-1.4 1.4v23.1c0 .9.6 1.5 1.4 1.5h12.5v-10.1h-3.4v-3.9h3.4v-2.9c0-3.4 2.1-5.2 5-5.2 1.4 0 2.7.1 3 .2v3.5h-2.1c-1.6 0-1.9.8-1.9 1.9v2.5h3.9l-.5 3.9h-3.4v10.1h6.6c.8 0 1.4-.6 1.4-1.4v-23.2c.1-.8-.5-1.4-1.3-1.4z"></path></svg>' +
+					'<p class="fancybox-share__links">' +
+						'<a class="fancybox-share__button fancybox-share__button--fb" href="https://www.facebook.com/sharer/sharer.php?u={{url}}">' +
+							'<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="m287 456v-299c0-21 6-35 35-35h38v-63c-7-1-29-3-55-3-54 0-91 33-91 94v306m143-254h-205v72h196" /></svg>' +
 							'<span>Facebook</span>' +
 						'</a>' +
-						'<a href="https://www.pinterest.com/pin/create/button/?url={{src}}&amp;description={{descr}}" target="_blank" class="fancybox-share_button">' +
-							'<svg version="1.1" viewBox="0 0 32 32" fill="#c92228"><path d="M16 3c-7.2 0-13 5.8-13 13 0 5.5 3.4 10.2 8.3 12.1-.1-1-.2-2.6 0-3.7.2-1 1.5-6.5 1.5-6.5s-.4-.8-.4-1.9c0-1.8 1-3.2 2.4-3.2 1.1 0 1.6.8 1.6 1.8 0 1.1-.7 2.8-1.1 4.3-.3 1.3.6 2.3 1.9 2.3 2.3 0 4.1-2.4 4.1-6 0-3.1-2.2-5.3-5.4-5.3-3.7 0-5.9 2.8-5.9 5.6 0 1.1.4 2.3 1 3 .1.1.1.2.1.4-.1.4-.3 1.3-.4 1.5-.1.2-.2.3-.4.2-1.6-.8-2.6-3.1-2.6-5 0-4.1 3-7.9 8.6-7.9 4.5 0 8 3.2 8 7.5 0 4.5-2.8 8.1-6.7 8.1-1.3 0-2.6-.7-3-1.5 0 0-.7 2.5-.8 3.1-.3 1.1-1.1 2.5-1.6 3.4 1.2.4 2.5.6 3.8.6 7.2 0 13-5.8 13-13 0-7.1-5.8-12.9-13-12.9z"></path></svg>' +
+						'<a class="fancybox-share__button fancybox-share__button--pt" href="https://www.pinterest.com/pin/create/button/?url={{url}}&description={{descr}}&media={{media}}">' +
+							'<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="m265 56c-109 0-164 78-164 144 0 39 15 74 47 87 5 2 10 0 12-5l4-19c2-6 1-8-3-13-9-11-15-25-15-45 0-58 43-110 113-110 62 0 96 38 96 88 0 67-30 122-73 122-24 0-42-19-36-44 6-29 20-60 20-81 0-19-10-35-31-35-25 0-44 26-44 60 0 21 7 36 7 36l-30 125c-8 37-1 83 0 87 0 3 4 4 5 2 2-3 32-39 42-75l16-64c8 16 31 29 56 29 74 0 124-67 124-157 0-69-58-132-146-132z" fill="#fff"/></svg>' +
 							'<span>Pinterest</span>' +
 						'</a>' +
-						'<a href="https://twitter.com/intent/tweet?url={{src}}&amp;text={{descr}}" target="_blank" class="fancybox-share_button">' +
-							'<svg version="1.1" viewBox="0 0 32 32" fill="#1da1f2"><path d="M30 7.3c-1 .5-2.1.8-3.3.9 1.2-.7 2.1-1.8 2.5-3.2-1.1.7-2.3 1.1-3.6 1.4-1-1.1-2.5-1.8-4.2-1.8-3.2 0-5.7 2.6-5.7 5.7 0 .5.1.9.1 1.3-4.8-.2-9-2.5-11.8-6-.5.9-.8 1.9-.8 3 0 2 1 3.8 2.6 4.8-.9 0-1.8-.3-2.6-.7v.1c0 2.8 2 5.1 4.6 5.6-.5.1-1 .2-1.5.2-.4 0-.7 0-1.1-.1.7 2.3 2.9 3.9 5.4 4-2 1.5-4.4 2.5-7.1 2.5-.5 0-.9 0-1.4-.1 2.5 1.6 5.6 2.6 8.8 2.6 10.6 0 16.3-8.8 16.3-16.3v-.7c1.1-1 2-2 2.8-3.2z"></path></svg>' +
+						'<a class="fancybox-share__button fancybox-share__button--tw" href="https://twitter.com/intent/tweet?url={{url}}&text={{descr}}">' +
+							'<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="m456 133c-14 7-31 11-47 13 17-10 30-27 37-46-15 10-34 16-52 20-61-62-157-7-141 75-68-3-129-35-169-85-22 37-11 86 26 109-13 0-26-4-37-9 0 39 28 72 65 80-12 3-25 4-37 2 10 33 41 57 77 57-42 30-77 38-122 34 170 111 378-32 359-208 16-11 30-25 41-42z" /></svg>' +
 							'<span>Twitter</span>' +
 						'</a>' +
 					'</p>' +
-					'<p><input type="text" value="{{src_raw}}" onfocus="this.select()" /></p>' +
+					'<p><input class="fancybox-share__input" type="text" value="{{url_raw}}" /></p>' +
 				'</div>'
 		}
 	});
@@ -4922,8 +4935,9 @@
 		if ( f ) {
 			url = f.current.opts.hash === false ? f.current.src : window.location;
 			tpl = f.current.opts.share.tpl
-					.replace( /\{\{src\}\}/g, encodeURIComponent( url ) )
-					.replace( /\{\{src_raw\}\}/g, escapeHtml( url ) )
+					.replace( /\{\{media\}\}/g, f.current.type === 'image' ? encodeURIComponent( f.current.src ) : '' )
+					.replace( /\{\{url\}\}/g, encodeURIComponent( url ) )
+					.replace( /\{\{url_raw\}\}/g, escapeHtml( url ) )
 					.replace( /\{\{descr\}\}/g, f.$caption ? encodeURIComponent( f.$caption.text() ) : '' );
 
 			$.fancybox.open({
@@ -4931,7 +4945,14 @@
 				type : 'html',
 				opts : {
 					animationEffect   : "fade",
-					animationDuration : 250
+					animationDuration : 250,
+					afterLoad : function(instance, current) {
+						// Opening links in a popup window
+						current.$content.find('.fancybox-share__links a').click(function() {
+					        window.open(this.href, "Share", "width=550, height=450");
+					        return false;
+						});
+					}
 				}
 			});
 		}
@@ -5167,27 +5188,19 @@
     $(document).on({
         'onInit.fb' : function( e, instance, current ) {
 			instance.$refs.stage.on('mousewheel DOMMouseScroll wheel MozMousePixelScroll', function(e) {
-				var current = instance.current,
-					currTime,
-					value,
-					delta,
-					isHorizontal,
-					isVertical;
+				var current  = instance.current,
+					currTime = new Date().getTime();
 
-				if ( current.opts.wheel === false || ( current.opts.wheel === 'auto' && current.type !== 'image' ) ) {
-					return;
-				}
-
-				if ( current.$slide.hasClass( 'fancybox-animated' ) ) {
-				    return;
-				}
-
-				if ( instance.group.length < 1 ) {
+				if ( instance.group.length < 1 || current.opts.wheel === false || ( current.opts.wheel === 'auto' && current.type !== 'image' ) ) {
 					return;
 				}
 
 				e.preventDefault();
 				e.stopPropagation();
+
+				if ( current.$slide.hasClass( 'fancybox-animated' ) ) {
+					return;
+				}
 
 				e = e.originalEvent || e;
 
@@ -5197,18 +5210,7 @@
 
 				prevTime = currTime;
 
-				value = e.wheelDelta || -e.deltaY || -e.detail;
-				delta = Math.max(-1, Math.min(1, value));
-
-				isHorizontal = typeof e.wheelDeltaX !== 'undefined' || typeof e.deltaX !== 'undefined';
-				isVertical   = !isHorizontal || ( (Math.abs(e.wheelDeltaX) < Math.abs(e.wheelDelta)) || (Math.abs(e.deltaX) < Math.abs(e.deltaY)) );
-
-				if ( delta < 0 ) {
-					instance[ isVertical ? 'previous' : 'next' ]();
-
-				} else {
-					instance[ isVertical ? 'next' : 'previous' ]();
-				}
+				instance[ ( -e.deltaY || -e.deltaX || e.wheelDelta || -e.detail ) < 0 ? 'next' : 'previous' ]();
 
 			});
 		}

@@ -6,27 +6,19 @@
     $(document).on({
         'onInit.fb' : function( e, instance, current ) {
 			instance.$refs.stage.on('mousewheel DOMMouseScroll wheel MozMousePixelScroll', function(e) {
-				var current = instance.current,
-					currTime,
-					value,
-					delta,
-					isHorizontal,
-					isVertical;
+				var current  = instance.current,
+					currTime = new Date().getTime();
 
-				if ( current.opts.wheel === false || ( current.opts.wheel === 'auto' && current.type !== 'image' ) ) {
-					return;
-				}
-
-				if ( current.$slide.hasClass( 'fancybox-animated' ) ) {
-				    return;
-				}
-
-				if ( instance.group.length < 1 ) {
+				if ( instance.group.length < 1 || current.opts.wheel === false || ( current.opts.wheel === 'auto' && current.type !== 'image' ) ) {
 					return;
 				}
 
 				e.preventDefault();
 				e.stopPropagation();
+
+				if ( current.$slide.hasClass( 'fancybox-animated' ) ) {
+					return;
+				}
 
 				e = e.originalEvent || e;
 
@@ -36,18 +28,7 @@
 
 				prevTime = currTime;
 
-				value = e.wheelDelta || -e.deltaY || -e.detail;
-				delta = Math.max(-1, Math.min(1, value));
-
-				isHorizontal = typeof e.wheelDeltaX !== 'undefined' || typeof e.deltaX !== 'undefined';
-				isVertical   = !isHorizontal || ( (Math.abs(e.wheelDeltaX) < Math.abs(e.wheelDelta)) || (Math.abs(e.deltaX) < Math.abs(e.deltaY)) );
-
-				if ( delta < 0 ) {
-					instance[ isVertical ? 'previous' : 'next' ]();
-
-				} else {
-					instance[ isVertical ? 'next' : 'previous' ]();
-				}
+				instance[ ( -e.deltaY || -e.deltaX || e.wheelDelta || -e.detail ) < 0 ? 'next' : 'previous' ]();
 
 			});
 		}
