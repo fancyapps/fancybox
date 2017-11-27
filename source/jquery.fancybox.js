@@ -1431,7 +1431,7 @@
 
 			F.isOpen = F.isOpened = true;
 
-			F.wrap.css('overflow', 'visible').addClass('fancybox-opened').hide().show(0);
+			F.wrap.css('overflow', 'visible').addClass('fancybox-opened').hide().show();
 
 			F.update();
 
