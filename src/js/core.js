@@ -630,6 +630,7 @@
                     opts = {},
                     $item,
                     type,
+                    found,
                     src,
                     srcParts;
 
@@ -697,6 +698,13 @@
 
                     } else if ( src.match(/\.(pdf)((\?|#).*)?$/i) ) {
                         type = 'pdf';
+
+                    } else if ( found = src.match(/\.(mp4|mov|ogv)((\?|#).*)?$/i) ) {
+                        type = 'video';
+
+                        if ( !obj.opts.videoFormat ) {
+                            obj.opts.videoFormat = 'video/' + ( found[1] === 'ogv' ? 'ogg' : found[1] );
+                        }
 
                     } else if ( src.charAt(0) === '#' ) {
                         type = 'inline';
@@ -1642,6 +1650,17 @@
                     $slide.one( 'onReset', function () {
                         ajaxLoad.abort();
                     });
+
+                break;
+
+                case 'video' :
+
+                    self.setContent( slide,
+                        '<video controls>' +
+                          '<source src="' + slide.src + '" type="' + slide.opts.videoFormat + '">' +
+                            'Your browser doesn\'t support HTML5 video' +
+                        '</video>'
+                    );
 
                 break;
 
