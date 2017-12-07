@@ -510,9 +510,10 @@
 
         init : function() {
             var self = this,
-                firstItem      = self.group[ self.currIndex ],
-                firstItemOpts  = firstItem.opts,
-                scrollbarWidth = $.fancybox.scrollbarWidth,
+                firstItem         = self.group[ self.currIndex ],
+                firstItemOpts     = firstItem.opts,
+                scrollbarWidth    = $.fancybox.scrollbarWidth,
+                isOverflowYScroll = $('body').css('overflow-y') === 'scroll',
                 $scrollDiv,
                 $container,
                 buttonStr;
@@ -525,8 +526,6 @@
             // ===============
 
             if ( !$.fancybox.getInstance() ) {
-
-                var isOverflowYScroll = $('body').css('overflow-y') === 'scroll';
 
                 $( 'body' ).addClass( 'fancybox-active' );
 
