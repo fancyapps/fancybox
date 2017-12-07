@@ -3,120 +3,126 @@
 
 .fancybox-thumbs {
     display: none;
+	position: absolute;
+    top: 0;
+    bottom: 0;
+	right: 0;
+    width: 212px;
+	margin: 0;
+	padding: 2px 2px 4px 2px;
+    background: #fff;
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
+	-webkit-overflow-scrolling: touch;
+	-ms-overflow-style: -ms-autohiding-scrollbar;
+	box-sizing: border-box;
+	z-index: 99995;
 }
 
-.fancybox-button--thumbs {
-	display: none;
+.fancybox-thumbs-x {
+    overflow-y: hidden;
+    overflow-x: auto;
 }
 
-@media all and (min-width: 800px) {
+.fancybox-show-thumbs .fancybox-thumbs {
+    display: block;
+}
 
-	.fancybox-button--thumbs {
-		display: inline-block;
-	}
+.fancybox-show-thumbs .fancybox-inner {
+    right: 212px;
+}
 
-	.fancybox-button--thumbs span {
-		font-size: 23px;
-	}
+.fancybox-thumbs > ul {
+	list-style: none;
+	position: absolute;
+	position: relative;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+	font-size: 0;
+    white-space: nowrap;
+}
 
-	.fancybox-button--thumbs::before {
-		width: 3px;
-		height: 3px;
-		top: calc(50% - 2px);
-		left: calc(50% - 2px);
-		box-shadow: 0 -4px 0, -4px -4px 0, 4px -4px 0, 0 0 0 32px inset, -4px 0 0, 4px 0 0, 0 4px 0, -4px 4px 0, 4px 4px 0;
-	}
+.fancybox-thumbs-x > ul {
+  overflow : hidden;
+}
 
+.fancybox-thumbs-y > ul::-webkit-scrollbar {
+    width: 7px;
+}
+
+.fancybox-thumbs-y > ul::-webkit-scrollbar-track {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+
+.fancybox-thumbs-y > ul::-webkit-scrollbar-thumb {
+    background: #2a2a2a;
+    border-radius: 10px;
+}
+
+.fancybox-thumbs > ul > li {
+	float: left;
+	overflow: hidden;
+	padding: 0;
+	margin: 2px;
+	width: 100px;
+	height: 75px;
+    max-width: calc(50% - 4px);
+    max-height: calc(100% - 8px);
+	position: relative;
+	cursor: pointer;
+	outline: none;
+	-webkit-tap-highlight-color: transparent;
+    backface-visibility: hidden;
+    box-sizing: border-box;
+}
+
+li.fancybox-thumbs-loading {
+	background: rgba(0,0,0,0.1);
+}
+
+.fancybox-thumbs > ul > li > img {
+	position: absolute;
+	top: 0;
+	left: 0;
+	max-width: none;
+	max-height: none;
+	-webkit-touch-callout: none;
+	user-select: none;
+}
+
+.fancybox-thumbs > ul > li:before {
+	content: '';
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	border: 4px solid #4ea7f9;
+	z-index: 99991;
+	opacity: 0;
+	transition: all 0.2s cubic-bezier(.25,.46,.45,.94);
+}
+
+.fancybox-thumbs > ul > li.fancybox-thumbs-active:before {
+	opacity: 1;
+}
+
+/* Styling for Small-Screen Devices */
+@media all and (max-width: 800px) {
 	.fancybox-thumbs {
-		position: absolute;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		left: auto;
-		width: 220px;
-		margin: 0;
-		padding: 5px 5px 0 0;
-		background: #fff;
-		word-break: normal;
-		-webkit-tap-highlight-color: rgba(0,0,0,0);
-		-webkit-overflow-scrolling: touch;
-		-ms-overflow-style: -ms-autohiding-scrollbar;
-		box-sizing: border-box;
-		z-index: 99995;
+		width: 110px;
 	}
 
-	.fancybox-show-thumbs .fancybox-thumbs {
-		display: block;
-	}
+    .fancybox-show-thumbs .fancybox-inner {
+        right: 110px;
+    }
 
-	.fancybox-show-thumbs .fancybox-inner {
-		right: 220px;
-	}
-
-	.fancybox-thumbs > ul {
-		list-style: none;
-		position: absolute;
-		position: relative;
-		width: 100%;
-		height: 100%;
-		margin: 0;
-		padding: 0;
-		overflow-x: hidden;
-		overflow-y: auto;
-		font-size: 0;
-	}
-
-	.fancybox-thumbs > ul > li {
-		float: left;
-		overflow: hidden;
-		max-width: 50%;
-		padding: 0;
-		margin: 0;
-		width: 105px;
-		height: 75px;
-		position: relative;
-		cursor: pointer;
-		outline: none;
-		border: 5px solid transparent;
-		border-top-width: 0;
-		border-right-width: 0;
-		-webkit-tap-highlight-color: transparent;
-	    backface-visibility: hidden;
-	    box-sizing: border-box;
-	}
-
-	li.fancybox-thumbs-loading {
-		background: rgba(0,0,0,0.1);
-	}
-
-	.fancybox-thumbs > ul > li > img {
-		position: absolute;
-		top: 0;
-		left: 0;
-		min-width: 100%;
-		min-height: 100%;
-		max-width: none;
-		max-height: none;
-		-webkit-touch-callout: none;
-		user-select: none;
-	}
-
-	.fancybox-thumbs > ul > li:before {
-		content:'';
-		position: absolute;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		left: 0;
-		border-radius: 2px;
-		border: 4px solid #4ea7f9;
-		z-index: 99991;
-		opacity: 0;
-		transition: all 0.2s cubic-bezier(.25,.46,.45,.94);
-	}
-
-	.fancybox-thumbs > ul > li.fancybox-thumbs-active:before {
-		opacity: 1;
-	}
-
+    .fancybox-thumbs > ul > li {
+        max-width: calc(100% - 10px);
+    }
 }

@@ -10,6 +10,22 @@
 ;(function (document, $) {
 	'use strict';
 
+	$.extend(true, $.fancybox.defaults, {
+		btnTpl : {
+			slideShow :
+				'<button data-fancybox-play class="fancybox-button fancybox-button--play" title="{{PLAY_START}}">' +
+					'<svg viewBox="0 0 40 40">' +
+						'<path d="M13,12 L27,20 L13,27 Z" />' +
+						'<path d="M15,10 v19 M23,10 v19" />' +
+					'</svg>' +
+				'</button>'
+		},
+		slideShow : {
+			autoStart : false,
+            speed     : 3000
+		}
+	});
+
 	var SlideShow = function( instance ) {
 		this.instance = instance;
 		this.init();
@@ -19,7 +35,6 @@
 		timer    : null,
 		isActive : false,
 		$button  : null,
-		speed    : 3000,
 
 		init : function() {
 			var self = this;
@@ -33,22 +48,23 @@
 			}
 		},
 
-		set : function() {
+		set : function( force ) {
 			var self = this;
 
 			// Check if reached last element
-			if ( self.instance && self.instance.current && (self.instance.current.opts.loop || self.instance.currIndex < self.instance.group.length - 1 )) {
+			if ( self.instance && self.instance.current && (force === true || self.instance.current.opts.loop || self.instance.currIndex < self.instance.group.length - 1 )) {
 				self.timer = setTimeout(function() {
-					self.instance.next();
+					if ( self.isActive ) {
+						self.instance.jumpTo( (self.instance.currIndex + 1) % self.instance.group.length );
+					}
 
-				}, self.instance.current.opts.slideShow.speed || self.speed);
+				}, self.instance.current.opts.slideShow.speed);
 
 			} else {
 				self.stop();
 				self.instance.idleSecondsCounter = 0;
 				self.instance.showControls();
 			}
-
 		},
 
 		clear : function() {
@@ -63,17 +79,15 @@
 			var self = this;
 			var current = self.instance.current;
 
-			if ( self.instance && current && ( current.opts.loop || current.index < self.instance.group.length - 1 )) {
-
+			if ( current ) {
 				self.isActive = true;
 
 				self.$button
 					.attr( 'title', current.opts.i18n[ current.opts.lang ].PLAY_STOP )
+					.removeClass( 'fancybox-button--play' )
 					.addClass( 'fancybox-button--pause' );
 
-				if ( current.isComplete ) {
-					self.set();
-				}
+					self.set( true );
 			}
 		},
 
@@ -85,7 +99,8 @@
 
 			self.$button
 				.attr( 'title', current.opts.i18n[ current.opts.lang ].PLAY_START )
-				.removeClass( 'fancybox-button--pause' );
+				.removeClass( 'fancybox-button--pause' )
+				.addClass( 'fancybox-button--play' );
 
 			self.isActive = false;
 		},
@@ -167,4 +182,4 @@
 		}
 	});
 
-}(document, window.jQuery));
+}( document, window.jQuery || jQuery ));

@@ -1,10 +1,11 @@
-.fancybox-enabled {
+body.fancybox-active {
 	overflow: hidden;
 }
 
-.fancybox-enabled body {
-    overflow: visible;
-	height: 100%;
+body.fancybox-iosfix {
+	position: fixed;
+    left: 0;
+    right: 0;
 }
 
 .fancybox-is-hidden {
@@ -20,15 +21,11 @@
 	left: 0;
 	width: 100%;
 	height: 100%;
-	z-index: 99993;
+	z-index: 99992;
 	-webkit-tap-highlight-color: rgba(0,0,0,0);
 	backface-visibility: hidden;
 	transform: translateZ(0);
-}
-
-/* Make sure that the first one is on the top */
-.fancybox-container ~ .fancybox-container {
-	z-index: 99992;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
 .fancybox-outer,
@@ -82,29 +79,27 @@
 
 .fancybox-infobar {
 	top: 0;
-	left : 50%;
-	margin-left: -79px;
-}
-
-.fancybox-infobar__body {
-	display: inline-block;
-	width: 70px;
-	line-height: 44px;
+	left: 0;
 	font-size: 13px;
-	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	padding: 0 10px;
+	height: 44px;
+	min-width: 44px;
+	line-height: 44px;
+	color: #ccc;
 	text-align: center;
-	color: #ddd;
-	background-color: rgba(30,30,30,0.7);
 	pointer-events: none;
 	user-select: none;
 	-webkit-touch-callout: none;
 	-webkit-tap-highlight-color: rgba(0,0,0,0);
 	-webkit-font-smoothing: subpixel-antialiased;
+	mix-blend-mode: exclusion;
 }
 
 .fancybox-toolbar {
 	top: 0;
 	right: 0;
+	margin: 0;
+	padding: 0;
 }
 
 .fancybox-stage {
@@ -112,6 +107,10 @@
 	direction: ltr;
 	z-index: 99994;
 	-webkit-transform: translate3d(0, 0, 0);
+}
+
+.fancybox-is-closing .fancybox-stage {
+  overflow: visible;
 }
 
 .fancybox-slide {
@@ -132,7 +131,6 @@
 	display: none;
 	backface-visibility: hidden;
 	transition-property: transform, opacity;
-	transform-style: preserve-3d;
 }
 
 .fancybox-slide::before {
@@ -185,6 +183,15 @@
 	box-sizing: border-box;
 }
 
+.fancybox-slide > title,
+.fancybox-slide > style,
+.fancybox-slide > meta,
+.fancybox-slide > link,
+.fancybox-slide > script,
+.fancybox-slide > base {
+	display: none;
+}
+
 .fancybox-slide .fancybox-image-wrap {
 	position: absolute;
 	top: 0;
@@ -200,6 +207,8 @@
 	background-size: 100% 100%;
 	background-repeat: no-repeat;
 	backface-visibility: hidden;
+	user-select: none;
+	transition-property: transform, opacity;
 }
 
 .fancybox-can-zoomOut .fancybox-image-wrap {
@@ -230,6 +239,7 @@
 	border: 0;
 	max-width: none;
 	max-height: none;
+	user-select: none;
 }
 
  .fancybox-spaceball {
@@ -269,20 +279,128 @@
 	margin: 0;
 	padding: 0;
 	color: #444;
-	font: 16px/20px "Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-size: 16px;
+	line-height: 20px;
 }
+
+
+/* Buttons */
+
+.fancybox-button {
+    box-sizing: border-box;
+    display: inline-block;
+    vertical-align: top;
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    padding: 10px;
+    border: 0;
+    border-radius: 0;
+    background: rgba(30,30,30,0.6);
+    transition: color .3s ease;
+    cursor: pointer;
+	outline: none;
+}
+
+.fancybox-button,
+.fancybox-button:visited,
+.fancybox-button:link {
+	color: #ccc;
+}
+
+.fancybox-button:focus,
+.fancybox-button:hover {
+	color: #fff;
+}
+
+.fancybox-button[disabled] {
+	color: #ccc;
+	cursor: default;
+    opacity: 0.6;
+}
+
+.fancybox-button svg {
+    display: block;
+	position: relative;
+    overflow: visible;
+    shape-rendering: geometricPrecision;
+}
+
+.fancybox-button svg path {
+    fill: currentColor;
+    stroke: currentColor;
+    stroke-linejoin: round;
+    stroke-width: 3;
+}
+
+.fancybox-button--share svg path {
+	stroke-width: 1;
+}
+
+.fancybox-button--play svg path:nth-child(2) {
+    display: none;
+}
+
+.fancybox-button--pause svg path:nth-child(1) {
+    display: none;
+}
+
+.fancybox-button--zoom svg path {
+	fill: transparent;
+}
+
+
+/* Navigation arrows */
+
+.fancybox-navigation {
+    display: none;
+}
+
+.fancybox-show-nav .fancybox-navigation {
+    display: block;
+}
+
+.fancybox-navigation button {
+    position: absolute;
+    top: 50%;
+    margin: -50px 0 0 0;
+    z-index: 99997;
+	background: transparent;
+	width: 60px;
+	height: 100px;
+	padding: 17px;
+}
+
+.fancybox-navigation button:before {
+	content: "";
+	position: absolute;
+	top: 30px;
+	right: 10px;
+	width: 40px;
+	height: 40px;
+	background: rgba(30,30,30,0.6);
+}
+
+.fancybox-navigation .fancybox-button--arrow_left {
+	left: 0;
+}
+
+.fancybox-navigation .fancybox-button--arrow_right {
+	right: 0;
+}
+
+/* Close button on the top right corner of html content */
 
 .fancybox-close-small {
 	position: absolute;
 	top: 0;
 	right: 0;
-	width: 44px;
-	height: 44px;
+	width: 40px;
+	height: 40px;
 	padding: 0;
 	margin: 0;
 	border: 0;
 	border-radius: 0;
-	outline: none;
 	background: transparent;
 	z-index: 10;
 	cursor: pointer;
@@ -295,16 +413,20 @@
 	right: 5px;
 	width: 30px;
 	height: 30px;
-	font: 20px/30px Arial,"Helvetica Neue",Helvetica,sans-serif;
+	font: 22px/30px Arial,"Helvetica Neue",Helvetica,sans-serif;
 	color: #888;
 	font-weight: 300;
 	text-align: center;
 	border-radius: 50%;
 	border-width: 0;
-	background: #fff;
-	transition: background .25s;
+	background-color: transparent;
+	transition: background-color .25s;
 	box-sizing: border-box;
 	z-index: 2;
+}
+
+.fancybox-close-small:focus {
+	outline: none;
 }
 
 .fancybox-close-small:focus:after {
@@ -316,21 +438,28 @@
 	background: #eee;
 }
 
+.fancybox-slide--image .fancybox-close-small,
 .fancybox-slide--iframe .fancybox-close-small {
-	top : 0;
-	right : -44px;
+	top: 0;
+	right: -40px;
 }
 
+.fancybox-slide--image .fancybox-close-small:after,
 .fancybox-slide--iframe .fancybox-close-small:after {
-	background: transparent;
 	font-size: 35px;
 	color: #aaa;
 }
 
+.fancybox-slide--image .fancybox-close-small:hover:after,
 .fancybox-slide--iframe .fancybox-close-small:hover:after {
 	color: #fff;
+	background: transparent;
 }
 
+.fancybox-is-scaling .fancybox-close-small,
+.fancybox-is-zoomable.fancybox-can-drag .fancybox-close-small {
+	display: none;
+}
 
 /* Caption */
 
@@ -338,7 +467,7 @@
 	bottom: 0;
 	left: 0;
 	right: 0;
-	padding: 60px 30px 0 30px;
+	padding: 60px 2vw 0 2vw;
 	background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.1) 20%, rgba(0,0,0,0.2) 40%,rgba(0,0,0,0.6) 80%, rgba(0,0,0,0.8) 100%);
 	pointer-events: none;
 }
@@ -347,7 +476,6 @@
 	padding: 30px 0;
 	border-top: 1px solid rgba(255,255,255,0.4);
 	font-size: 14px;
-	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 	color: #fff;
 	line-height: 20px;
 	-webkit-text-size-adjust: none;
@@ -357,6 +485,7 @@
 .fancybox-caption button,
 .fancybox-caption select {
 	pointer-events: all;
+	position: relative; /* Fix IE11 */
 }
 
 .fancybox-caption a {
@@ -365,162 +494,9 @@
 }
 
 
-/* Buttons */
-
-.fancybox-button {
-	display: inline-block;
-	position: relative;
-	margin: 0;
-	padding: 0;
-	border: 0;
-	width: 44px;
-	height: 44px;
-	line-height: 44px;
-	text-align: center;
-	background: transparent;
-	color: #ddd;
-	border-radius: 0;
-	cursor: pointer;
-	vertical-align: top;
-	outline: none;
-}
-
-.fancybox-button[disabled] {
-	cursor: default;
-	pointer-events: none;
-}
-
-.fancybox-infobar__body, .fancybox-button {
-	background: rgba(30,30,30,0.6);
-}
-
-.fancybox-button:hover:not([disabled]) {
-	color: #fff;
-	background: rgba(0,0,0,0.8);
-}
-
-.fancybox-button::before,
-.fancybox-button::after {
-	content: '';
-	pointer-events: none;
-	position: absolute;
-	background-color: currentColor;
-	color: currentColor;
-	opacity: 0.9;
-	box-sizing: border-box;
-	display: inline-block;
-}
-
-.fancybox-button[disabled]::before,
-.fancybox-button[disabled]::after {
-	opacity: 0.3;
-}
-
-.fancybox-button--left::after,
-.fancybox-button--right::after {
-	top: 18px;
-	width: 6px;
-	height: 6px;
-	background: transparent;
-	border-top: solid 2px currentColor;
-	border-right: solid 2px currentColor;
-}
-
-.fancybox-button--left::after {
-	left: 20px;
-	transform: rotate(-135deg);
-}
-
-.fancybox-button--right::after {
-	right: 20px;
-	transform: rotate(45deg);
-}
-
-.fancybox-button--left {
-	border-bottom-left-radius: 5px;
-}
-
-.fancybox-button--right {
-	border-bottom-right-radius: 5px;
-}
-
-.fancybox-button--close::before, .fancybox-button--close::after {
-	content: '';
-	display: inline-block;
-	position: absolute;
-	height: 2px;
-	width: 16px;
-	top: calc(50% - 1px);
-	left: calc(50% - 8px);
-}
-
-.fancybox-button--close::before {
-	transform: rotate(45deg);
-}
-
-.fancybox-button--close::after {
-	transform: rotate(-45deg);
-}
-
-
-/* Navigation arrows */
-
-.fancybox-arrow {
-	position: absolute;
-	top: 50%;
-	margin: -50px 0 0 0;
-	height: 100px;
-	width: 54px;
-	padding: 0;
-	border: 0;
-	outline: none;
-	background: none;
-	cursor: pointer;
-	z-index: 99995;
-	opacity: 0;
-	user-select: none;
-	transition: opacity .25s;
-}
-
-.fancybox-arrow::after {
-	content : '';
-	position: absolute;
-	top: 28px;
-	width: 44px;
-	height: 44px;
-	background-color: rgba(30,30,30,0.8);
-	background-image: url(data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjQ4IiB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSI0OCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gICAgPHBhdGggZD0iTTAgMGgyNHYyNEgweiIgZmlsbD0ibm9uZSIvPiAgICA8cGF0aCBkPSJNMTIgNGwtMS40MSAxLjQxTDE2LjE3IDExSDR2MmgxMi4xN2wtNS41OCA1LjU5TDEyIDIwbDgtOHoiLz48L3N2Zz4=);
-	background-repeat: no-repeat;
-	background-position: center center;
-	background-size: 24px 24px;
-}
-
-.fancybox-arrow--right {
-	right: 0;
-}
-
-.fancybox-arrow--left {
-	left: 0;
-	transform: scaleX(-1);
-}
-
-.fancybox-arrow--right::after,
-.fancybox-arrow--left::after {
-	left: 0;
-}
-
-.fancybox-show-nav .fancybox-arrow {
-	opacity: 0.6;
-}
-
-.fancybox-show-nav .fancybox-arrow[disabled] {
-	opacity: 0.3;
-}
-
-
 /* Loading indicator */
 
-.fancybox-loading {
+.fancybox-slide > .fancybox-loading {
 	border: 6px solid rgba(100, 100, 100, .4);
 	border-top: 6px solid rgba(255, 255, 255, .6);
 	border-radius: 100%;
@@ -531,8 +507,8 @@
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	margin-top: -25px;
-	margin-left: -25px;
+	margin-top: -30px;
+	margin-left: -30px;
 	z-index: 99999;
 }
 
@@ -640,25 +616,4 @@
 
 .fancybox-fx-tube.fancybox-slide--current {
 	transform: translate3d(0, 0, 0) scale(1);
-}
-
-
-/* Styling for Small-Screen Devices */
-
-@media all and (max-width: 800px) {
-
-	.fancybox-infobar {
-		left: 0;
-		margin-left: 0;
-	}
-
-	.fancybox-button--left,
-	.fancybox-button--right {
-		display: none !important;
-	}
-
-	.fancybox-caption {
-		padding: 20px 0;
-		margin: 0;
-	}
 }

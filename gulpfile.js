@@ -34,6 +34,7 @@ gulp.task('scripts', function() {
             'src/js/fullscreen.js',
             'src/js/thumbs.js',
             'src/js/hash.js',
+            'src/js/wheel.js'
         ])
         .pipe(concat('jquery.fancybox.js'))
         .pipe(replace(/({fancybox-version})/g, pkg.version))
