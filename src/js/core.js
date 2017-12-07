@@ -526,6 +526,8 @@
 
             if ( !$.fancybox.getInstance() ) {
 
+                var isOverflowYScroll = $('body').css('overflow-y') === 'scroll';
+
                 $( 'body' ).addClass( 'fancybox-active' );
 
                 // iOS hack
@@ -539,7 +541,7 @@
                         $( 'body' ).css( 'top', $( 'body' ).scrollTop() * -1 ).addClass( 'fancybox-iosfix' );
                     }
 
-                } else if ( !$.fancybox.isMobile && document.body.scrollHeight > window.innerHeight ) {
+                } else if ( !$.fancybox.isMobile && ( document.body.scrollHeight > window.innerHeight || isOverflowYScroll ) ) {
 
                     if ( scrollbarWidth === undefined ) {
                         $scrollDiv = $('<div style="width:50px;height:50px;overflow:scroll;" />').appendTo( 'body' );
