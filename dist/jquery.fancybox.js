@@ -1671,7 +1671,7 @@
 
                     if (thumb!==undefined && thumb!=="")
                     {
-                        poster = 'poster="' + slide.opts.thumb + "' preload='auto'";
+                        poster = 'poster="' + slide.opts.thumb + '" preload="auto"';
                     }
 
                     self.setContent( slide,
@@ -2375,9 +2375,15 @@
 
             self.trigger( 'afterShow' );
 
-            // Play first html5 video/audio
-            current.$slide.find( 'video,audio' ).first().trigger( 'play' );
+            //the poster has to be a valid extension
+            var found = current.opts.thumb.match(/\.(jpg|png)((\?|#).*)?$/i);
 
+            if  (found === null)
+            {
+                //if doesn't have an poster, then play automatically
+                current.$slide.find( 'video,audio' ).first().trigger( 'play' );
+            }
+            
             // Try to focus on the first focusable element
             if ( $( document.activeElement ).is( '[disabled]' ) || ( current.opts.autoFocus && !( current.type == 'image' || current.type === 'iframe' ) ) ) {
                 self.focus();
