@@ -692,23 +692,24 @@
                 type = obj.type || obj.opts.type;
                 src  = obj.src || '';
 
-                if ( !type && src ) {
+                              if (  (type === undefined || type === "") && (src !== undefined && src.length > 0) ) {
                     if ( src.match(/(^data:image\/[a-z0-9+\/=]*,)|(\.(jp(e|g|eg)|gif|png|bmp|webp|svg|ico)((\?|#).*)?$)/i) ) {
                         type = 'image';
-
                     } else if ( src.match(/\.(pdf)((\?|#).*)?$/i) ) {
                         type = 'pdf';
-
                     } else if ( found = src.match(/\.(mp4|mov|ogv)((\?|#).*)?$/i) ) {
                         type = 'video';
-
-                        if ( !obj.opts.videoFormat ) {
-                            obj.opts.videoFormat = 'video/' + ( found[1] === 'ogv' ? 'ogg' : found[1] );
-                        }
-
                     } else if ( src.charAt(0) === '#' ) {
                         type = 'inline';
                     }
+                }
+
+                if (type === 'video')
+                {
+                    found = src.match(/\.(mp4|mov|ogv)((\?|#).*)?$/i)
+                    if ( !obj.opts.videoFormat ) {
+                            obj.opts.videoFormat = 'video/' + ( found[1] === 'ogv' ? 'ogg' : found[1] );
+                        }
                 }
 
                 if ( type ) {
@@ -1655,8 +1656,16 @@
 
                 case 'video' :
 
+                    var thumb = slide.opts.thumb;
+                    var poster = "";
+
+                    if (thumb!==undefined && thumb!=="")
+                    {
+                        poster = 'poster="' + slide.opts.thumb + '" preload="auto"';
+                    }
+
                     self.setContent( slide,
-                        '<video controls>' +
+                        '<video controls '+ poster +'>' +
                           '<source src="' + slide.src + '" type="' + slide.opts.videoFormat + '">' +
                             'Your browser doesn\'t support HTML5 video' +
                         '</video>'
@@ -2356,9 +2365,15 @@
 
             self.trigger( 'afterShow' );
 
-            // Play first html5 video/audio
-            current.$slide.find( 'video,audio' ).first().trigger( 'play' );
+           //the poster has to be a valid extension
+            var found = current.opts.thumb.match(/\.(jpg|png)((\?|#).*)?$/i);
 
+            if  (found === null)
+            {
+                //if doesn't have an poster, then play automatically
+                current.$slide.find( 'video,audio' ).first().trigger( 'play' );
+            }
+            
             // Try to focus on the first focusable element
             if ( $( document.activeElement ).is( '[disabled]' ) || ( current.opts.autoFocus && !( current.type == 'image' || current.type === 'iframe' ) ) ) {
                 self.focus();
