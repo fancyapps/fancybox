@@ -705,10 +705,8 @@
                 if (  (type === undefined || type === "") && (src !== undefined && src.length > 0) ) {
                     if ( src.match(/(^data:image\/[a-z0-9+\/=]*,)|(\.(jp(e|g|eg)|gif|png|bmp|webp|svg|ico)((\?|#).*)?$)/i) ) {
                         type = 'image';
-
                     } else if ( src.match(/\.(pdf)((\?|#).*)?$/i) ) {
                         type = 'pdf';
-
                     } else if ( found = src.match(/\.(mp4|mov|ogv)((\?|#).*)?$/i) ) {
                         type = 'video';
                     } else if ( src.charAt(0) === '#' ) {
@@ -1668,8 +1666,16 @@
 
                 case 'video' :
 
+                    var thumb = slide.opts.thumb;
+                    var poster = "";
+
+                    if (thumb!==undefined && thumb!=="")
+                    {
+                        poster = 'poster="' + slide.opts.thumb + "' preload='auto'";
+                    }
+
                     self.setContent( slide,
-                        '<video controls>' +
+                        '<video controls '+ poster +'>' +
                           '<source src="' + slide.src + '" type="' + slide.opts.videoFormat + '">' +
                             'Your browser doesn\'t support HTML5 video' +
                         '</video>'
