@@ -691,8 +691,8 @@
 
                 type = obj.type || obj.opts.type;
                 src  = obj.src || '';
-
-                if ( !type && src ) {
+            
+                if (type == undefined && src) {
                     if ( src.match(/(^data:image\/[a-z0-9+\/=]*,)|(\.(jp(e|g|eg)|gif|png|bmp|webp|svg|ico)((\?|#).*)?$)/i) ) {
                         type = 'image';
 

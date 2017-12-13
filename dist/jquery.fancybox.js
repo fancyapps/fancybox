@@ -701,8 +701,8 @@
 
                 type = obj.type || obj.opts.type;
                 src  = obj.src || '';
-
-                if ( !type && src ) {
+  
+                if (  (type === undefined || type === "") && (src !== undefined && src.length > 0) ) {
                     if ( src.match(/(^data:image\/[a-z0-9+\/=]*,)|(\.(jp(e|g|eg)|gif|png|bmp|webp|svg|ico)((\?|#).*)?$)/i) ) {
                         type = 'image';
 
@@ -711,14 +711,17 @@
 
                     } else if ( found = src.match(/\.(mp4|mov|ogv)((\?|#).*)?$/i) ) {
                         type = 'video';
-
-                        if ( !obj.opts.videoFormat ) {
-                            obj.opts.videoFormat = 'video/' + ( found[1] === 'ogv' ? 'ogg' : found[1] );
-                        }
-
                     } else if ( src.charAt(0) === '#' ) {
                         type = 'inline';
                     }
+                }
+
+                if (type === 'video')
+                {
+                    found = src.match(/\.(mp4|mov|ogv)((\?|#).*)?$/i)
+                    if ( !obj.opts.videoFormat ) {
+                            obj.opts.videoFormat = 'video/' + ( found[1] === 'ogv' ? 'ogg' : found[1] );
+                        }
                 }
 
                 if ( type ) {
