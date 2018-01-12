@@ -249,4 +249,4 @@
 
 	});
 
-}(document, window.jQuery));
+}(document, window.jQuery || jQuery));
