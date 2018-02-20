@@ -651,12 +651,25 @@
 				rez.h = locked[0].clientHeight;
 
 			} else {
-				// See http://bugs.jquery.com/ticket/6724
-				rez.w = isTouch && window.innerWidth  ? window.innerWidth  : W.width();
-				rez.h = isTouch && window.innerHeight ? window.innerHeight : W.height();
+				if (this.readDeviceOrientation() === "landscape" && screen.width < screen.height) {
+					rez.w = screen.height;
+					rez.h = screen.width;
+				} else {
+					// See http://bugs.jquery.com/ticket/6724
+					rez.w = isTouch && screen.width  ? screen.width  : isTouch && window.innerWidth ? window.innerWidth : W.width();
+					rez.h = isTouch && screen.height ? screen.height : isTouch && window.innerHeight ? window.innerHeight : W.height();
+				}
 			}
 
 			return rez;
+		},
+
+		readDeviceOrientation: function() {
+			if (Math.abs(window.orientation) === 90) {
+				return 'landscape';
+			} else {
+				return 'portrait';
+			}
 		},
 
 		// Unbind the keyboard / clicking actions
