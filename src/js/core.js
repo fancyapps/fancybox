@@ -390,6 +390,19 @@
                 DOWNLOAD    : 'Herunterladen',
                 SHARE       : 'Teilen',
                 ZOOM        : 'Maßstab'
+            },
+            'vi' : {
+                CLOSE       : 'Đóng',
+                NEXT        : 'Tiếp theo',
+                PREV        : 'Trước đó',
+                ERROR       : 'Nội dung không thể tải được.<br/> Vui lòng thử lại sau.',
+                PLAY_START  : 'Bắt đầu trình chiếu',
+                PLAY_STOP   : 'Ngừng trình chiếu',
+                FULL_SCREEN : 'Toàn màn hình',
+                THUMBS      : 'Hình đại diện',
+                DOWNLOAD    : 'Tải về',
+                SHARE       : 'Chia sẻ',
+                ZOOM        : 'Phóng to/nhỏ'
             }
         }
 
