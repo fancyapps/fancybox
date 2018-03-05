@@ -331,7 +331,8 @@ body.fancybox-iosfix {
   display: none; }
 
 .fancybox-show-nav .fancybox-navigation {
-  display: block; }
+  display: block;
+  height: 100%; }
 
 .fancybox-navigation button {
   position: absolute;
