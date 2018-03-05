@@ -358,6 +358,7 @@ body.fancybox-iosfix {
 
 .fancybox-show-nav .fancybox-navigation {
     display: block;
+	height: 100%;
 }
 
 .fancybox-navigation button {
