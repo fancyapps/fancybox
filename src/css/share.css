@@ -1,18 +1,18 @@
 /* Share */
 
 .fancybox-share {
-    padding: 30px;
-    border-radius: 3px;
     background: #f4f4f4;
+    border-radius: 3px;
     max-width: 90%;
+    padding: 30px;
     text-align: center;
 }
 
 .fancybox-share h1 {
     color: #222;
-    margin: 0 0 20px 0;
     font-size: 35px;
     font-weight: 700;
+    margin: 0 0 20px 0;
 }
 
 .fancybox-share p {
@@ -20,26 +20,25 @@
     padding: 0;
 }
 
-p.fancybox-share__links {
-    margin-right: -10px;
-}
-
 .fancybox-share__button {
-    display: inline-block;
-    text-decoration: none;
-    margin: 0 10px 10px 0;
-    padding: 0 15px;
-    min-width: 130px;
     border: 0;
     border-radius: 3px;
-    background: #fff;
-    white-space: nowrap;
+    display: inline-block;
     font-size: 14px;
     font-weight: 700;
     line-height: 40px;
-    user-select: none;
-    color: #fff;
+    margin: 0 5px 10px 5px;
+    min-width: 130px;
+    padding: 0 15px;
+    text-decoration: none;
     transition: all .2s;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.fancybox-share__button:visited,
+.fancybox-share__button:link {
+    color: #fff;
 }
 
 .fancybox-share__button:hover {
@@ -71,12 +70,12 @@ p.fancybox-share__links {
 }
 
 .fancybox-share__button svg {
-    position: relative;
-    top: -1px;
-    width: 25px;
     height: 25px;
     margin-right: 7px;
+    position: relative;
+    top: -1px;
     vertical-align: middle;
+    width: 25px;
 }
 
 .fancybox-share__button svg path {
@@ -84,14 +83,14 @@ p.fancybox-share__links {
 }
 
 .fancybox-share__input {
-    box-sizing: border-box;
-    width: 100%;
-    margin: 10px 0 0 0;
-    padding: 10px 15px;
     background: transparent;
+    border: 0;
+    border-bottom: 1px solid #d7d7d7;
+    border-radius: 0;
     color: #5d5b5b;
     font-size: 14px;
+    margin: 10px 0 0 0;
     outline: none;
-    border: 0;
-    border-bottom: 2px solid #d7d7d7;
+    padding: 10px 15px;
+    width: 100%;
 }
