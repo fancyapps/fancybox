@@ -184,8 +184,9 @@
       }
 
       $.extend(item, {
-        src: url,
         type: type,
+        src: url,
+        origSrc: item.src,
         contentSource: provider,
         contentType: type === "image" ? "image" : provider == "gmap_place" || provider == "gmap_search" ? "map" : "video"
       });

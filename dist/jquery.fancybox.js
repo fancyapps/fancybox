@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.3.0
+// fancyBox v3.3.1
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -2764,7 +2764,7 @@
   });
 
   $.fancybox = {
-    version: "3.3.0",
+    version: "3.3.1",
     defaults: defaults,
 
     // Get current instance and execute a command.
@@ -3278,8 +3278,9 @@
       }
 
       $.extend(item, {
-        src: url,
         type: type,
+        src: url,
+        origSrc: item.src,
         contentSource: provider,
         contentType: type === "image" ? "image" : provider == "gmap_place" || provider == "gmap_search" ? "map" : "video"
       });
@@ -4806,6 +4807,11 @@
         "</button>"
     },
     share: {
+      url: function(instance, item) {
+        return (
+          (!instance.currentHash && !(item.type === "inline" || item.type === "html") ? item.origSrc || item.src : false) || window.location
+        );
+      },
       tpl:
         '<div class="fancybox-share">' +
         "<h1>{{SHARE}}</h1>" +
@@ -4846,38 +4852,44 @@
   }
 
   $(document).on("click", "[data-fancybox-share]", function() {
-    var f = $.fancybox.getInstance(),
+    var instance = $.fancybox.getInstance(),
+      current = instance.current || null,
       url,
       tpl;
 
-    if (f) {
-      url = f.current.opts.hash === false ? f.current.src : window.location;
-      tpl = f.current.opts.share.tpl
-        .replace(/\{\{media\}\}/g, f.current.type === "image" ? encodeURIComponent(f.current.src) : "")
-        .replace(/\{\{url\}\}/g, encodeURIComponent(url))
-        .replace(/\{\{url_raw\}\}/g, escapeHtml(url))
-        .replace(/\{\{descr\}\}/g, f.$caption ? encodeURIComponent(f.$caption.text()) : "");
-
-      $.fancybox.open({
-        src: f.translate(f, tpl),
-        type: "html",
-        opts: {
-          animationEffect: false,
-          afterLoad: function(instance, current) {
-            // Close self if parent instance is closing
-            f.$refs.container.one("beforeClose.fb", function() {
-              instance.close(null, 0);
-            });
-
-            // Opening links in a popup window
-            current.$content.find(".fancybox-share__links a").click(function() {
-              window.open(this.href, "Share", "width=550, height=450");
-              return false;
-            });
-          }
-        }
-      });
+    if (!current) {
+      return;
     }
+
+    if ($.type(current.opts.share.url) === "function") {
+      url = current.opts.share.url.apply(current, [instance, current]);
+    }
+
+    tpl = current.opts.share.tpl
+      .replace(/\{\{media\}\}/g, current.type === "image" ? encodeURIComponent(current.src) : "")
+      .replace(/\{\{url\}\}/g, encodeURIComponent(url))
+      .replace(/\{\{url_raw\}\}/g, escapeHtml(url))
+      .replace(/\{\{descr\}\}/g, instance.$caption ? encodeURIComponent(instance.$caption.text()) : "");
+
+    $.fancybox.open({
+      src: instance.translate(instance, tpl),
+      type: "html",
+      opts: {
+        animationEffect: false,
+        afterLoad: function(shareInstance, shareCurrent) {
+          // Close self if parent instance is closing
+          instance.$refs.container.one("beforeClose.fb", function() {
+            shareInstance.close(null, 0);
+          });
+
+          // Opening links in a popup window
+          shareCurrent.$content.find(".fancybox-share__links a").click(function() {
+            window.open(this.href, "Share", "width=550, height=450");
+            return false;
+          });
+        }
+      }
+    });
   });
 })(document, window.jQuery || jQuery);
 
