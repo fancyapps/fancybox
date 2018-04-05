@@ -392,6 +392,22 @@ bower install fancybox --save
                         <code>data-options</code> attribute.
                     </p>
 
+                    <p>
+                        Sometimes you have multiple links pointing to the same source and that creates duplicates in the gallery. To avoid that,
+                        simply use
+                        <code>data-trigger</code> attribute with the same value used for
+                        <code>data-fancybox</code> attribute for your other links. Optionally, use
+                        <code>data-index</code> attribute to specify index of starting element:
+                    </p>
+
+                    <pre><code>&lt;a data-trigger=&quot;gallery&quot; href=&quot;javascript:;&quot;&gt;
+    &lt;img src="thumbnail_1.jpg" alt="" /&gt;
+&lt;/a&gt;
+</code></pre>
+                    <p class="demo">
+                        <a href="https://codepen.io/fancyapps/pen/oqPKYp?editors=1000" target="_blank">View demo on CodePen</a>
+                    </p>
+
                     <h3>Initialize with JavaScript</h3>
 
                     <p>
