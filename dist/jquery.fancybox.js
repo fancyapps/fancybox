@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.3.1
+// fancyBox v3.3.2
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -1678,7 +1678,7 @@
         if (slide.isLoading && (!$img || !$img[0].complete) && !slide.hasError) {
           self.showLoading(slide);
         }
-      }, 300);
+      }, 350);
 
       // If we have "srcset", then we need to find first matching "src" value.
       // This is necessary, because when you set an src attribute, the browser will preload the image
@@ -1769,6 +1769,7 @@
           .attr("src", thumbSrc);
       }
 
+      // Start loading actual image
       self.setBigImage(slide);
     },
 
@@ -2181,6 +2182,7 @@
 
       duration = parseInt(slide.forcedDuration === undefined ? duration : slide.forcedDuration, 10);
 
+      // Do not animate if revealing the same slide
       if (slide.pos === self.currPos) {
         if (slide.isComplete) {
           effect = false;
@@ -2204,7 +2206,6 @@
 
       // Zoom animation
       // ==============
-
       if (effect === "zoom") {
         end.scaleX = end.width / start.width;
         end.scaleY = end.height / start.height;
@@ -2289,7 +2290,7 @@
       var self = this,
         rez = false,
         $thumb = slide.opts.$thumb,
-        thumbPos = $thumb ? $thumb.offset() : 0,
+        thumbPos = $thumb && $thumb.length && $thumb[0].ownerDocument === document ? $thumb.offset() : 0,
         slidePos;
 
       // Check if element is inside the viewport by at least 1 pixel
@@ -2323,7 +2324,7 @@
         );
       };
 
-      if (thumbPos && $thumb[0].ownerDocument === document && isElementVisible($thumb)) {
+      if (thumbPos && isElementVisible($thumb)) {
         slidePos = self.$refs.stage.offset();
 
         rez = {
@@ -2764,7 +2765,7 @@
   });
 
   $.fancybox = {
-    version: "3.3.1",
+    version: "3.3.2",
     defaults: defaults,
 
     // Get current instance and execute a command.
