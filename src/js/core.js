@@ -517,18 +517,6 @@
         $container,
         buttonStr;
 
-      // iOS hack; https://bugs.webkit.org/show_bug.cgi?id=176896
-      if (
-        firstItem.type !== "image" &&
-        /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-        !window.MSStream &&
-        !$("body").hasClass("fancybox-iosfix")
-      ) {
-        $("body")
-          .addClass("fancybox-iosfix")
-          .css("top", -$W.scrollTop());
-      }
-
       // Hide scrollbars
       // ===============
 
@@ -2628,14 +2616,6 @@
         $body.removeClass("fancybox-active compensate-for-scrollbar");
 
         $("#fancybox-style-noscroll").remove();
-
-        if ($body.hasClass("fancybox-iosfix")) {
-          scrollTop = parseInt($body[0].style.top, 10);
-
-          $body.css("top", "").removeClass("fancybox-iosfix");
-
-          $W.scrollTop(-scrollTop);
-        }
       }
     },
 

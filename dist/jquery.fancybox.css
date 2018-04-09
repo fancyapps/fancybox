@@ -4,13 +4,6 @@ body.compensate-for-scrollbar {
 .fancybox-active {
   height: auto; }
 
-.fancybox-iosfix {
-  height: 100%;
-  left: 0;
-  overflow: hidden;
-  position: fixed;
-  width: 100%; }
-
 .fancybox-is-hidden {
   left: -9999px;
   margin: 0;

@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.3.3
+// fancyBox v3.3.4
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -526,18 +526,6 @@
         $scrollDiv,
         $container,
         buttonStr;
-
-      // iOS hack; https://bugs.webkit.org/show_bug.cgi?id=176896
-      if (
-        firstItem.type !== "image" &&
-        /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-        !window.MSStream &&
-        !$("body").hasClass("fancybox-iosfix")
-      ) {
-        $("body")
-          .addClass("fancybox-iosfix")
-          .css("top", -$W.scrollTop());
-      }
 
       // Hide scrollbars
       // ===============
@@ -2638,14 +2626,6 @@
         $body.removeClass("fancybox-active compensate-for-scrollbar");
 
         $("#fancybox-style-noscroll").remove();
-
-        if ($body.hasClass("fancybox-iosfix")) {
-          scrollTop = parseInt($body[0].style.top, 10);
-
-          $body.css("top", "").removeClass("fancybox-iosfix");
-
-          $W.scrollTop(-scrollTop);
-        }
       }
     },
 
@@ -2765,7 +2745,7 @@
   });
 
   $.fancybox = {
-    version: "3.3.3",
+    version: "3.3.4",
     defaults: defaults,
 
     // Get current instance and execute a command.
@@ -3258,7 +3238,7 @@
           return "&start=" + ((m ? parseInt(m, 10) * 60 : 0) + parseInt(s, 10));
         });
       } else if (providerName === "vimeo") {
-        c = url.replace("&%23", "#");
+        url = url.replace("&%23", "#");
       }
 
       return false;

@@ -163,7 +163,7 @@
           return "&start=" + ((m ? parseInt(m, 10) * 60 : 0) + parseInt(s, 10));
         });
       } else if (providerName === "vimeo") {
-        c = url.replace("&%23", "#");
+        url = url.replace("&%23", "#");
       }
 
       return false;
