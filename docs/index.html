@@ -831,10 +831,10 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
     // and they will be placed into toolbar (class=&quot;fancybox-toolbar&quot;` element)
     buttons: [
         &quot;zoom&quot;,
-        //'share',
-        //'slideShow',
-        //'fullScreen',
-        //'download',
+        //&quot;share&quot;,
+        //&quot;slideShow&quot;,
+        //&quot;fullScreen&quot;,
+        //&quot;download&quot;,
         &quot;thumbs&quot;,
         &quot;close&quot;
     ],
@@ -951,7 +951,7 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 
     btnTpl: {
         download:
-            '&lt;a download data-fancybox-download class=&quot;fancybox-button fancybox-button--download&quot; title=&quot;{{DOWNLOAD}}&quot;&gt;' +
+            '&lt;a download data-fancybox-download class=&quot;fancybox-button fancybox-button--download&quot; title=&quot;{{DOWNLOAD}}&quot; href=&quot;javascript:;&quot;&gt;' +
             '&lt;svg viewBox=&quot;0 0 40 40&quot;&gt;' +
             '&lt;path d=&quot;M13,16 L20,23 L27,16 M20,7 L20,23 M10,24 L10,28 L30,28 L30,24&quot; /&gt;' +
             &quot;&lt;/svg&gt;&quot; +
@@ -978,22 +978,25 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 
         // Arrows
         arrowLeft:
-            '&lt;button data-fancybox-prev class=&quot;fancybox-button fancybox-button--arrow_left&quot; title=&quot;{{PREV}}&quot;&gt;' +
+            '&lt;a data-fancybox-prev class=&quot;fancybox-button fancybox-button--arrow_left&quot; title=&quot;{{PREV}}&quot; href=&quot;javascript:;&quot;&gt;' +
             '&lt;svg viewBox=&quot;0 0 40 40&quot;&gt;' +
             '&lt;path d=&quot;M18,12 L10,20 L18,28 M10,20 L30,20&quot;&gt;&lt;/path&gt;' +
             &quot;&lt;/svg&gt;&quot; +
-            &quot;&lt;/button&gt;&quot;,
+            &quot;&lt;/a&gt;&quot;,
 
         arrowRight:
-            '&lt;button data-fancybox-next class=&quot;fancybox-button fancybox-button--arrow_right&quot; title=&quot;{{NEXT}}&quot;&gt;' +
+            '&lt;a data-fancybox-next class=&quot;fancybox-button fancybox-button--arrow_right&quot; title=&quot;{{NEXT}}&quot; href=&quot;javascript:;&quot;&gt;' +
             '&lt;svg viewBox=&quot;0 0 40 40&quot;&gt;' +
             '&lt;path d=&quot;M10,20 L30,20 M22,12 L30,20 L22,28&quot;&gt;&lt;/path&gt;' +
             &quot;&lt;/svg&gt;&quot; +
-            &quot;&lt;/button&gt;&quot;
+            &quot;&lt;/a&gt;&quot;
     },
 
     // Container is injected into this element
     parentEl: &quot;body&quot;,
+
+    // Hide browser vertical scrollbars; use at your own risk
+    hideScrollbar: true,
 
     // Focus handling
     // ==============
@@ -1027,13 +1030,13 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
     // Customize or add new media types
     // Example:
     /*
-    media : {
-        youtube : {
-            params : {
-                autoplay : 0
+        media : {
+            youtube : {
+                params : {
+                    autoplay : 0
+                }
             }
         }
-    }
     */
     media: {},
 
@@ -1060,8 +1063,8 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
     // Example:
     /*
         afterShow: function( instance, current ) {
-                console.info( 'Clicked element:' );
-                console.info( current.opts.$orig );
+            console.info( 'Clicked element:' );
+            console.info( current.opts.$orig );
         }
     */
 
@@ -1115,7 +1118,6 @@ parent.jQuery.fancybox.getInstance().close();</code></pre>
 
     mobile: {
         idleTime: false,
-
         clickContent: function(current, event) {
             return current.type === &quot;image&quot; ? &quot;toggleControls&quot; : false;
         },

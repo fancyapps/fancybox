@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.3.4
+// fancyBox v3.3.5
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -530,12 +530,12 @@
       // Hide scrollbars
       // ===============
 
-      if (!$.fancybox.getInstance()) {
+      if (!$.fancybox.getInstance() && firstItemOpts.hideScrollbar !== false) {
         $("body").addClass("fancybox-active");
 
         if (!$.fancybox.isMobile && document.body.scrollHeight > window.innerHeight) {
           if (scrollbarWidth === undefined) {
-            $scrollDiv = $('<div style="width:50px;height:50px;overflow:scroll;" />').appendTo("body");
+            $scrollDiv = $('<div style="width:100px;height:100px;overflow:scroll;" />').appendTo("body");
 
             scrollbarWidth = $.fancybox.scrollbarWidth = $scrollDiv[0].offsetWidth - $scrollDiv[0].clientWidth;
 
@@ -2745,7 +2745,7 @@
   });
 
   $.fancybox = {
-    version: "3.3.4",
+    version: "3.3.5",
     defaults: defaults,
 
     // Get current instance and execute a command.
