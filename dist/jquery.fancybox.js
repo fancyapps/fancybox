@@ -3123,7 +3123,7 @@
       },
       paramPlace: 8,
       type: "iframe",
-      url: "//www.youtube.com/embed/$4",
+      url: "//www.youtube-nocookie.com/embed/$4",
       thumb: "//img.youtube.com/vi/$4/hqdefault.jpg"
     },
 
