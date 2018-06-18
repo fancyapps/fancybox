@@ -19,6 +19,7 @@ body.compensate-for-scrollbar {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol';
     height: 100%;
+    height: 100vh;
     left: 0;
     position: fixed;
     -webkit-tap-highlight-color: transparent;
