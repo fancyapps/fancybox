@@ -18,138 +18,139 @@
         crossorigin="anonymous"></script>
 
     <style>
-        a,
-        a:hover {
-            color: #ff5268;
-        }
+a,
+a:hover {
+    color: #ff5268;
+}
 
-        h2 {
-            border-bottom: 1px solid rgba(0, 0, 0, .1);
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            padding-top: 2rem;
-        }
+h2 {
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    padding-top: 2rem;
+}
 
-        h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            padding-top: 1.5rem;
-        }
+h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    padding-top: 1.5rem;
+}
 
-        h2+h3 {
-            margin-top: -2rem;
-        }
+h2 + h3 {
+    margin-top: -2rem;
+}
 
-        h3 a,
-        h3 a:hover {
-            color: currentColor;
-        }
+h3 a,
+h3 a:hover {
+    color: currentColor;
+}
 
-        code {
-            background: #f1ecec;
-            color: #555;
-            padding: 2px 5px;
-        }
+code {
+    background: #f1ecec;
+    color: #555;
+    padding: 2px 5px;
+}
 
-        pre {
-            background: #f1ecec;
-            color: #555;
-            max-height: 70vh;
-            overflow: auto;
-            padding: 1rem 1.5rem;
-            -moz-tab-size: 4;
-            tab-size: 4;
-        }
+pre {
+    background: #f1ecec;
+    color: #555;
+    max-height: 70vh;
+    overflow: auto;
+    padding: 1rem 1.5rem;
+    -moz-tab-size: 4;
+         tab-size: 4;
+}
 
-        pre code {
-            padding: 0;
-        }
+pre code {
+    padding: 0;
+}
 
-        section {
-            margin-bottom: 1rem;
-            margin-bottom: 5vh;
-        }
+section {
+    margin-bottom: 1rem;
+    margin-bottom: 5vh;
+}
 
-        #introduction {
-            background: #fbf9f9;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            padding-top: 1rem;
-        }
+#introduction {
+    background: #fbf9f9;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    padding-top: 1rem;
+}
 
-        .navbar-brand {
-            color: #444;
-            font-size: 1.375rem;
-        }
+.navbar-brand {
+    color: #444;
+    font-size: 1.375rem;
+}
 
-        .navbar-brand svg {
-            position: relative;
-            top: -1px;
-            vertical-align: middle;
-        }
+.navbar-brand svg {
+    position: relative;
+    top: -1px;
+    vertical-align: middle;
+}
 
-        .navbar-brand svg path {
-            fill: #fff;
-            stroke: #444;
-            stroke-width: 2.5;
-        }
+.navbar-brand svg path {
+    fill: #fff;
+    stroke: #444;
+    stroke-width: 2.5;
+}
 
-        .nav-link {
-            color: grey;
-            height: 2.5rem;
-        }
+.nav-link {
+    color: grey;
+    height: 2.5rem;
+}
 
-        .navbar-brand:hover,
-        .nav-link:hover {
-            color: #464646;
-        }
+.navbar-brand:hover,
+.nav-link:hover {
+    color: #464646;
+}
 
-        .nav-link.active {
-            background: #ff5268;
-            border-radius: .25rem;
-            color: #fff;
-        }
+.nav-link.active {
+    background: #ff5268;
+    border-radius: .25rem;
+    color: #fff;
+}
 
-        .sticky {
-            padding-top: 2rem;
-            top: 0;
-        }
+.sticky {
+    padding-top: 2rem;
+    top: 0;
+}
 
-        .sticky ul {
-            line-height: 2;
-            list-style: none;
-        }
+.sticky ul {
+    line-height: 2;
+    list-style: none;
+}
 
-        .sticky>ul {
-            padding-left: 1rem;
-        }
+.sticky > ul {
+    padding-left: 1rem;
+}
 
-        .sticky a {
-            color: grey;
-            text-decoration: none;
-        }
+.sticky a {
+    color: grey;
+    text-decoration: none;
+}
 
-        .sticky a:hover {
-            color: #464646;
-        }
+.sticky a:hover {
+    color: #464646;
+}
 
-        .sticky a.active {
-            color: #ff5268;
-        }
+.sticky a.active {
+    color: #ff5268;
+}
 
-        .demo {
-            font-size: 90%;
-            margin-bottom: 2rem;
-            text-align: right;
-        }
+.demo {
+    font-size: 90%;
+    margin-bottom: 2rem;
+    text-align: right;
+}
 
-        pre~.demo {
-            margin-top: -1rem;
-        }
+pre ~ .demo {
+    margin-top: -1rem;
+}
 
-        .badge-warning {
-            font-weight: 600;
-        }
+.badge-warning {
+    font-weight: 600;
+}
+
     </style>
 </head>
 
@@ -464,7 +465,7 @@ bower install fancybox --save
                         Display iframed page:
                     </p>
 
-                    <pre><code>$s.fancybox.open({
+                    <pre><code>$.fancybox.open({
 	src  : 'link-to-your-page.html',
 	type : 'iframe',
 	opts : {
@@ -1242,7 +1243,7 @@ $.fancybox.destroy();
 </code></pre>
 
 
-                    <h3 id="api_usage">Starting facybox</h3>
+                    <h3 id="api_usage">Starting fancybox</h3>
 
 
                     <p>
