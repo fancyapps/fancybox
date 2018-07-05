@@ -117,7 +117,7 @@
             '" tabindex="0" class="' +
             CLASS_LOAD +
             '"' +
-            (src && src.length ? ' style="background-image:url(' + src + ')" />' : "") +
+            (src && src.length ? ' style="background-image:url(\'' + src + '\')" />' : "") +
             "></li>"
         );
       });
