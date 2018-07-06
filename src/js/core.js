@@ -3055,9 +3055,9 @@
   // Enable "trigger elements"
   // =========================
 
-  $D.on("click.fb-start", "[data-trigger]", function(e) {
+  $D.on("click.fb-start", "[data-fancybox-trigger]", function(e) {
     _run(e, {
-      $target: $('[data-fancybox="' + $(e.currentTarget).attr("data-trigger") + '"]').eq($(e.currentTarget).attr("data-index") || 0),
+      $target: $('[data-fancybox="' + $(e.currentTarget).attr("data-fancybox-trigger") + '"]').eq($(e.currentTarget).attr("data-index") || 0),
       $trigger: $(this)
     });
   });
