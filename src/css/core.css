@@ -16,8 +16,7 @@ body.compensate-for-scrollbar {
 
 .fancybox-container {
     backface-visibility: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol';
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
     height: 100%;
     left: 0;
     position: fixed;
@@ -107,7 +106,7 @@ body.compensate-for-scrollbar {
 .fancybox-stage {
     direction: ltr;
     overflow: visible;
-    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
     z-index: 99994;
 }
 
@@ -348,7 +347,7 @@ body.compensate-for-scrollbar {
     fill: transparent;
     stroke: currentColor;
     stroke-linejoin: round;
-    stroke-width: 3;
+    stroke-width: 3px;
 }
 
 .fancybox-button--play svg path:nth-child(2) {
@@ -366,7 +365,7 @@ body.compensate-for-scrollbar {
 }
 
 .fancybox-button--share svg path {
-    stroke-width: 1;
+    stroke-width: 1px;
 }
 
 /* Navigation arrows */
@@ -422,7 +421,7 @@ body.compensate-for-scrollbar {
     fill: transparent;
     opacity: .8;
     stroke: currentColor;
-    stroke-width: 1.5;
+    stroke-width: 1.5px;
     transition: stroke .1s;
 }
 
