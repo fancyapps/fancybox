@@ -1,5 +1,6 @@
 body.compensate-for-scrollbar {
     overflow: hidden;
+    -ms-overflow-style: none;
 }
 
 .fancybox-active {
@@ -16,13 +17,13 @@ body.compensate-for-scrollbar {
 
 .fancybox-container {
     backface-visibility: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol';
     height: 100%;
     left: 0;
+    outline: none;
     position: fixed;
     -webkit-tap-highlight-color: transparent;
     top: 0;
+    touch-action: manipulation;
     transform: translateZ(0);
     width: 100%;
     z-index: 99992;
@@ -93,7 +94,6 @@ body.compensate-for-scrollbar {
     mix-blend-mode: difference;
     padding: 0 10px;
     pointer-events: none;
-    text-align: center;
     top: 0;
     -webkit-touch-callout: none;
     user-select: none;
@@ -107,7 +107,7 @@ body.compensate-for-scrollbar {
 .fancybox-stage {
     direction: ltr;
     overflow: visible;
-    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
     z-index: 99994;
 }
 
@@ -123,7 +123,7 @@ body.compensate-for-scrollbar {
     outline: none;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
-    padding: 44px;
+    padding: 44px 44px 0 44px;
     position: absolute;
     text-align: center;
     top: 0;
@@ -136,8 +136,8 @@ body.compensate-for-scrollbar {
 .fancybox-slide::before {
     content: '';
     display: inline-block;
+    font-size: 0;
     height: 100%;
-    margin-right: -.25em;
     vertical-align: middle;
     width: 0;
 }
@@ -154,8 +154,11 @@ body.compensate-for-scrollbar {
 }
 
 .fancybox-slide--image {
+    padding: 44px 0 0 0;
+}
+
+.fancybox-slide--image {
     overflow: visible;
-    padding: 44px 0;
 }
 
 .fancybox-slide--image::before {
@@ -166,18 +169,14 @@ body.compensate-for-scrollbar {
     padding: 6px 6px 0 6px;
 }
 
-.fancybox-slide--iframe {
-    padding: 44px 44px 0;
-}
-
 .fancybox-content {
     background: #fff;
     display: inline-block;
-    margin: 0 0 6px 0;
+    margin: 0 0 44px 0;
     max-width: 100%;
     overflow: auto;
-    padding: 0;
-    padding: 24px;
+    -webkit-overflow-scrolling: touch;
+    padding: 44px;
     position: relative;
     text-align: left;
     vertical-align: middle;
@@ -190,7 +189,6 @@ body.compensate-for-scrollbar {
     background-repeat: no-repeat;
     background-size: 100% 100%;
     left: 0;
-    margin: 0;
     max-width: none;
     overflow: visible;
     padding: 0;
@@ -202,6 +200,10 @@ body.compensate-for-scrollbar {
     z-index: 99995;
 }
 
+.fancybox-slide--html .fancybox-content {
+    margin: 0 0 6px 0;
+}
+
 .fancybox-can-zoomOut .fancybox-content {
     cursor: zoom-out;
 }
@@ -210,11 +212,12 @@ body.compensate-for-scrollbar {
     cursor: zoom-in;
 }
 
-.fancybox-can-drag .fancybox-content {
+.fancybox-can-swipe .fancybox-content,
+.fancybox-can-pan .fancybox-content {
     cursor: grab;
 }
 
-.fancybox-is-dragging .fancybox-content {
+.fancybox-is-grabbing .fancybox-content {
     cursor: grabbing;
 }
 
@@ -242,15 +245,10 @@ body.compensate-for-scrollbar {
     z-index: 1;
 }
 
-.fancybox-slide--html .fancybox-content {
-    margin-bottom: 6px;
-}
-
 .fancybox-slide--video .fancybox-content,
 .fancybox-slide--map .fancybox-content,
 .fancybox-slide--iframe .fancybox-content {
-    height: 100%;
-    margin: 0;
+    height: calc(100% - 44px);
     overflow: visible;
     padding: 0;
     width: 100%;
@@ -266,23 +264,19 @@ body.compensate-for-scrollbar {
 
 .fancybox-slide--iframe .fancybox-content {
     background: #fff;
-    height: calc(100% - 44px);
-    margin-bottom: 44px;
 }
 
 .fancybox-video,
 .fancybox-iframe {
     background: transparent;
     border: 0;
+    display: block;
     height: 100%;
     margin: 0;
     overflow: hidden;
     padding: 0;
-    width: 100%;
-}
-
-.fancybox-iframe {
     vertical-align: top;
+    width: 100%;
 }
 
 .fancybox-error {
@@ -311,7 +305,6 @@ body.compensate-for-scrollbar {
     display: inline-block;
     height: 44px;
     margin: 0;
-    outline: none;
     padding: 10px;
     transition: color .2s;
     vertical-align: top;
@@ -324,7 +317,6 @@ body.compensate-for-scrollbar {
     color: #ccc;
 }
 
-.fancybox-button:focus,
 .fancybox-button:hover {
     color: #fff;
 }
@@ -337,46 +329,83 @@ body.compensate-for-scrollbar {
     cursor: default;
 }
 
+.fancybox-button:focus {
+    outline: none;
+}
+
+.fancybox-button.fancybox-focus {
+    outline: 1px dotted;
+}
+
 .fancybox-button svg {
     display: block;
+    height: 100%;
     overflow: visible;
     position: relative;
-    shape-rendering: geometricPrecision;
+    width: 100%;
 }
 
 .fancybox-button svg path {
-    fill: transparent;
-    stroke: currentColor;
-    stroke-linejoin: round;
-    stroke-width: 3;
-}
-
-.fancybox-button--play svg path:nth-child(2) {
-    display: none;
-}
-
-.fancybox-button--pause svg path:nth-child(1) {
-    display: none;
-}
-
-.fancybox-button--play svg path,
-.fancybox-button--share svg path,
-.fancybox-button--thumbs svg path {
     fill: currentColor;
+    stroke-width: 0;
 }
 
-.fancybox-button--share svg path {
-    stroke-width: 1;
+.fancybox-button--play svg:nth-child(2),
+.fancybox-button--fsenter svg:nth-child(2) {
+    display: none;
+}
+
+.fancybox-button--pause svg:nth-child(1),
+.fancybox-button--fsexit svg:nth-child(1) {
+    display: none;
+}
+
+/* Close button on the top right corner of html content */
+
+.fancybox-close-small {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    color: #ccc;
+    cursor: pointer;
+    opacity: .8;
+    padding: 8px;
+    position: absolute;
+    right: -12px;
+    top: -44px;
+    z-index: 401;
+}
+
+.fancybox-close-small:hover {
+    color: #fff;
+}
+
+.fancybox-slide--html .fancybox-close-small {
+    color: currentColor;
+    padding: 10px;
+    right: 0;
+    top: 0;
+}
+
+.fancybox-slide--html .fancybox-close-small:hover {
+    color: currentColor;
+    opacity: 1;
+}
+
+.fancybox-is-scaling .fancybox-close-small,
+.fancybox-is-zoomable.fancybox-can-pan .fancybox-close-small {
+    display: none;
 }
 
 /* Navigation arrows */
 
 .fancybox-navigation .fancybox-button {
     height: 38px;
+    margin: 0;
     opacity: 0;
-    padding: 6px;
+    padding: 7px;
     position: absolute;
-    top: 50%;
+    top: calc(50% - (38px / 2));
     width: 38px;
 }
 
@@ -386,10 +415,11 @@ body.compensate-for-scrollbar {
 
 .fancybox-navigation .fancybox-button::after {
     content: '';
-    left: -25px;
-    padding: 50px;
+    height: 100px;
+    left: -26px;
     position: absolute;
-    top: -25px;
+    top: -31px;
+    width: 70px;
 }
 
 .fancybox-navigation .fancybox-button--arrow_left {
@@ -398,61 +428,6 @@ body.compensate-for-scrollbar {
 
 .fancybox-navigation .fancybox-button--arrow_right {
     right: 6px;
-}
-
-/* Close button on the top right corner of html content */
-
-.fancybox-close-small {
-    background: transparent;
-    border: 0;
-    border-radius: 0;
-    color: #555;
-    cursor: pointer;
-    height: 44px;
-    margin: 0;
-    padding: 6px;
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 44px;
-    z-index: 10;
-}
-
-.fancybox-close-small svg {
-    fill: transparent;
-    opacity: .8;
-    stroke: currentColor;
-    stroke-width: 1.5;
-    transition: stroke .1s;
-}
-
-.fancybox-close-small:focus {
-    outline: none;
-}
-
-.fancybox-close-small:hover svg {
-    opacity: 1;
-}
-
-.fancybox-slide--image .fancybox-close-small,
-.fancybox-slide--video .fancybox-close-small,
-.fancybox-slide--iframe .fancybox-close-small {
-    color: #ccc;
-    padding: 5px;
-    right: -12px;
-    top: -44px;
-}
-
-.fancybox-slide--image .fancybox-close-small:hover svg,
-.fancybox-slide--video .fancybox-close-small:hover svg,
-.fancybox-slide--iframe .fancybox-close-small:hover svg {
-    background: transparent;
-    color: #fff;
-}
-
-.fancybox-is-scaling .fancybox-close-small,
-.fancybox-is-zoomable.fancybox-can-drag .fancybox-close-small {
-    display: none;
 }
 
 /* Caption */
@@ -631,4 +606,31 @@ body.compensate-for-scrollbar {
 
 .fancybox-fx-tube.fancybox-slide--current {
     transform: translate3d(0, 0, 0) scale(1);
+}
+
+/* Styling for Small-Screen Devices */
+@media all and (max-height: 576px) {
+    .fancybox-slide {
+        padding-left: 6px;
+        padding-right: 6px;
+    }
+
+    .fancybox-slide--image {
+        padding: 6px 0 0 0;
+    }
+
+    .fancybox-slide--image .fancybox-content {
+        margin-bottom: 6px;
+    }
+
+    .fancybox-slide--image .fancybox-close-small {
+        background: #4e4e4e;
+        color: #f2f4f6;
+        height: 36px;
+        opacity: 1;
+        padding: 6px;
+        right: 0;
+        top: 0;
+        width: 36px;
+    }
 }

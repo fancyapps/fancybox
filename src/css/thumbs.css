@@ -29,7 +29,7 @@
     right: 212px;
 }
 
-.fancybox-thumbs > ul {
+.fancybox-thumbs__list {
     font-size: 0;
     height: 100%;
     list-style: none;
@@ -43,27 +43,31 @@
     width: 100%;
 }
 
-.fancybox-thumbs-x > ul {
+.fancybox-thumbs-x .fancybox-thumbs__list {
     overflow: hidden;
 }
 
-.fancybox-thumbs-y > ul::-webkit-scrollbar {
+.fancybox-thumbs-y .fancybox-thumbs__list::-webkit-scrollbar {
     width: 7px;
 }
 
-.fancybox-thumbs-y > ul::-webkit-scrollbar-track {
+.fancybox-thumbs-y .fancybox-thumbs__list::-webkit-scrollbar-track {
     background: #fff;
     border-radius: 10px;
     box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
 }
 
-.fancybox-thumbs-y > ul::-webkit-scrollbar-thumb {
+.fancybox-thumbs-y .fancybox-thumbs__list::-webkit-scrollbar-thumb {
     background: #2a2a2a;
     border-radius: 10px;
 }
 
-.fancybox-thumbs > ul > li {
+.fancybox-thumbs__list a {
     backface-visibility: hidden;
+    background-color: rgba(0, 0, 0, .1);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
     cursor: pointer;
     float: left;
     height: 75px;
@@ -78,17 +82,7 @@
     width: 100px;
 }
 
-.fancybox-thumbs-loading {
-    background: rgba(0, 0, 0, .1);
-}
-
-.fancybox-thumbs > ul > li {
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: cover;
-}
-
-.fancybox-thumbs > ul > li:before {
+.fancybox-thumbs__list a::before {
     border: 4px solid #4ea7f9;
     bottom: 0;
     content: '';
@@ -101,20 +95,23 @@
     z-index: 99991;
 }
 
-.fancybox-thumbs .fancybox-thumbs-active:before {
+.fancybox-thumbs__list a:focus::before {
+    opacity: .5;
+}
+
+.fancybox-thumbs__list a.fancybox-thumbs-active::before {
     opacity: 1;
 }
 
 /* Styling for Small-Screen Devices */
-
-@media all and (max-width: 800px) {
+@media all and (max-width: 768px) {
     .fancybox-thumbs {
         width: 110px;
     }
     .fancybox-show-thumbs .fancybox-inner {
         right: 110px;
     }
-    .fancybox-thumbs > ul > li {
+    .fancybox-thumbs__list a {
         max-width: calc(100% - 10px);
     }
 }
