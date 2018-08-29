@@ -41,7 +41,7 @@ Follow [@thefancyapps](//twitter.com/thefancyapps) for updates.
 fancyBox is licensed under the [GPLv3](http://choosealicense.com/licenses/gpl-3.0) license for all open source applications.
 A commercial license is required for all commercial applications (including sites, themes and apps you plan to sell).
 
-[Read more about fancyBox license](http://fancyapps.com/fancybox/#license).
+[Read more about fancyBox license](http://fancyapps.com/fancybox/3/#license).
 
 ## Bugs and feature requests
 
