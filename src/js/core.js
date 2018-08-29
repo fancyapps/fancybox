@@ -2471,11 +2471,11 @@
         if (!$el.length) {
           $el = current.$content.find("button,:input,[tabindex],a").filter(":not(.fancybox-close-small):enabled:visible:first");
         }
-
-        $el = $el && $el.length ? $el : self.$refs.container;
-
-        $el.trigger("focus");
       }
+
+      $el = $el && $el.length ? $el : self.$refs.container;
+
+      $el.trigger("focus");
     },
 
     // Activates current instance - brings container to the front and enables keyboard,
