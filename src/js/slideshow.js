@@ -47,23 +47,34 @@
     },
 
     set: function(force) {
-      var self = this;
+      var self = this,
+        instance = self.instance,
+        current = instance.current,
+        advance = function() {
+          if (self.isActive) {
+            instance.jumpTo((instance.currIndex + 1) % instance.group.length);
+          }
+        };
 
       // Check if reached last element
-      if (
-        self.instance &&
-        self.instance.current &&
-        (force === true || self.instance.current.opts.loop || self.instance.currIndex < self.instance.group.length - 1)
-      ) {
+      if (current && (force === true || current.opts.loop || instance.currIndex < instance.group.length - 1)) {
         self.timer = setTimeout(function() {
+          var $video;
+
           if (self.isActive) {
-            self.instance.jumpTo((self.instance.currIndex + 1) % self.instance.group.length);
+            $video = current.$slide.find("video,audio").filter(":visible:first");
+
+            if ($video.length) {
+              $video.one("ended", advance);
+            } else {
+              advance();
+            }
           }
-        }, self.instance.current.opts.slideShow.speed);
+        }, current.opts.slideShow.speed);
       } else {
         self.stop();
-        self.instance.idleSecondsCounter = 0;
-        self.instance.showControls();
+        instance.idleSecondsCounter = 0;
+        instance.showControls();
       }
     },
 
@@ -182,4 +193,4 @@
       }
     }
   });
-})(document, window.jQuery || jQuery);
+})(document, jQuery);

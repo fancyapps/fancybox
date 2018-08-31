@@ -891,4 +891,4 @@
       instance.Guestures = new Guestures(instance);
     }
   });
-})(window, document, window.jQuery || jQuery);
+})(window, document, jQuery);

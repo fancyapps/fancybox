@@ -198,4 +198,4 @@
       item.type = item.opts.defaultType;
     }
   });
-})(window.jQuery || jQuery);
+})(jQuery);
