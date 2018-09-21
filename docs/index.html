@@ -266,8 +266,8 @@ pre ~ .demo {
           <h3>Compatibility</h3>
 
           <p>
-            fancybox includes support for touch gestures and even supports pinch gestures for zooming. It is perfectly suited for both
-            mobile and desktop browsers.
+            fancybox includes support for touch gestures and even supports pinch gestures for zooming.
+            It is perfectly suited for both mobile and desktop browsers.
           </p>
 
           <p>
@@ -292,8 +292,8 @@ pre ~ .demo {
           <p>
             You can install fancybox by linking
             <code>.css</code> and
-            <code>.js</code> files to your html file. Make sure you also load the jQuery library. Below is a basic HTML template
-            to use as an example:
+            <code>.js</code> files to your html file. Make sure you also load the jQuery library. Below is a basic HTML
+            template to use as an example:
           </p>
 
           <pre>&lt;!DOCTYPE html&gt;
@@ -346,7 +346,8 @@ bower install fancybox --save
             <li>If you already have jQuery on your page, you shouldn't include it second time</li>
             <li>Do not include both fancybox.js and fancybox.min.js files</li>
             <li>
-              Some functionality (ajax, iframes, etc) will not work when you're opening local file directly on your browser, the code must
+              Some functionality (ajax, iframes, etc) will not work when you're opening local file directly on your
+              browser, the code must
               be running on a web server
             </li>
           </ul>
@@ -360,7 +361,8 @@ bower install fancybox --save
 
           <p>
             The most basic way to use fancybox is by adding the
-            <code>data-fancybox</code> attribute to your element. This will automatically bind click event that will start
+            <code>data-fancybox</code> attribute to your element. This will automatically bind click event that will
+            start
             fancybox. Use
             <code>href</code> or
             <code>data-src</code> attribute to specify source of your content. Example:
@@ -376,7 +378,8 @@ bower install fancybox --save
 
           <p>
             If you have a group of items, you can use the same attribute
-            <code>data-fancybox</code> value for each of them to create a gallery. Each group should have a unique value.
+            <code>data-fancybox</code> value for each of them to create a gallery. Each group should have a unique
+            value.
             Example:
           </p>
 
@@ -399,8 +402,8 @@ bower install fancybox --save
           </p>
 
           <p>
-            Sometimes you have multiple links pointing to the same source and that creates duplicates in the gallery. To avoid that,
-            simply use
+            Sometimes you have multiple links pointing to the same source and that creates duplicates in the gallery.
+            To avoid that, simply use
             <code>data-fancybox-trigger</code> attribute with the same value used for
             <code>data-fancybox</code> attribute for your other links. Optionally, use
             <code>data-fancybox-index</code> attribute to specify index of starting element:
@@ -414,7 +417,7 @@ bower install fancybox --save
             <a href="https://codepen.io/fancyapps/pen/YOyRKR?editors=1010" target="_blank">View demo on CodePen</a>
           </p>
 
-          <h3>Initialize with JavaScript</h3>
+          <h3 id="initialize-with-javascript">Initialize with JavaScript</h3>
 
           <p>
             Select your elements with a jQuery selector (you can use any valid selector) and call the
@@ -432,8 +435,8 @@ bower install fancybox --save
 
           <p>
             Sometimes you might need to bind fancybox to dynamically added elements. Use
-            <code>selector</code> option to attach click event listener for elements that exist now or in the future. All
-            selected items will be automatically grouped in the gallery. Example:
+            <code>selector</code> option to attach click event listener for elements that exist now or in the future.
+            All selected items will be automatically grouped in the gallery. Example:
           </p>
 
           <pre><code>$().fancybox({
@@ -481,8 +484,8 @@ bower install fancybox --save
           </h4>
 
           <p>
-            fancybox attempts to automatically detect the type of content based on the given url. If it cannot be detected, the type
-            can also be set manually using
+            fancybox attempts to automatically detect the type of content based on the given url. If it cannot be
+            detected, the type can also be set manually using
             <code>data-type</code> attribute (or
             <code>type</code> option). Example:
           </p>
@@ -497,8 +500,8 @@ bower install fancybox --save
           <h2>Media types</h2>
 
           <p>
-            fancybox is designed to display images, video, iframes and any HTML content. For your convenience, there is a built in support
-            for inline content and ajax.
+            fancybox is designed to display images, video, iframes and any HTML content. For your convenience, there is
+            a built in support for inline content and ajax.
           </p>
 
           <h3 id="images">Images</h3>
@@ -516,8 +519,9 @@ bower install fancybox --save
           </p>
 
           <p>
-            By default, fancybox fully preloads an image before displaying it. You can choose to display the image right away. It will
-            render and show the full size image while the data is being received. To do so, some attributes are necessary:
+            By default, fancybox fully preloads an image before displaying it. You can choose to display the image
+            right away. It will render and show the full size image while the data is being received. To do so, some
+            attributes are necessary:
           </p>
 
           <ul>
@@ -537,8 +541,8 @@ bower install fancybox --save
           <p>
             You can also use these
             <code>width</code> and
-            <code>height</code> properties to control size of the image. This can be used to make images look sharper on
-            retina displays. Example:
+            <code>height</code> properties to control size of the image. This can be used to make images look sharper
+            on retina displays. Example:
           </p>
 
           <pre><code>$('[data-fancybox=&quot;images&quot;]').fancybox({
@@ -557,8 +561,8 @@ bower install fancybox --save
           </p>
 
           <p>
-            fancybox supports "srcset" so it can display different images based on viewport width. You can use this to improve download
-            times for mobile users and over time save bandwidth. Example:
+            fancybox supports "srcset" so it can display different images based on viewport width. You can use this to
+            improve download times for mobile users and over time save bandwidth. Example:
           </p>
 
           <pre><code>&lt;a href=&quot;medium.jpg&quot; data-fancybox=&quot;images&quot; data-srcset=&quot;large.jpg 1600w, medium.jpg 1200w, small.jpg 640w&quot;&gt;
@@ -569,9 +573,9 @@ bower install fancybox --save
           </p>
 
           <p>
-            It is also possible to protect images from downloading by right-click. While this does not protect from truly determined
-            users, it should discourage the vast majority from ripping off your files. Optionally, put the watermark over
-            image.
+            It is also possible to protect images from downloading by right-click. While this does not protect from
+            truly determined users, it should discourage the vast majority from ripping off your files.
+            Optionally, put the watermark over image.
           </p>
 
           <pre><code>$('[data-fancybox]').fancybox({
@@ -585,9 +589,8 @@ bower install fancybox --save
           <h3 id="video">Video</h3>
 
           <p>
-            YouTube and Vimeo videos can be used with fancybox by just providing the page URL. Link to MP4 video directly or use trigger
-            element to display hidden
-            <code>&lt;video&gt;</code> element.
+            YouTube and Vimeo videos can be used with fancybox by just providing the page URL. Link to MP4 video
+            directly or use trigger element to display hidden <code>&lt;video&gt;</code> element.
           </p>
 
           <p>
@@ -660,9 +663,9 @@ bower install fancybox --save
           <h3 id="iframe">Iframe</h3>
 
           <p>
-            If you need to display content from another page, add <code>data-fancybox</code> and <code>data-type="iframe"</code>            attributes
-            to your link. This would create <code>&lt;iframe&gt;</iframe></code> element that allows to embed an entire web
-            document inside the modal.
+            If you need to display content from another page, add <code>data-fancybox</code> and <code>data-type="iframe"</code>
+            attributes to your link. This would create <code>&lt;iframe&gt;</iframe></code> element that allows to
+            embed an entire web document inside the modal.
           </p>
 
           <pre><code>&lt;a data-fancybox data-type="iframe" data-src=&quot;http://codepen.io/fancyapps/full/jyEGGG/&quot; href=&quot;javascript:;&quot;&gt;
@@ -679,14 +682,15 @@ bower install fancybox --save
 
           <p>
             If you have not disabled iframe preloading (using
-            <code>preload</code> option), the script will atempt to calculate content dimensions and will adjust width/height
-            of <code>&lt;iframe&gt;</iframe></code> to fit with content in it. Keep in mind, that due to
-            <a href="https://en.wikipedia.org/wiki/Same-origin_policy" target="_blank">same origin policy</a>, there are
-            some limitations.
+            <code>preload</code> option), the script will atempt to calculate content dimensions and will adjust
+            width/height of <code>&lt;iframe&gt;</iframe></code> to fit with content in it. Keep in mind, that due to
+            <a href="https://en.wikipedia.org/wiki/Same-origin_policy" target="_blank">same origin policy</a>, there
+            are some limitations.
           </p>
 
           <p>
-            This example will disable iframe preloading and will display small close button next to iframe instead of the toolbar:
+            This example will disable iframe preloading and will display small close button next to iframe instead of
+            the toolbar:
           </p>
 
           <pre><code>$('[data-fancybox]').fancybox({
@@ -740,7 +744,8 @@ parent.jQuery.fancybox.getInstance().update();
           <h3 id="inline">Inline</h3>
 
           <p>
-            fancybox can be used to display any HTML element on the page. First, create a hidden element with unique ID:
+            fancybox can be used to display any HTML element on the page.
+            First, create a hidden element with unique ID:
           </p>
 
           <pre><code>&lt;div style=&quot;display: none;&quot; id=&quot;hidden-content&quot;&gt;
@@ -750,9 +755,8 @@ parent.jQuery.fancybox.getInstance().update();
 
           <p>
             Then simply create a link having
-            <code>data-src</code> attribute that matches ID of the element you want to open (preceded by a hash mark (#);
-            in this example -
-            <code>#hidden-content</code>):
+            <code>data-src</code> attribute that matches ID of the element you want to open (preceded by a hash mark
+            (#); in this example - <code>#hidden-content</code>):
           </p>
 
           <pre><code>&lt;a data-fancybox data-src=&quot;#hidden-content&quot; href=&quot;javascript:;&quot;&gt;
@@ -764,13 +768,13 @@ parent.jQuery.fancybox.getInstance().update();
 
           <p>
             The script will append small close button (if you have not disabled by
-            <code>smallBtn:false</code>) and will not apply any styles except for centering. Therefore you can easily set
-            custom dimensions using CSS.
+            <code>smallBtn:false</code>) and will not apply any styles except for centering. Therefore you can easily
+            set custom dimensions using CSS.
           </p>
 
           <p>
-            <span class="badge badge-info">Info</span> If necessary, you can make your element (and similarly any other html
-            content) scrollable by adding additional wrapping element and some CSS -
+            <span class="badge badge-info">Info</span> If necessary, you can make your element (and similarly any other
+            html content) scrollable by adding additional wrapping element and some CSS -
 
             <a href="https://codepen.io/fancyapps/pen/MqKGvq?editors=1100" target="_blank">view demo on CodePen</a>.
           </p>
@@ -792,8 +796,8 @@ parent.jQuery.fancybox.getInstance().update();
 
           <p>
             Additionally it is possible to define a selector with the
-            <code>data-filter</code> attribute to show only a part of the response. The selector can be any string, that
-            is a valid jQuery selector:
+            <code>data-filter</code> attribute to show only a part of the response. The selector can be any string,
+            that is a valid jQuery selector:
           </p>
 
           <pre><code>&lt;a data-fancybox data-type=&quot;ajax&quot; data-src=&quot;my_page.com/path/to/ajax/&quot; data-filter=&quot;#two&quot; href=&quot;javascript:;&quot;&gt;
@@ -850,7 +854,7 @@ parent.jQuery.fancybox.getInstance().update();
   buttons: [
     &quot;zoom&quot;,
     //&quot;share&quot;,
-    //&quot;slideShow&quot;,
+    &quot;slideShow&quot;,
     //&quot;fullScreen&quot;,
     //&quot;download&quot;,
     &quot;thumbs&quot;,
@@ -888,7 +892,7 @@ parent.jQuery.fancybox.getInstance().update();
   iframe: {
     // Iframe template
     tpl:
-      '&lt;iframe id=&quot;fancybox-frame{rnd}&quot; name=&quot;fancybox-frame{rnd}&quot; class=&quot;fancybox-iframe&quot; frameborder=&quot;0&quot; vspace=&quot;0&quot; hspace=&quot;0&quot; webkitAllowFullScreen mozallowfullscreen allowFullScreen allowtransparency=&quot;true&quot; src=&quot;&quot;&gt;&lt;/iframe&gt;',
+    '&lt;iframe id=&quot;fancybox-frame{rnd}&quot; name=&quot;fancybox-frame{rnd}&quot; class=&quot;fancybox-iframe&quot; allowfullscreen allow=&quot;fullscreen autoplay&quot; src=&quot;&quot;&gt;&lt;/iframe&gt;',
 
     // Preload iframe before displaying it
     // This allows to calculate iframe content width and height
@@ -901,7 +905,7 @@ parent.jQuery.fancybox.getInstance().update();
 
     // Iframe tag attributes
     attr: {
-      scrolling: &quot;auto&quot;
+    scrolling: &quot;auto&quot;
     }
   },
 
@@ -962,9 +966,7 @@ parent.jQuery.fancybox.getInstance().update();
     '&lt;div class=&quot;fancybox-container&quot; role=&quot;dialog&quot; tabindex=&quot;-1&quot;&gt;' +
     '&lt;div class=&quot;fancybox-bg&quot;&gt;&lt;/div&gt;' +
     '&lt;div class=&quot;fancybox-inner&quot;&gt;' +
-    '&lt;div class=&quot;fancybox-infobar&quot;&gt;' +
-    &quot;&lt;span data-fancybox-index&gt;&lt;/span&gt;&amp;nbsp;/&amp;nbsp;&lt;span data-fancybox-count&gt;&lt;/span&gt;&quot; +
-    &quot;&lt;/div&gt;&quot; +
+    '&lt;div class=&quot;fancybox-infobar&quot;&gt;&lt;span data-fancybox-index&gt;&lt;/span&gt;&amp;nbsp;/&amp;nbsp;&lt;span data-fancybox-count&gt;&lt;/span&gt;&lt;/div&gt;' +
     '&lt;div class=&quot;fancybox-toolbar&quot;&gt;{{buttons}}&lt;/div&gt;' +
     '&lt;div class=&quot;fancybox-navigation&quot;&gt;{{arrows}}&lt;/div&gt;' +
     '&lt;div class=&quot;fancybox-stage&quot;&gt;&lt;/div&gt;' +
@@ -980,39 +982,37 @@ parent.jQuery.fancybox.getInstance().update();
 
   btnTpl: {
     download:
-      '&lt;a download data-fancybox-download class=&quot;fancybox-button fancybox-button--download&quot; title=&quot;{{DOWNLOAD}}&quot; href=&quot;javascript:;&quot;&gt;' +
-      '&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M18.62 17.09V19H5.38v-1.91zm-2.97-6.96L17 11.45l-5 4.87-5-4.87 1.36-1.32 2.68 2.64V5h1.92v7.77z&quot;/&gt;&lt;/svg&gt;' +
-      &quot;&lt;/a&gt;&quot;,
+    '&lt;a download data-fancybox-download class=&quot;fancybox-button fancybox-button--download&quot; title=&quot;{{DOWNLOAD}}&quot; href=&quot;javascript:;&quot;&gt;' +
+    '&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M18.62 17.09V19H5.38v-1.91zm-2.97-6.96L17 11.45l-5 4.87-5-4.87 1.36-1.32 2.68 2.64V5h1.92v7.77z&quot;/&gt;&lt;/svg&gt;' +
+    &quot;&lt;/a&gt;&quot;,
 
     zoom:
-      '&lt;button data-fancybox-zoom class=&quot;fancybox-button fancybox-button--zoom&quot; title=&quot;{{ZOOM}}&quot;&gt;' +
-      '&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M18.7 17.3l-3-3a5.9 5.9 0 0 0-.6-7.6 5.9 5.9 0 0 0-8.4 0 5.9 5.9 0 0 0 0 8.4 5.9 5.9 0 0 0 7.7.7l3 3a1 1 0 0 0 1.3 0c.4-.5.4-1 0-1.5zM8.1 13.8a4 4 0 0 1 0-5.7 4 4 0 0 1 5.7 0 4 4 0 0 1 0 5.7 4 4 0 0 1-5.7 0z&quot;/&gt;&lt;/svg&gt;' +
-      &quot;&lt;/button&gt;&quot;,
+    '&lt;button data-fancybox-zoom class=&quot;fancybox-button fancybox-button--zoom&quot; title=&quot;{{ZOOM}}&quot;&gt;' +
+    '&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M18.7 17.3l-3-3a5.9 5.9 0 0 0-.6-7.6 5.9 5.9 0 0 0-8.4 0 5.9 5.9 0 0 0 0 8.4 5.9 5.9 0 0 0 7.7.7l3 3a1 1 0 0 0 1.3 0c.4-.5.4-1 0-1.5zM8.1 13.8a4 4 0 0 1 0-5.7 4 4 0 0 1 5.7 0 4 4 0 0 1 0 5.7 4 4 0 0 1-5.7 0z&quot;/&gt;&lt;/svg&gt;' +
+    &quot;&lt;/button&gt;&quot;,
 
     close:
-      '&lt;button data-fancybox-close class=&quot;fancybox-button fancybox-button--close&quot; title=&quot;{{CLOSE}}&quot;&gt;' +
-      '&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M12 10.6L6.6 5.2 5.2 6.6l5.4 5.4-5.4 5.4 1.4 1.4 5.4-5.4 5.4 5.4 1.4-1.4-5.4-5.4 5.4-5.4-1.4-1.4-5.4 5.4z&quot;/&gt;&lt;/svg&gt;' +
-      &quot;&lt;/button&gt;&quot;,
+    '&lt;button data-fancybox-close class=&quot;fancybox-button fancybox-button--close&quot; title=&quot;{{CLOSE}}&quot;&gt;' +
+    '&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M12 10.6L6.6 5.2 5.2 6.6l5.4 5.4-5.4 5.4 1.4 1.4 5.4-5.4 5.4 5.4 1.4-1.4-5.4-5.4 5.4-5.4-1.4-1.4-5.4 5.4z&quot;/&gt;&lt;/svg&gt;' +
+    &quot;&lt;/button&gt;&quot;,
 
     // Arrows
     arrowLeft:
-      '&lt;a data-fancybox-prev class=&quot;fancybox-button fancybox-button--arrow_left&quot; title=&quot;{{PREV}}&quot; href=&quot;javascript:;&quot;&gt;' +
-      '&lt;svg viewBox=&quot;0 0 40 40&quot;&gt;' +
-      '&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M11.28 15.7l-1.34 1.37L5 12l4.94-5.07 1.34 1.38-2.68 2.72H19v1.94H8.6z&quot;/&gt;&lt;/svg&gt;' +
-      &quot;&lt;/svg&gt;&quot; +
-      &quot;&lt;/a&gt;&quot;,
+    '&lt;button data-fancybox-prev class=&quot;fancybox-button fancybox-button--arrow_left&quot; title=&quot;{{PREV}}&quot;&gt;' +
+    '&lt;div&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M11.28 15.7l-1.34 1.37L5 12l4.94-5.07 1.34 1.38-2.68 2.72H19v1.94H8.6z&quot;/&gt;&lt;/svg&gt;&lt;/div&gt;' +
+    &quot;&lt;/button&gt;&quot;,
 
     arrowRight:
-      '&lt;a data-fancybox-next class=&quot;fancybox-button fancybox-button--arrow_right&quot; title=&quot;{{NEXT}}&quot; href=&quot;javascript:;&quot;&gt;' +
-      '&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M15.4 12.97l-2.68 2.72 1.34 1.38L19 12l-4.94-5.07-1.34 1.38 2.68 2.72H5v1.94z&quot;/&gt;&lt;/svg&gt;' +
-      &quot;&lt;/a&gt;&quot;,
+    '&lt;button data-fancybox-next class=&quot;fancybox-button fancybox-button--arrow_right&quot; title=&quot;{{NEXT}}&quot;&gt;' +
+    '&lt;div&gt;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M15.4 12.97l-2.68 2.72 1.34 1.38L19 12l-4.94-5.07-1.34 1.38 2.68 2.72H5v1.94z&quot;/&gt;&lt;/svg&gt;&lt;/div&gt;' +
+    &quot;&lt;/button&gt;&quot;,
 
     // This small close button will be appended to your html/inline/ajax content by default,
     // if &quot;smallBtn&quot; option is not set to false
     smallBtn:
-      '&lt;button type=&quot;button&quot; data-fancybox-close class=&quot;fancybox-button fancybox-close-small&quot; title=&quot;{{CLOSE}}&quot;&gt;' +
-      '&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M13 12l5-5-1-1-5 5-5-5-1 1 5 5-5 5 1 1 5-5 5 5 1-1z&quot;/&gt;&lt;/svg&gt;' +
-      &quot;&lt;/button&gt;&quot;
+    '&lt;button type=&quot;button&quot; data-fancybox-close class=&quot;fancybox-button fancybox-close-small&quot; title=&quot;{{CLOSE}}&quot;&gt;' +
+    '&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; version=&quot;1&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path d=&quot;M13 12l5-5-1-1-5 5-5-5-1 1 5 5-5 5 1 1 5-5 5 5 1-1z&quot;/&gt;&lt;/svg&gt;' +
+    &quot;&lt;/button&gt;&quot;
   },
 
   // Container is injected into this element
@@ -1054,11 +1054,11 @@ parent.jQuery.fancybox.getInstance().update();
   // Example:
   /*
     media : {
-      youtube : {
-        params : {
-          autoplay : 0
-        }
+    youtube : {
+      params : {
+      autoplay : 0
       }
+    }
     }
   */
   media: {},
@@ -1086,8 +1086,8 @@ parent.jQuery.fancybox.getInstance().update();
   // Example:
   /*
     afterShow: function( instance, current ) {
-      console.info( 'Clicked element:' );
-      console.info( current.opts.$orig );
+    console.info( 'Clicked element:' );
+    console.info( current.opts.$orig );
     }
   */
 
@@ -1192,8 +1192,7 @@ parent.jQuery.fancybox.getInstance().update();
 
 
           <p>
-            Set instance options by passing a valid object to
-            <code>fancybox()</code> method:
+            Set instance options by passing a valid object to <code>fancybox()</code> method:
           </p>
 
           <pre><code>$(&quot;[data-fancybox]&quot;).fancybox({
@@ -1213,14 +1212,13 @@ parent.jQuery.fancybox.getInstance().update();
 
           <p>
             Custom options for each element individually can be set by adding a
-            <code>data-options</code> attribute to the element. This attribute should contain the properly formatted JSON
-            object.
+            <code>data-options</code> attribute to the element.
+            This attribute should contain the properly formatted JSON object.
           </p>
           <p>
             It is also possible to quickly set any option using
             <em>parameterized</em> name of the selected option, for example,
-            <code>animationEffect</code> would be
-            <code>data-animation-effect</code>:
+            <code>animationEffect</code> would be <code>data-animation-effect</code>:
           </p>
 
           <pre><code>&lt;a data-fancybox data-options='{&quot;caption&quot; : &quot;My caption&quot;, &quot;src&quot; : &quot;https://codepen.io/about/&quot;, &quot;type&quot; : &quot;iframe&quot;}' href=&quot;javascript:;&quot; class=&quot;btn btn-primary&quot;&gt;
@@ -1241,8 +1239,8 @@ parent.jQuery.fancybox.getInstance().update();
           <h2>API</h2>
 
           <p>
-            The fancybox API offers a couple of methods to control fancybox. This gives you the ability to extend the plugin and to integrate
-            it with other web application components.
+            The fancybox API offers a couple of methods to control fancybox. This gives you the ability to extend the
+            plugin and to integrate it with other web application components.
           </p>
 
           <h3 id="core_methods">Core methods</h3>
@@ -1268,7 +1266,6 @@ $.fancybox.destroy();
 
           <h3 id="api_usage">Starting fancybox</h3>
 
-
           <p>
             When creating group objects manually, each item should follow this pattern:
           </p>
@@ -1279,7 +1276,6 @@ $.fancybox.destroy();
 	opts : {} // Object containing item options (optional)
 }
 </code></pre>
-
 
           <p>
             Example of opening image gallery programmatically:
@@ -1326,8 +1322,8 @@ $.fancybox.destroy();
           </p>
 
           <p>
-            If you wish to quickly display some html content (for example, a message), then you can use a simpler syntax. Do not forget
-            to use a wrapping element around your content.
+            If you wish to quickly display some html content (for example, a message), then you can use a simpler
+            syntax. Do not forget to use a wrapping element around your content.
           </p>
 
           <pre><code>$.fancybox.open('&lt;div class=&quot;message&quot;&gt;&lt;h2&gt;Hello!&lt;/h2&gt;&lt;p&gt;You are awesome!&lt;/p&gt;&lt;/div&gt;');</code></pre>
@@ -1336,7 +1332,8 @@ $.fancybox.destroy();
           </p>
 
           <p>
-            Group items can be collection of jQuery objects, too. This can be used, for example, to display group of inline elements:
+            Group items can be collection of jQuery objects, too.
+            This can be used, for example, to display group of inline elements:
           </p>
 
           <pre><code>$('#test').on('click', function() {
@@ -1352,7 +1349,8 @@ $.fancybox.destroy();
           <h3 id="instance_methods">Instance methods</h3>
 
           <p>
-            In order to use these methods, you need an instance of the plugin's object. There are 3 common ways to get the reference.
+            In order to use these methods, you need an instance of the plugin's object.
+            There are 3 common ways to get the reference.
           </p>
 
           <p>
@@ -1368,7 +1366,6 @@ $.fancybox.destroy();
 	// Your content and options
 );</code></pre>
 
-
           <p>
             3) From within the callback - first argument is always a reference to current instance:
           </p>
@@ -1381,7 +1378,6 @@ $.fancybox.destroy();
           <p>
             Once you have a reference to fancybox instance the following methods are available:
           </p>
-
 
           <pre><code>// Go to next gallery item
 instance.next( duration );
@@ -1432,7 +1428,6 @@ instance.activate();
 instance.close();
 </code></pre>
 
-
           <p>
             You can also do something like this:
           </p>
@@ -1465,7 +1460,8 @@ onActivate   : When instance is brought to front
 onDeactivate : When other instance has been activated</code></pre>
 
           <p>
-            Event callbacks can be set as function properties of the options object passed to fancybox initialization function:
+            Event callbacks can be set as function properties of the options object passed to fancybox initialization
+            function:
           </p>
 
           <pre><code>&lt;script type=&quot;text/javascript&quot;&gt;
@@ -1496,10 +1492,9 @@ onDeactivate : When other instance has been activated</code></pre>
           </p>
 
           <p>
-            It is also possible to attach event handler for all instances. To prevent interfering with other scripts, these events have
-            been namespaced to
-            <code>.fb</code>. These handlers receive 3 parameters - event, current fancybox instance and current gallery
-            object.
+            It is also possible to attach event handler for all instances. To prevent interfering with other scripts,
+            these events have been namespaced to <code>.fb</code>.
+            These handlers receive 3 parameters - event, current fancybox instance and current gallery object.
           </p>
           <p>
             Here is an example of binding to the
@@ -1529,10 +1524,9 @@ onDeactivate : When other instance has been activated</code></pre>
           <h2>Modules</h2>
 
           <p>
-            fancybox code is split into several files (modules) that extend core functionality. You can build your own fancybox version
-            by excluding unnecessary modules, if needed. Each one has their own
-            <code>js</code> and/or
-            <code>css</code> files.
+            fancybox code is split into several files (modules) that extend core functionality. You can build your own
+            fancybox version by excluding unnecessary modules, if needed.
+            Each one has their own <code>js</code> and/or <code>css</code> files.
           </p>
 
           <p>
@@ -1641,9 +1635,9 @@ share: {
           </p>
 
           <p>
-            If you would inspect fancybox instance object, you would find that same keys ar captialized - these are references for each
-            module object. Also, you would notice that fancybox uses common naming convention to prefix jQuery objects with
-            <code>$</code>.
+            If you would inspect fancybox instance object, you would find that same keys ar captialized - these are
+            references for each module object.
+            Also, you would notice that fancybox uses common naming convention to prefix jQuery objects with <code>$</code>.
           </p>
 
           <p>
@@ -1695,9 +1689,8 @@ SlideShow.toggle();
             <a href="#faq-1">#1</a> Opening/closing causes fixed element to jump</h3>
 
           <p>
-            Simply add
-            <code>compensate-for-scrollbar</code> CSS class to your fixed positioned elements. Example of using Bootstrap
-            navbar component:
+            Simply add <code>compensate-for-scrollbar</code> CSS class to your fixed positioned elements.
+            Example of using Bootstrap navbar component:
           </p>
 
           <pre><code>&lt;nav class=&quot;navbar navbar-inverse navbar-fixed-top compensate-for-scrollbar&quot;&gt;
@@ -1731,8 +1724,8 @@ SlideShow.toggle();
 
           <p>
             You can use
-            <code>caption</code> option that accepts a function and is called for each group element. Example of appending
-            image download link:
+            <code>caption</code> option that accepts a function and is called for each group element.
+            Example of appending image download link:
           </p>
 
           <pre><code>$( '[data-fancybox=&quot;images&quot;]' ).fancybox({
@@ -1749,7 +1742,6 @@ SlideShow.toggle();
           <p class="demo">
             <a href="https://codepen.io/fancyapps/pen/LJGrRx?editors=1010" target="_blank">View demo on CodePen</a>
           </p>
-
 
           <p>
             Add current image index and image count (the total number of images in the gallery) right in the caption:
@@ -1817,9 +1809,9 @@ $( '[data-fancybox=&quot;images&quot;]' ).fancybox({
           </h3>
 
           <p>
-            There is currenty no JS option to change thumbnail grid position. But fancybox is designed so that you can use CSS to change
-            position or dimension for each block (e.g., content area, caption or thumbnail grid). This gives you freedom
-            to completely change the look and feel of the modal window, if needed.
+            There is currenty no JS option to change thumbnail grid position. But fancybox is designed so that you can
+            use CSS to change position or dimension for each block (e.g., content area, caption or thumbnail grid).
+            This gives you freedom to completely change the look and feel of the modal window, if needed.
 
             <a href="https://codepen.io/fancyapps/pen/vzLrxW" target="_blank">View demo on CodePen</a>
           </p>
@@ -1852,10 +1844,12 @@ $( '[data-fancybox=&quot;images&quot;]' ).fancybox({
           </h3>
 
           <p>
-            If you are combining fancybox with slider/carousel script and that script clones items to enable infinite navigation, then
-            duplicated items will appear in the gallery. To avoid that - 1) initialise fancybox on all items except cloned;
-            2) add custom click event on cloned items and trigger click event on corresponding "real" item. Here is an example
-            using Slick slider:
+            If you are combining fancybox with slider/carousel script and that script clones items to enable infinite
+            navigation, then duplicated items will appear in the gallery.
+            To avoid that -
+            1) initialise fancybox on all items except cloned;
+            2) add custom click event on cloned items and trigger click event on corresponding "real" item. Here is an
+            example using Slick slider:
           </p>
           <pre><code>// Init fancybox
 // =============

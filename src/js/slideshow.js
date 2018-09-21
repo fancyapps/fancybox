@@ -20,7 +20,8 @@
     },
     slideShow: {
       autoStart: false,
-      speed: 3000
+      speed: 3000,
+      progress: true
     }
   });
 
@@ -35,42 +36,37 @@
     $button: null,
 
     init: function() {
-      var self = this;
+      var self = this,
+        instance = self.instance,
+        opts = instance.group[instance.currIndex].opts.slideShow;
 
-      self.$button = self.instance.$refs.toolbar.find("[data-fancybox-play]").on("click", function() {
+      self.$button = instance.$refs.toolbar.find("[data-fancybox-play]").on("click", function() {
         self.toggle();
       });
 
-      if (self.instance.group.length < 2 || !self.instance.group[self.instance.currIndex].opts.slideShow) {
+      if (instance.group.length < 2 || !opts) {
         self.$button.hide();
+      } else if (opts.progress) {
+        self.$progress = $('<div class="fancybox-progress"></div>').appendTo(instance.$refs.inner);
       }
     },
 
     set: function(force) {
       var self = this,
         instance = self.instance,
-        current = instance.current,
-        advance = function() {
-          if (self.isActive) {
-            instance.jumpTo((instance.currIndex + 1) % instance.group.length);
-          }
-        };
+        current = instance.current;
 
       // Check if reached last element
       if (current && (force === true || current.opts.loop || instance.currIndex < instance.group.length - 1)) {
-        self.timer = setTimeout(function() {
-          var $video;
-
-          if (self.isActive) {
-            $video = current.$slide.find("video,audio").filter(":visible:first");
-
-            if ($video.length) {
-              $video.one("ended", advance);
-            } else {
-              advance();
-            }
+        if (self.isActive && current.contentType !== "video") {
+          if (self.$progress) {
+            $.fancybox.animate(self.$progress.show(), {scaleX: 1}, current.opts.slideShow.speed);
           }
-        }, current.opts.slideShow.speed);
+
+          self.timer = setTimeout(function() {
+            instance.jumpTo((instance.currIndex + 1) % instance.group.length);
+          }, current.opts.slideShow.speed);
+        }
       } else {
         self.stop();
         instance.idleSecondsCounter = 0;
@@ -84,11 +80,15 @@
       clearTimeout(self.timer);
 
       self.timer = null;
+
+      if (self.$progress) {
+        self.$progress.removeAttr("style").hide();
+      }
     },
 
     start: function() {
-      var self = this;
-      var current = self.instance.current;
+      var self = this,
+        current = self.instance.current;
 
       if (current) {
         self.$button
@@ -107,8 +107,8 @@
     },
 
     stop: function() {
-      var self = this;
-      var current = self.instance.current;
+      var self = this,
+        current = self.instance.current;
 
       self.clear();
 
@@ -120,6 +120,10 @@
       self.isActive = false;
 
       self.instance.trigger("onSlideShowChange", false);
+
+      if (self.$progress) {
+        self.$progress.removeAttr("style").hide();
+      }
     },
 
     toggle: function() {
@@ -182,8 +186,8 @@
 
   // Page Visibility API to pause slideshow when window is not active
   $(document).on("visibilitychange", function() {
-    var instance = $.fancybox.getInstance();
-    var SlideShow = instance && instance.SlideShow;
+    var instance = $.fancybox.getInstance(),
+      SlideShow = instance && instance.SlideShow;
 
     if (SlideShow && SlideShow.isActive) {
       if (document.hidden) {

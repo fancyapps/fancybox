@@ -111,8 +111,8 @@
         list.push(
           '<a href="javascript:;" tabindex="0" data-index="' +
             i +
-            '" ' +
-            (src && src.length ? ' style="background-image:url(' + src + ')" />' : "") +
+            '"' +
+            (src && src.length ? ' style="background-image:url(' + src + ')"' : "") +
             "></a>"
         );
       });

@@ -1,6 +1,5 @@
 body.compensate-for-scrollbar {
     overflow: hidden;
-    -ms-overflow-style: none;
 }
 
 .fancybox-active {
@@ -107,7 +106,7 @@ body.compensate-for-scrollbar {
 .fancybox-stage {
     direction: ltr;
     overflow: visible;
-    transform: translate3d(0, 0, 0);
+    transform: translateZ(0);
     z-index: 99994;
 }
 
@@ -116,7 +115,7 @@ body.compensate-for-scrollbar {
 }
 
 .fancybox-slide {
-    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden; /* Using without prefix would break IE11 */
     display: none;
     height: 100%;
     left: 0;
@@ -154,11 +153,8 @@ body.compensate-for-scrollbar {
 }
 
 .fancybox-slide--image {
+    overflow: hidden;
     padding: 44px 0 0 0;
-}
-
-.fancybox-slide--image {
-    overflow: visible;
 }
 
 .fancybox-slide--image::before {
@@ -184,7 +180,7 @@ body.compensate-for-scrollbar {
 
 .fancybox-slide--image .fancybox-content {
     animation-timing-function: cubic-bezier(.5, 0, .14, 1);
-    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     background: transparent;
     background-repeat: no-repeat;
     background-size: 100% 100%;
@@ -301,11 +297,13 @@ body.compensate-for-scrollbar {
     background: rgba(30, 30, 30, .6);
     border: 0;
     border-radius: 0;
+    box-shadow: none;
     cursor: pointer;
     display: inline-block;
     height: 44px;
     margin: 0;
     padding: 10px;
+    position: relative;
     transition: color .2s;
     vertical-align: top;
     visibility: inherit;
@@ -362,6 +360,19 @@ body.compensate-for-scrollbar {
     display: none;
 }
 
+.fancybox-progress {
+    background: #ff5268;
+    height: 2px;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: scaleX(0);
+    transform-origin: 0;
+    transition-property: transform;
+    transition-timing-function: linear;
+    z-index: 99998;
+}
 /* Close button on the top right corner of html content */
 
 .fancybox-close-small {
@@ -476,28 +487,25 @@ body.compensate-for-scrollbar {
 /* Loading indicator */
 
 .fancybox-loading {
-    animation: fancybox-rotate .8s infinite linear;
+    animation: fancybox-rotate 1s linear infinite;
     background: transparent;
-    border: 6px solid rgba(100, 100, 100, .5);
-    border-radius: 100%;
-    border-top-color: #fff;
-    height: 60px;
+    border: 4px solid #888;
+    border-bottom-color: #fff;
+    border-radius: 50%;
+    height: 50px;
     left: 50%;
-    margin: -30px 0 0 -30px;
-    opacity: .6;
+    margin: -25px 0 0 -25px;
+    opacity: .7;
     padding: 0;
     position: absolute;
     top: 50%;
-    width: 60px;
+    width: 50px;
     z-index: 99999;
 }
 
 @keyframes fancybox-rotate {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(359deg);
+    100% {
+        transform: rotate(360deg);
     }
 }
 
