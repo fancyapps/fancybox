@@ -104,7 +104,7 @@
 }
 
 /* Styling for Small-Screen Devices */
-@media all and (max-width: 768px) {
+@media all and (max-width: 576px) {
     .fancybox-thumbs {
         width: 110px;
     }
