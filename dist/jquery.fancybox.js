@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.5.0
+// fancyBox v3.5.1
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -1724,7 +1724,7 @@
             slide.opts.video.tpl
               .replace(/\{\{src\}\}/gi, slide.src)
               .replace("{{format}}", slide.opts.videoFormat || slide.opts.video.format || "")
-              .replace("{{poster}}", slide.opts.thumb || "")
+              .replace("{{poster}}", slide.thumb || "")
           );
 
           break;
@@ -3029,7 +3029,7 @@
   });
 
   $.fancybox = {
-    version: "3.5.0",
+    version: "3.5.1",
     defaults: defaults,
 
     // Get current instance and execute a command.

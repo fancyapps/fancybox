@@ -1714,7 +1714,7 @@
             slide.opts.video.tpl
               .replace(/\{\{src\}\}/gi, slide.src)
               .replace("{{format}}", slide.opts.videoFormat || slide.opts.video.format || "")
-              .replace("{{poster}}", slide.opts.thumb || "")
+              .replace("{{poster}}", slide.thumb || "")
           );
 
           break;
