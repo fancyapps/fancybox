@@ -229,6 +229,7 @@ body.compensate-for-scrollbar {
 
 .fancybox-slide--video .fancybox-content,
 .fancybox-slide--map .fancybox-content,
+.fancybox-slide--pdf .fancybox-content,
 .fancybox-slide--iframe .fancybox-content {
   height: 100%;
   overflow: visible;
@@ -572,6 +573,8 @@ body.compensate-for-scrollbar {
     padding-right: 6px; }
   .fancybox-slide--image {
     padding: 6px 0; }
+  .fancybox-close-small {
+    right: -6px; }
   .fancybox-slide--image .fancybox-close-small {
     background: #4e4e4e;
     color: #f2f4f6;
