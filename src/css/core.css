@@ -429,42 +429,45 @@ body.compensate-for-scrollbar {
 
 .fancybox-navigation .fancybox-button--arrow_left {
     left: 0;
+    left: env(safe-area-inset-left);
     padding: 31px 26px 31px 6px;
 }
 
 .fancybox-navigation .fancybox-button--arrow_right {
     padding: 31px 6px 31px 26px;
     right: 0;
+    right: env(safe-area-inset-right);
 }
 
 /* Caption */
 
 .fancybox-caption {
+    background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, .85) 0%,
+    rgba(0, 0, 0, .3) 50%,
+    rgba(0, 0, 0, .15) 65%,
+    rgba(0, 0, 0, .075) 75.5%,
+    rgba(0, 0, 0, .037) 82.85%,
+    rgba(0, 0, 0, .019) 88%,
+    rgba(0, 0, 0, 0) 100%
+    );
     bottom: 0;
     color: #eee;
     font-size: 14px;
     font-weight: 400;
     left: 0;
     line-height: 1.5;
-    padding: 25px 44px 25px 44px;
+    overflow: auto;
+    padding: 50px 44px 25px 44px;
     right: 0;
     text-align: center;
     z-index: 99996;
 }
 
-.fancybox-caption::before {
-    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAD6CAQAAADKSeXYAAAAYklEQVQoz42RwQ3AMAgDjfcfup8WoRykfBAK5mQHKSz5rbXJPis1hjiV3CIqgG0hLZPkVkA4p4x5oR1bVeDrdCLrW2Q0D5bcwY3TGMHbdw3mPRuOtaspYP1w//G1OIcW148H0DMCqI/3mMMAAAAASUVORK5CYII=);
-    background-repeat: repeat-x;
-    background-size: contain;
-    bottom: 0;
-    content: '';
-    display: block;
-    left: 0;
-    pointer-events: none;
-    position: absolute;
-    right: 0;
-    top: -44px;
-    z-index: -1;
+.fancybox-caption--separate {
+    margin-top: -25px;
+    max-height: 50vh;
 }
 
 .fancybox-caption a,
@@ -607,7 +610,8 @@ body.compensate-for-scrollbar {
 /* Styling for Small-Screen Devices */
 @media all and (max-height: 576px) {
     .fancybox-caption {
-        padding: 12px;
+        padding-left: 12px;
+        padding-right: 12px;
     }
 
     .fancybox-slide {
@@ -632,5 +636,13 @@ body.compensate-for-scrollbar {
         right: 0;
         top: 0;
         width: 36px;
+    }
+}
+
+/* Using calc to trick sass */
+@supports (padding: max(0px)) {
+    .fancybox-caption {
+        padding: 50px calc(max(12px, env(safe-area-inset-right))) calc(max(12px, env(safe-area-inset-bottom)))
+        calc(max(25px, env(safe-area-inset-left)));
     }
 }

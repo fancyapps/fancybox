@@ -104,11 +104,13 @@
       if (instance) {
         // If image is zooming, then force to stop and reposition properly
         if (instance.current && instance.current.type === "image" && instance.isAnimating) {
-          instance.current.$content.css("transition", "none");
-
           instance.isAnimating = false;
 
           instance.update(true, true, 0);
+
+          if (!instance.isComplete) {
+            instance.complete();
+          }
         }
 
         instance.trigger("onFullscreenChange", isFullscreen);

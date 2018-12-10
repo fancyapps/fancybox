@@ -737,7 +737,7 @@
     newPos.width = self.contentStartPos.width;
     newPos.height = self.contentStartPos.height;
 
-    $.fancybox.animate(self.$content, newPos, 330);
+    $.fancybox.animate(self.$content, newPos, 366);
   };
 
   Guestures.prototype.endZooming = function() {
