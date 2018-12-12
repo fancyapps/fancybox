@@ -458,16 +458,27 @@ body.compensate-for-scrollbar {
     font-weight: 400;
     left: 0;
     line-height: 1.5;
-    overflow: auto;
-    padding: 50px 44px 25px 44px;
+    padding: 75px 44px 25px 44px;
+    pointer-events: none;
     right: 0;
     text-align: center;
     z-index: 99996;
 }
 
+@supports (padding: max(0px)) {
+    .fancybox-caption {
+        padding: 75px max(44px, env(safe-area-inset-right)) max(25px, env(safe-area-inset-bottom)) max(44px, env(safe-area-inset-left));
+    }
+}
+
 .fancybox-caption--separate {
-    margin-top: -25px;
+    margin-top: -50px;
+}
+
+.fancybox-caption__body {
     max-height: 50vh;
+    overflow: auto;
+    pointer-events: all;
 }
 
 .fancybox-caption a,
@@ -609,11 +620,6 @@ body.compensate-for-scrollbar {
 
 /* Styling for Small-Screen Devices */
 @media all and (max-height: 576px) {
-    .fancybox-caption {
-        padding-left: 12px;
-        padding-right: 12px;
-    }
-
     .fancybox-slide {
         padding-left: 6px;
         padding-right: 6px;
@@ -637,12 +643,16 @@ body.compensate-for-scrollbar {
         top: 0;
         width: 36px;
     }
-}
 
-/* Using calc to trick sass */
-@supports (padding: max(0px)) {
     .fancybox-caption {
-        padding: 50px calc(max(12px, env(safe-area-inset-right))) calc(max(12px, env(safe-area-inset-bottom)))
-        calc(max(25px, env(safe-area-inset-left)));
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    @supports (padding: max(0px)) {
+        .fancybox-caption {
+            padding-left: max(12px, env(safe-area-inset-left));
+            padding-right: max(12px, env(safe-area-inset-right));
+        }
     }
 }

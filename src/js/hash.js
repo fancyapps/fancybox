@@ -148,7 +148,7 @@
       },
 
       "beforeClose.fb": function(e, instance, current) {
-        if (current.opts.hash === false) {
+        if (!current || current.opts.hash === false) {
           return;
         }
 
