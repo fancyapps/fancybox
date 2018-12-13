@@ -2293,24 +2293,26 @@
       var self = this,
         current = slide || self.current,
         caption = current.opts.caption,
+        preventOverlap = current.opts.preventCaptionOverlap,
         $caption = self.$refs.caption,
-        captionH = false,
-        preventOverlap = current.opts.preventCaptionOverlap;
+        $clone,
+        captionH = false;
 
       $caption.toggleClass("fancybox-caption--separate", preventOverlap);
 
       if (preventOverlap && caption && caption.length) {
         if (current.pos !== self.currPos) {
-          $caption = $caption
-            .clone()
+          $clone = $caption.clone().appendTo($caption.parent());
+
+          $clone
+            .children()
+            .eq(0)
             .empty()
-            .appendTo($caption.parent());
+            .html(caption);
 
-          $caption.html(caption);
+          captionH = $clone.outerHeight(true);
 
-          captionH = $caption.outerHeight(true);
-
-          $caption.empty().remove();
+          $clone.empty().remove();
         } else if (self.$caption) {
           captionH = self.$caption.outerHeight(true);
         }
@@ -2953,6 +2955,8 @@
           .children()
           .eq(0)
           .html(caption);
+      } else {
+        self.$caption = null;
       }
 
       if (!self.hasHiddenControls && !self.isIdle) {

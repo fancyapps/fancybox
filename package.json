@@ -1,7 +1,7 @@
 {
   "name": "@fancyapps/fancybox",
   "description": "Touch enabled, responsive and fully customizable jQuery lightbox script",
-  "version": "3.5.4",
+  "version": "3.5.5",
   "homepage": "https://fancyapps.com/fancybox/3/",
   "main": "dist/jquery.fancybox.js",
   "style": "dist/jquery.fancybox.css",
