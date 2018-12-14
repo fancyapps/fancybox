@@ -1,5 +1,5 @@
 // ==================================================
-// fancyBox v3.5.5
+// fancyBox v3.5.6
 //
 // Licensed GPLv3 for open source use
 // or fancyBox Commercial License for commercial use
@@ -3050,7 +3050,7 @@
   });
 
   $.fancybox = {
-    version: "3.5.5",
+    version: "3.5.6",
     defaults: defaults,
 
     // Get current instance and execute a command.
@@ -3965,7 +3965,7 @@
         e.preventDefault();
       }
 
-      if (!($.fancybox.isMobile && $target.hasClass("fancybox-caption"))) {
+      if (!($.fancybox.isMobile && $target.parents(".fancybox-caption").length)) {
         return;
       }
     }

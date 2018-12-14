@@ -243,7 +243,7 @@
         e.preventDefault();
       }
 
-      if (!($.fancybox.isMobile && $target.hasClass("fancybox-caption"))) {
+      if (!($.fancybox.isMobile && $target.parents(".fancybox-caption").length)) {
         return;
       }
     }
