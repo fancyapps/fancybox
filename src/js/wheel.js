@@ -4,14 +4,14 @@
 // Basic mouse weheel support for gallery navigation
 //
 // ==========================================================================
-(function(document, $) {
+(function (document, $) {
   "use strict";
 
   var prevTime = new Date().getTime();
 
   $(document).on({
-    "onInit.fb": function(e, instance, current) {
-      instance.$refs.stage.on("mousewheel DOMMouseScroll wheel MozMousePixelScroll", function(e) {
+    "onInit.fb": function (e, instance, current) {
+      instance.$refs.stage.on("mousewheel DOMMouseScroll wheel MozMousePixelScroll", function (e) {
         var current = instance.current,
           currTime = new Date().getTime();
 

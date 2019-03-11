@@ -4,7 +4,7 @@
 // Displays thumbnails in a grid
 //
 // ==========================================================================
-(function(document, $) {
+(function (document, $) {
   "use strict";
 
   var CLASS = "fancybox-thumbs",
@@ -12,11 +12,9 @@
 
   // Make sure there are default values
   $.fancybox.defaults = $.extend(
-    true,
-    {
+    true, {
       btnTpl: {
-        thumbs:
-          '<button data-fancybox-thumbs class="fancybox-button fancybox-button--thumbs" title="{{THUMBS}}">' +
+        thumbs: '<button data-fancybox-thumbs class="fancybox-button fancybox-button--thumbs" title="{{THUMBS}}">' +
           '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.59 14.59h3.76v3.76h-3.76v-3.76zm-4.47 0h3.76v3.76h-3.76v-3.76zm-4.47 0h3.76v3.76H5.65v-3.76zm8.94-4.47h3.76v3.76h-3.76v-3.76zm-4.47 0h3.76v3.76h-3.76v-3.76zm-4.47 0h3.76v3.76H5.65v-3.76zm8.94-4.47h3.76v3.76h-3.76V5.65zm-4.47 0h3.76v3.76h-3.76V5.65zm-4.47 0h3.76v3.76H5.65V5.65z"/></svg>' +
           "</button>"
       },
@@ -30,7 +28,7 @@
     $.fancybox.defaults
   );
 
-  var FancyThumbs = function(instance) {
+  var FancyThumbs = function (instance) {
     this.init(instance);
   };
 
@@ -41,7 +39,7 @@
     isVisible: false,
     isActive: false,
 
-    init: function(instance) {
+    init: function (instance) {
       var self = this,
         group = instance.group,
         enabled = 0;
@@ -65,7 +63,7 @@
       }
 
       if (enabled > 1 && !!self.opts) {
-        self.$button.removeAttr("style").on("click", function() {
+        self.$button.removeAttr("style").on("click", function () {
           self.toggle();
         });
 
@@ -75,7 +73,7 @@
       }
     },
 
-    create: function() {
+    create: function () {
       var self = this,
         instance = self.instance,
         parentEl = self.opts.parentEl,
@@ -86,13 +84,13 @@
         // Create main element
         self.$grid = $('<div class="' + CLASS + " " + CLASS + "-" + self.opts.axis + '"></div>').appendTo(
           instance.$refs.container
-            .find(parentEl)
-            .addBack()
-            .filter(parentEl)
+          .find(parentEl)
+          .addBack()
+          .filter(parentEl)
         );
 
         // Add "click" event that performs gallery navigation
-        self.$grid.on("click", "a", function() {
+        self.$grid.on("click", "a", function () {
           instance.jumpTo($(this).attr("data-index"));
         });
       }
@@ -102,7 +100,7 @@
         self.$list = $('<div class="' + CLASS + '__list">').appendTo(self.$grid);
       }
 
-      $.each(instance.group, function(i, item) {
+      $.each(instance.group, function (i, item) {
         src = item.thumb;
 
         if (!src && item.type === "image") {
@@ -111,10 +109,10 @@
 
         list.push(
           '<a href="javascript:;" tabindex="0" data-index="' +
-            i +
-            '"' +
-            (src && src.length ? ' style="background-image:url(' + src + ')"' : 'class="fancybox-thumbs-missing"') +
-            "></a>"
+          i +
+          '"' +
+          (src && src.length ? ' style="background-image:url(' + src + ')"' : 'class="fancybox-thumbs-missing"') +
+          "></a>"
         );
       });
 
@@ -124,16 +122,16 @@
         // Set fixed width for list element to enable horizontal scrolling
         self.$list.width(
           parseInt(self.$grid.css("padding-right"), 10) +
-            instance.group.length *
-              self.$list
-                .children()
-                .eq(0)
-                .outerWidth(true)
+          instance.group.length *
+          self.$list
+          .children()
+          .eq(0)
+          .outerWidth(true)
         );
       }
     },
 
-    focus: function(duration) {
+    focus: function (duration) {
       var self = this,
         $list = self.$list,
         $grid = self.$grid,
@@ -154,8 +152,7 @@
 
       // Check if need to scroll to make current thumb visible
       if (self.opts.axis === "y" && (thumbPos.top < 0 || thumbPos.top > $list.height() - thumb.outerHeight())) {
-        $list.stop().animate(
-          {
+        $list.stop().animate({
             scrollTop: $list.scrollTop() + thumbPos.top
           },
           duration
@@ -167,8 +164,7 @@
         $list
           .parent()
           .stop()
-          .animate(
-            {
+          .animate({
               scrollLeft: thumbPos.left
             },
             duration
@@ -176,7 +172,7 @@
       }
     },
 
-    update: function() {
+    update: function () {
       var that = this;
       that.instance.$refs.container.toggleClass("fancybox-show-thumbs", this.isVisible);
 
@@ -196,24 +192,24 @@
       that.instance.update();
     },
 
-    hide: function() {
+    hide: function () {
       this.isVisible = false;
       this.update();
     },
 
-    show: function() {
+    show: function () {
       this.isVisible = true;
       this.update();
     },
 
-    toggle: function() {
+    toggle: function () {
       this.isVisible = !this.isVisible;
       this.update();
     }
   });
 
   $(document).on({
-    "onInit.fb": function(e, instance) {
+    "onInit.fb": function (e, instance) {
       var Thumbs;
 
       if (instance && !instance.Thumbs) {
@@ -225,7 +221,7 @@
       }
     },
 
-    "beforeShow.fb": function(e, instance, item, firstRun) {
+    "beforeShow.fb": function (e, instance, item, firstRun) {
       var Thumbs = instance && instance.Thumbs;
 
       if (Thumbs && Thumbs.isVisible) {
@@ -233,7 +229,7 @@
       }
     },
 
-    "afterKeydown.fb": function(e, instance, current, keypress, keycode) {
+    "afterKeydown.fb": function (e, instance, current, keypress, keycode) {
       var Thumbs = instance && instance.Thumbs;
 
       // "G"
@@ -244,7 +240,7 @@
       }
     },
 
-    "beforeClose.fb": function(e, instance) {
+    "beforeClose.fb": function (e, instance) {
       var Thumbs = instance && instance.Thumbs;
 
       if (Thumbs && Thumbs.isVisible && Thumbs.opts.hideOnClose !== false) {

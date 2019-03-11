@@ -7,13 +7,12 @@
 // $.fancybox.getInstance().SlideShow.start()
 //
 // ==========================================================================
-(function(document, $) {
+(function (document, $) {
   "use strict";
 
   $.extend(true, $.fancybox.defaults, {
     btnTpl: {
-      slideShow:
-        '<button data-fancybox-play class="fancybox-button fancybox-button--play" title="{{PLAY_START}}">' +
+      slideShow: '<button data-fancybox-play class="fancybox-button fancybox-button--play" title="{{PLAY_START}}">' +
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6.5 5.4v13.2l11-6.6z"/></svg>' +
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.33 5.75h2.2v12.5h-2.2V5.75zm5.15 0h2.2v12.5h-2.2V5.75z"/></svg>' +
         "</button>"
@@ -25,7 +24,7 @@
     }
   });
 
-  var SlideShow = function(instance) {
+  var SlideShow = function (instance) {
     this.instance = instance;
     this.init();
   };
@@ -35,12 +34,12 @@
     isActive: false,
     $button: null,
 
-    init: function() {
+    init: function () {
       var self = this,
         instance = self.instance,
         opts = instance.group[instance.currIndex].opts.slideShow;
 
-      self.$button = instance.$refs.toolbar.find("[data-fancybox-play]").on("click", function() {
+      self.$button = instance.$refs.toolbar.find("[data-fancybox-play]").on("click", function () {
         self.toggle();
       });
 
@@ -51,7 +50,7 @@
       }
     },
 
-    set: function(force) {
+    set: function (force) {
       var self = this,
         instance = self.instance,
         current = instance.current;
@@ -60,10 +59,12 @@
       if (current && (force === true || current.opts.loop || instance.currIndex < instance.group.length - 1)) {
         if (self.isActive && current.contentType !== "video") {
           if (self.$progress) {
-            $.fancybox.animate(self.$progress.show(), {scaleX: 1}, current.opts.slideShow.speed);
+            $.fancybox.animate(self.$progress.show(), {
+              scaleX: 1
+            }, current.opts.slideShow.speed);
           }
 
-          self.timer = setTimeout(function() {
+          self.timer = setTimeout(function () {
             if (!instance.current.opts.loop && instance.current.index == instance.group.length - 1) {
               instance.jumpTo(0);
             } else {
@@ -78,7 +79,7 @@
       }
     },
 
-    clear: function() {
+    clear: function () {
       var self = this;
 
       clearTimeout(self.timer);
@@ -90,7 +91,7 @@
       }
     },
 
-    start: function() {
+    start: function () {
       var self = this,
         current = self.instance.current;
 
@@ -110,7 +111,7 @@
       }
     },
 
-    stop: function() {
+    stop: function () {
       var self = this,
         current = self.instance.current;
 
@@ -130,7 +131,7 @@
       }
     },
 
-    toggle: function() {
+    toggle: function () {
       var self = this;
 
       if (self.isActive) {
@@ -142,13 +143,13 @@
   });
 
   $(document).on({
-    "onInit.fb": function(e, instance) {
+    "onInit.fb": function (e, instance) {
       if (instance && !instance.SlideShow) {
         instance.SlideShow = new SlideShow(instance);
       }
     },
 
-    "beforeShow.fb": function(e, instance, current, firstRun) {
+    "beforeShow.fb": function (e, instance, current, firstRun) {
       var SlideShow = instance && instance.SlideShow;
 
       if (firstRun) {
@@ -160,7 +161,7 @@
       }
     },
 
-    "afterShow.fb": function(e, instance, current) {
+    "afterShow.fb": function (e, instance, current) {
       var SlideShow = instance && instance.SlideShow;
 
       if (SlideShow && SlideShow.isActive) {
@@ -168,7 +169,7 @@
       }
     },
 
-    "afterKeydown.fb": function(e, instance, current, keypress, keycode) {
+    "afterKeydown.fb": function (e, instance, current, keypress, keycode) {
       var SlideShow = instance && instance.SlideShow;
 
       // "P" or Spacebar
@@ -179,7 +180,7 @@
       }
     },
 
-    "beforeClose.fb onDeactivate.fb": function(e, instance) {
+    "beforeClose.fb onDeactivate.fb": function (e, instance) {
       var SlideShow = instance && instance.SlideShow;
 
       if (SlideShow) {
@@ -189,7 +190,7 @@
   });
 
   // Page Visibility API to pause slideshow when window is not active
-  $(document).on("visibilitychange", function() {
+  $(document).on("visibilitychange", function () {
     var instance = $.fancybox.getInstance(),
       SlideShow = instance && instance.SlideShow;
 

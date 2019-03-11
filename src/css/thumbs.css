@@ -108,9 +108,11 @@
     .fancybox-thumbs {
         width: 110px;
     }
+
     .fancybox-show-thumbs .fancybox-inner {
         right: 110px;
     }
+
     .fancybox-thumbs__list a {
         max-width: calc(100% - 10px);
     }

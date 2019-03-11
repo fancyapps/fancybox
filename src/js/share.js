@@ -4,24 +4,22 @@
 // Displays simple form for sharing current url
 //
 // ==========================================================================
-(function(document, $) {
+(function (document, $) {
   "use strict";
 
   $.extend(true, $.fancybox.defaults, {
     btnTpl: {
-      share:
-        '<button data-fancybox-share class="fancybox-button fancybox-button--share" title="{{SHARE}}">' +
+      share: '<button data-fancybox-share class="fancybox-button fancybox-button--share" title="{{SHARE}}">' +
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2.55 19c1.4-8.4 9.1-9.8 11.9-9.8V5l7 7-7 6.3v-3.5c-2.8 0-10.5 2.1-11.9 4.2z"/></svg>' +
         "</button>"
     },
     share: {
-      url: function(instance, item) {
+      url: function (instance, item) {
         return (
           (!instance.currentHash && !(item.type === "inline" || item.type === "html") ? item.origSrc || item.src : false) || window.location
         );
       },
-      tpl:
-        '<div class="fancybox-share">' +
+      tpl: '<div class="fancybox-share">' +
         "<h1>{{SHARE}}</h1>" +
         "<p>" +
         '<a class="fancybox-share__button fancybox-share__button--fb" href="https://www.facebook.com/sharer/sharer.php?u={{url}}">' +
@@ -54,12 +52,12 @@
       "=": "&#x3D;"
     };
 
-    return String(string).replace(/[&<>"'`=\/]/g, function(s) {
+    return String(string).replace(/[&<>"'`=\/]/g, function (s) {
       return entityMap[s];
     });
   }
 
-  $(document).on("click", "[data-fancybox-share]", function() {
+  $(document).on("click", "[data-fancybox-share]", function () {
     var instance = $.fancybox.getInstance(),
       current = instance.current || null,
       url,
@@ -85,14 +83,14 @@
       opts: {
         touch: false,
         animationEffect: false,
-        afterLoad: function(shareInstance, shareCurrent) {
+        afterLoad: function (shareInstance, shareCurrent) {
           // Close self if parent instance is closing
-          instance.$refs.container.one("beforeClose.fb", function() {
+          instance.$refs.container.one("beforeClose.fb", function () {
             shareInstance.close(null, 0);
           });
 
           // Opening links in a popup window
-          shareCurrent.$content.find(".fancybox-share__button").click(function() {
+          shareCurrent.$content.find(".fancybox-share__button").click(function () {
             window.open(this.href, "Share", "width=550, height=450");
             return false;
           });

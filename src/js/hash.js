@@ -4,14 +4,14 @@
 // Enables linking to each modal
 //
 // ==========================================================================
-(function(window, document, $) {
+(function (window, document, $) {
   "use strict";
 
   // Simple $.escapeSelector polyfill (for jQuery prior v3)
   if (!$.escapeSelector) {
-    $.escapeSelector = function(sel) {
+    $.escapeSelector = function (sel) {
       var rcssescape = /([\0-\x1f\x7f]|^-?\d)|^-$|[^\x80-\uFFFF\w-]/g;
-      var fcssescape = function(ch, asCodePoint) {
+      var fcssescape = function (ch, asCodePoint) {
         if (asCodePoint) {
           // U+0000 NULL becomes U+FFFD REPLACEMENT CHARACTER
           if (ch === "\0") {
@@ -72,7 +72,7 @@
   }
 
   // Start when DOM becomes ready
-  $(function() {
+  $(function () {
     // Check if user has disabled this module
     if ($.fancybox.defaults.hash === false) {
       return;
@@ -80,7 +80,7 @@
 
     // Update hash when opening/closing fancyBox
     $(document).on({
-      "onInit.fb": function(e, instance) {
+      "onInit.fb": function (e, instance) {
         var url, gallery;
 
         if (instance.group[instance.currIndex].opts.hash === false) {
@@ -96,7 +96,7 @@
         }
       },
 
-      "beforeShow.fb": function(e, instance, current, firstRun) {
+      "beforeShow.fb": function (e, instance, current, firstRun) {
         var gallery;
 
         if (!current || current.opts.hash === false) {
@@ -128,10 +128,9 @@
         }
 
         // Update hash
-        instance.hashTimer = setTimeout(function() {
+        instance.hashTimer = setTimeout(function () {
           if ("replaceState" in window.history) {
-            window.history[firstRun ? "pushState" : "replaceState"](
-              {},
+            window.history[firstRun ? "pushState" : "replaceState"]({},
               document.title,
               window.location.pathname + window.location.search + "#" + instance.currentHash
             );
@@ -147,7 +146,7 @@
         }, 300);
       },
 
-      "beforeClose.fb": function(e, instance, current) {
+      "beforeClose.fb": function (e, instance, current) {
         if (!current || current.opts.hash === false) {
           return;
         }
@@ -170,16 +169,16 @@
     });
 
     // Check if need to start/close after url has changed
-    $(window).on("hashchange.fb", function() {
+    $(window).on("hashchange.fb", function () {
       var url = parseUrl(),
         fb = null;
 
       // Find last fancyBox instance that has "hash"
       $.each(
         $(".fancybox-container")
-          .get()
-          .reverse(),
-        function(index, value) {
+        .get()
+        .reverse(),
+        function (index, value) {
           var tmp = $(value).data("FancyBox");
 
           if (tmp && tmp.currentHash) {
@@ -202,7 +201,7 @@
     });
 
     // Check current hash and trigger click event on matching element to start fancyBox, if needed
-    setTimeout(function() {
+    setTimeout(function () {
       if (!$.fancybox.getInstance()) {
         triggerFromUrl(parseUrl());
       }
