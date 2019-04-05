@@ -153,6 +153,7 @@
     animationDuration: 366,
 
     // Should image change opacity while zooming
+    // Can be true, false, "auto"
     // If opacity is "auto", then opacity will be changed if image and thumbnail have different aspect ratios
     zoomOpacity: "auto",
 
