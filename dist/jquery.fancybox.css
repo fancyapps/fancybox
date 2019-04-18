@@ -3,7 +3,7 @@ body.compensate-for-scrollbar {
 }
 
 .fancybox-active {
-    height: auto;
+    height: 100%;
 }
 
 .fancybox-is-hidden {
