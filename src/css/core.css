@@ -467,7 +467,7 @@ body.compensate-for-scrollbar {
 
 @supports (padding: max(0px)) {
     .fancybox-caption {
-        padding: 75px max(44px, env(safe-area-inset-right)) max(25px, env(safe-area-inset-bottom)) max(44px, env(safe-area-inset-left));
+        padding: 75px unquote('max(44px, env(safe-area-inset-right))') unquote('max(25px, env(safe-area-inset-bottom))') unquote('max(44px, env(safe-area-inset-left))');
     }
 }
 
@@ -651,8 +651,8 @@ body.compensate-for-scrollbar {
 
     @supports (padding: max(0px)) {
         .fancybox-caption {
-            padding-left: max(12px, env(safe-area-inset-left));
-            padding-right: max(12px, env(safe-area-inset-right));
+            padding-left: unquote('max(12px, env(safe-area-inset-left))');
+            padding-right: unquote('max(12px, env(safe-area-inset-right))');
         }
     }
 }

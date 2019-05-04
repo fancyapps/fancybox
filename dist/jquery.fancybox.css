@@ -482,7 +482,7 @@ body.compensate-for-scrollbar {
 
 @supports (padding: max(0px)) {
     .fancybox-caption {
-        padding: 75px max(44px, env(safe-area-inset-right)) max(25px, env(safe-area-inset-bottom)) max(44px, env(safe-area-inset-left));
+        padding: 75px unquote('max(44px, env(safe-area-inset-right))') unquote('max(25px, env(safe-area-inset-bottom))') unquote('max(44px, env(safe-area-inset-left))');
     }
 }
 
@@ -669,11 +669,24 @@ body.compensate-for-scrollbar {
 
     @supports (padding: max(0px)) {
         .fancybox-caption {
-            padding-left: max(12px, env(safe-area-inset-left));
-            padding-right: max(12px, env(safe-area-inset-right));
+            padding-left: unquote('max(12px, env(safe-area-inset-left))');
+            padding-right: unquote('max(12px, env(safe-area-inset-right))');
         }
     }
 }
+
+
+/* Fullscreen  */
+
+.fancybox-button--fullscreen::before {
+	width: 15px;
+	height: 11px;
+	left: calc(50% - 7px);
+	top: calc(50% - 6px);
+	border: 2px solid;
+	background: none;
+}
+
 /* Share */
 
 .fancybox-share {
@@ -773,6 +786,33 @@ body.compensate-for-scrollbar {
     padding: 10px 15px;
     width: 100%;
 }
+/* Slideshow button */
+
+.fancybox-button--play {}
+
+.fancybox-button--play::before,
+.fancybox-button--pause::before {
+	top: calc(50% - 6px);
+	left: calc(50% - 4px);
+	background: transparent;
+}
+
+.fancybox-button--play::before {
+	width: 0;
+	height: 0;
+	border-top: 6px inset transparent;
+	border-bottom: 6px inset transparent;
+	border-left: 10px solid;
+	border-radius: 1px;
+}
+
+.fancybox-button--pause::before {
+	width: 7px;
+	height: 11px;
+	border-style: solid;
+	border-width: 0 2px 0 2px;
+}
+
 /* Thumbs */
 
 .fancybox-thumbs {
