@@ -7,34 +7,56 @@ See the [project page](http://fancyapps.com/fancybox/3/) for documentation and a
 
 Follow [@thefancyapps](//twitter.com/thefancyapps) for updates.
 
-
 ## Quick start
 
-1\.  Add latest jQuery and fancyBox files
+1\. Add latest jQuery and fancyBox files
 
 ```html
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
-<link  href="/path/to/jquery.fancybox.min.css" rel="stylesheet">
+<link href="/path/to/jquery.fancybox.min.css" rel="stylesheet" />
 <script src="/path/to/jquery.fancybox.min.js"></script>
 ```
 
-
-2\.  Create links
+2\. Create links
 
 ```html
 <a data-fancybox="gallery" href="big_1.jpg">
-    <img src="small_1.jpg">
+    <img src="small_1.jpg" />
 </a>
 
 <a data-fancybox="gallery" href="big_2.jpg">
-    <img src="small_2.jpg">
+    <img src="small_2.jpg" />
 </a>
 ```
 
-
 3\. Enjoy!
 
+## Usage with webpack
+
+If you encounter a `jQuery is not defined` message when using webpack to bundle fancybox, you can add jquery as a webpack plugin. This will make sure jquery is exposed globally.
+
+```js
+//webpack.config.js
+...
+plugins: [
+    new webpack.ProvidePlugin({
+        'window.$': 'jquery',
+        'window.jQuery': 'jquery',
+        'window.jquery': 'jquery',
+        $: 'jquery',
+        jQuery: 'jquery',
+        jquery: 'jquery',
+    })
+    ]
+...
+```
+
+After you do this, you can just require fancybox without even requiring jquery:
+
+```js
+import fancybox from '@fancyapps/fancybox';
+```
 
 ## License
 
@@ -55,7 +77,6 @@ Guidelines for bug reports:
 
 A good bug report shouldn't leave others needing to chase you up for more information.
 Please try to be as detailed as possible in your report.
-
 
 Feature requests are welcome. Please look for existing ones and use GitHub's "reactions" feature to vote.
 
