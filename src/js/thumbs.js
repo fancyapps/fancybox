@@ -111,7 +111,7 @@
           '<a href="javascript:;" tabindex="0" data-index="' +
           i +
           '"' +
-          (src && src.length ? ' style="background-image:url(' + src + ')"' : 'class="fancybox-thumbs-missing"') +
+          (src && src.length ? ' style="background-image:url(\'' + src + '\')"' : 'class="fancybox-thumbs-missing"') +
           "></a>"
         );
       });
