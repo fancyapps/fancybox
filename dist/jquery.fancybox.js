@@ -2461,7 +2461,7 @@
         return;
       }
 
-      // Prepare for CSS transiton
+      // Prepare for CSS transition
       // =========================
       $.fancybox.stop($slide);
 
@@ -2553,7 +2553,7 @@
 
         self.preload("inline");
 
-        // Trigger any CSS transiton inside the slide
+        // Trigger any CSS transition inside the slide
         forceRedraw(current.$slide);
 
         current.$slide.addClass("fancybox-slide--complete");
