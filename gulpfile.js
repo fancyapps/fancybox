@@ -30,6 +30,7 @@ gulp.task("scripts", function() {
       "src/js/core.js",
       "src/js/media.js",
       "src/js/guestures.js",
+      "src/js/share.js",
       "src/js/slideshow.js",
       "src/js/fullscreen.js",
       "src/js/thumbs.js",
