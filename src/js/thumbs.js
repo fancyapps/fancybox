@@ -233,7 +233,7 @@
       var Thumbs = instance && instance.Thumbs;
 
       // "G"
-      if (Thumbs && Thumbs.isActive && keycode === 71) {
+      if (Thumbs && Thumbs.isActive && keycode === 71 && !$(document.activeElement).is("input,textarea,video,audio,select,[contenteditable]")) {
         keypress.preventDefault();
 
         Thumbs.toggle();

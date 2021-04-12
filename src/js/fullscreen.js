@@ -157,7 +157,7 @@
 
     "afterKeydown.fb": function (e, instance, current, keypress, keycode) {
       // "F"
-      if (instance && instance.FullScreen && keycode === 70) {
+      if (instance && instance.FullScreen && keycode === 70 && !$(document.activeElement).is("input,textarea,video,audio,select,[contenteditable]")) {
         keypress.preventDefault();
 
         instance.FullScreen.toggle();

@@ -173,7 +173,7 @@
       var SlideShow = instance && instance.SlideShow;
 
       // "P" or Spacebar
-      if (SlideShow && current.opts.slideShow && (keycode === 80 || keycode === 32) && !$(document.activeElement).is("button,a,input")) {
+      if (SlideShow && current.opts.slideShow && (keycode === 80 || keycode === 32) && !$(document.activeElement).is("button,a,input,textarea,video,audio,select,[contenteditable]")) {
         keypress.preventDefault();
 
         SlideShow.toggle();
