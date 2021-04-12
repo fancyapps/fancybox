@@ -65,4 +65,4 @@ gulp.task("css", function() {
 });
 
 // Default Task
-gulp.task("default", ["scripts", "css"]);
+gulp.task("default", gulp.parallel(["scripts", "css"]));
