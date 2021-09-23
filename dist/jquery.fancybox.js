@@ -476,7 +476,7 @@
     var rez = $.extend(true, {}, opts1, opts2);
 
     $.each(opts2, function (key, value) {
-      if ($.isArray(value)) {
+      if (Array.isArray(value)) {
         rez[key] = value;
       }
     });
@@ -669,7 +669,7 @@
 
           obj = item;
           opts = item.opts || item;
-        } else if ($.type(item) === "object" && $(item).length) {
+        } else if (typeof(item) === "object" && $(item).length) {
           // Here we probably have jQuery collection returned by some selector
           $item = $(item);
 
@@ -784,11 +784,11 @@
         obj.thumb = obj.opts.thumb || (obj.$thumb ? obj.$thumb[0].src : null);
 
         // "caption" is a "special" option, it can be used to customize caption per gallery item
-        if ($.type(obj.opts.caption) === "function") {
+        if (typeof(obj.opts.caption) === "function") {
           obj.opts.caption = obj.opts.caption.apply(item, [self, obj]);
         }
 
-        if ($.type(self.opts.caption) === "function") {
+        if (typeof(self.opts.caption) === "function") {
           obj.opts.caption = self.opts.caption.apply(item, [self, obj]);
         }
 
@@ -1102,7 +1102,7 @@
       // Validate duration length
       current.forcedDuration = undefined;
 
-      if ($.isNumeric(duration)) {
+      if (!isNaN(parseFloat(duration)) && isFinite(duration)) {
         current.forcedDuration = duration;
       } else {
         duration = current.opts[firstRun ? "animationDuration" : "transitionDuration"];
@@ -1590,7 +1590,7 @@
         $container.addClass("fancybox-can-pan");
       } else if (
         isZoomable &&
-        (current.opts.clickContent === "zoom" || ($.isFunction(current.opts.clickContent) && current.opts.clickContent(current) == "zoom"))
+        (current.opts.clickContent === "zoom" || (typeof current.opts.clickContent === 'function' && current.opts.clickContent(current) == "zoom"))
       ) {
         $container.addClass("fancybox-can-zoomIn");
       } else if (current.opts.touch && (current.opts.touch.vertical || self.group.length > 1) && current.contentType !== "video") {
@@ -2117,7 +2117,7 @@
         content.css("display", "inline-block");
       } else if (!slide.hasError) {
         // If content is just a plain text, try to convert it to html
-        if ($.type(content) === "string") {
+        if (typeof(content) === "string") {
           content = $("<div>")
             .append($.trim(content))
             .contents();
@@ -2775,7 +2775,7 @@
 
       $content = current.$content;
       effect = current.opts.animationEffect;
-      duration = $.isNumeric(d) ? d : effect ? current.opts.animationDuration : 0;
+      duration = (!isNaN(parseFloat(duration)) && isFinite(duration)) ? d : effect ? current.opts.animationDuration : 0;
 
       current.$slide.removeClass("fancybox-slide--complete fancybox-slide--next fancybox-slide--previous fancybox-animated");
 
@@ -2932,7 +2932,7 @@
 
       args.unshift(self);
 
-      if ($.isFunction(obj.opts[name])) {
+      if ( typeof obj.opts[name] === 'function' ) {
         rez = obj.opts[name].apply(obj, args);
       }
 
@@ -3074,9 +3074,9 @@
         args = Array.prototype.slice.call(arguments, 1);
 
       if (instance instanceof FancyBox) {
-        if ($.type(command) === "string") {
+        if (typeof(command) === "string") {
           instance[command].apply(instance, args);
-        } else if ($.type(command) === "function") {
+        } else if (typeof(command) === "function") {
           command.apply(instance, args);
         }
 
@@ -3217,7 +3217,7 @@
       var self = this,
         from;
 
-      if ($.isFunction(duration)) {
+      if (typeof duration === 'function') {
         callback = duration;
         duration = null;
       }
@@ -3234,7 +3234,7 @@
 
         self.stop($el);
 
-        if ($.isNumeric(duration)) {
+        if (!isNaN(parseFloat(duration)) && isFinite(duration)) {
           $el.css("transition-duration", "");
         }
 
@@ -3253,12 +3253,12 @@
           $el.removeClass(to);
         }
 
-        if ($.isFunction(callback)) {
+        if ( typeof callback === 'function') {
           callback(e);
         }
       });
 
-      if ($.isNumeric(duration)) {
+      if (!isNaN(parseFloat(duration)) && isFinite(duration)) {
         $el.css("transition-duration", duration + "ms");
       }
 
@@ -3524,7 +3524,7 @@
 
     params = params || "";
 
-    if ($.type(params) === "object") {
+    if (typeof(params) === "object") {
       params = $.param(params, true);
     }
 
@@ -3585,10 +3585,10 @@
       params = $.extend(true, {}, providerOpts.params, item.opts[providerName], paramObj);
 
       url =
-        $.type(providerOpts.url) === "function" ? providerOpts.url.call(this, rez, params, item) : format(providerOpts.url, rez, params);
+        typeof(providerOpts.url) === "function" ? providerOpts.url.call(this, rez, params, item) : format(providerOpts.url, rez, params);
 
       thumb =
-        $.type(providerOpts.thumb) === "function" ? providerOpts.thumb.call(this, rez, params, item) : format(providerOpts.thumb, rez);
+        typeof(providerOpts.thumb) === "function" ? providerOpts.thumb.call(this, rez, params, item) : format(providerOpts.thumb, rez);
 
       if (providerName === "youtube") {
         url = url.replace(/&t=((\d+)m)?(\d+)s/, function (match, p1, m, s) {
@@ -3797,7 +3797,7 @@
   var isClickable = function ($el) {
     if (
       $el.is('a,area,button,[role="button"],input,label,select,summary,textarea,video,audio,iframe') ||
-      $.isFunction($el.get(0).onclick) ||
+      typeof $el.get(0).onclick === 'function' ||
       $el.data("selectable")
     ) {
       return true;
@@ -4524,7 +4524,7 @@
     var process = function (prefix) {
       var action = current.opts[prefix];
 
-      if ($.isFunction(action)) {
+      if (typeof action === 'function') {
         action = action.apply(instance, [current, e]);
       }
 
