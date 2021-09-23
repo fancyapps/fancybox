@@ -701,7 +701,7 @@
         obj.opts = $.extend(true, {}, self.opts, opts);
 
         // Do not merge buttons array
-        if ($.isArray(opts.buttons)) {
+        if (Array.isArray(opts.buttons)) {
           obj.opts.buttons = opts.buttons;
         }
 
