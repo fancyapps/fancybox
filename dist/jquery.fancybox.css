@@ -97,7 +97,6 @@ body.compensate-for-scrollbar {
     top: 0;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
-    -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
 }
@@ -195,7 +194,6 @@ body.compensate-for-scrollbar {
     transform-origin: top left;
     transition-property: transform, opacity;
     -webkit-user-select: none;
-    -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
     z-index: 99995;
@@ -211,12 +209,10 @@ body.compensate-for-scrollbar {
 
 .fancybox-can-swipe .fancybox-content,
 .fancybox-can-pan .fancybox-content {
-    cursor: -webkit-grab;
     cursor: grab;
 }
 
 .fancybox-is-grabbing .fancybox-content {
-    cursor: -webkit-grabbing;
     cursor: grabbing;
 }
 
@@ -237,7 +233,6 @@ body.compensate-for-scrollbar {
     position: absolute;
     top: 0;
     -webkit-user-select: none;
-    -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
     width: 100%;
@@ -674,6 +669,18 @@ body.compensate-for-scrollbar {
         }
     }
 }
+
+/* Fullscreen  */
+
+.fancybox-button--fullscreen::before {
+	width: 15px;
+	height: 11px;
+	left: calc(50% - 7px);
+	top: calc(50% - 6px);
+	border: 2px solid;
+	background: none;
+}
+
 /* Share */
 
 .fancybox-share {
@@ -709,7 +716,6 @@ body.compensate-for-scrollbar {
     text-decoration: none;
     transition: all .2s;
     -webkit-user-select: none;
-    -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
     white-space: nowrap;
@@ -773,6 +779,33 @@ body.compensate-for-scrollbar {
     padding: 10px 15px;
     width: 100%;
 }
+/* Slideshow button */
+
+.fancybox-button--play {}
+
+.fancybox-button--play::before,
+.fancybox-button--pause::before {
+	top: calc(50% - 6px);
+	left: calc(50% - 4px);
+	background: transparent;
+}
+
+.fancybox-button--play::before {
+	width: 0;
+	height: 0;
+	border-top: 6px inset transparent;
+	border-bottom: 6px inset transparent;
+	border-left: 10px solid;
+	border-radius: 1px;
+}
+
+.fancybox-button--pause::before {
+	width: 7px;
+	height: 11px;
+	border-style: solid;
+	border-width: 0 2px 0 2px;
+}
+
 /* Thumbs */
 
 .fancybox-thumbs {

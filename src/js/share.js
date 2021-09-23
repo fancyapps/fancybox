@@ -67,7 +67,7 @@
       return;
     }
 
-    if ($.type(current.opts.share.url) === "function") {
+    if (typeof(current.opts.share.url) === "function") {
       url = current.opts.share.url.apply(current, [instance, current]);
     }
 

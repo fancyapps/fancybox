@@ -89,7 +89,7 @@
 
     params = params || "";
 
-    if ($.type(params) === "object") {
+    if (typeof(params) === "object") {
       params = $.param(params, true);
     }
 
@@ -150,10 +150,10 @@
       params = $.extend(true, {}, providerOpts.params, item.opts[providerName], paramObj);
 
       url =
-        $.type(providerOpts.url) === "function" ? providerOpts.url.call(this, rez, params, item) : format(providerOpts.url, rez, params);
+        typeof(providerOpts.url) === "function" ? providerOpts.url.call(this, rez, params, item) : format(providerOpts.url, rez, params);
 
       thumb =
-        $.type(providerOpts.thumb) === "function" ? providerOpts.thumb.call(this, rez, params, item) : format(providerOpts.thumb, rez);
+        typeof(providerOpts.thumb) === "function" ? providerOpts.thumb.call(this, rez, params, item) : format(providerOpts.thumb, rez);
 
       if (providerName === "youtube") {
         url = url.replace(/&t=((\d+)m)?(\d+)s/, function (match, p1, m, s) {

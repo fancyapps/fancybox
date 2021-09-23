@@ -72,7 +72,7 @@
   var isClickable = function ($el) {
     if (
       $el.is('a,area,button,[role="button"],input,label,select,summary,textarea,video,audio,iframe') ||
-      $.isFunction($el.get(0).onclick) ||
+      typeof $el.get(0).onclick === 'function' ||
       $el.data("selectable")
     ) {
       return true;
@@ -799,7 +799,7 @@
     var process = function (prefix) {
       var action = current.opts[prefix];
 
-      if ($.isFunction(action)) {
+      if (typeof action === 'function') {
         action = action.apply(instance, [current, e]);
       }
 
