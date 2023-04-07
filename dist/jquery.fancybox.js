@@ -3445,7 +3445,7 @@
   // Object containing properties for each media type
   var defaults = {
     youtube: {
-      matcher: /(youtube\.com|youtu\.be|youtube\-nocookie\.com)\/(watch\?(.*&)?v=|v\/|u\/|embed\/?)?(videoseries\?list=(.*)|[\w-]{11}|\?listType=(.*)&list=(.*))(.*)/i,
+      matcher: /(youtube\.com|youtu\.be)\/(watch\?(.*&)?v=|v\/|u\/|embed\/?)?(videoseries\?list=(.*)|[\w-]{11}|\?listType=(.*)&list=(.*))(.*)/i,
       params: {
         autoplay: 1,
         autohide: 1,
@@ -3458,7 +3458,7 @@
       },
       paramPlace: 8,
       type: "iframe",
-      url: "https://www.youtube-nocookie.com/embed/$4",
+      url: "https://www.youtube.com/embed/$4",
       thumb: "https://img.youtube.com/vi/$4/hqdefault.jpg"
     },
 
