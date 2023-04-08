@@ -52,7 +52,7 @@
       // then triggering click event should start fancyBox
       $("[data-fancybox='" + $.escapeSelector(url.gallery) + "']")
         .eq(url.index - 1)
-        .focus()
+        .trigger("focus")
         .trigger("click.fb-start");
     }
   }
