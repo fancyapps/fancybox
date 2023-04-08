@@ -1914,9 +1914,7 @@
             sizes = slide.opts.sizes;
 
             if (!sizes || sizes === "auto") {
-              sizes =
-                (slide.width / slide.height > 1 && $W.width() / $W.height() > 1 ? "100" : Math.round((slide.width / slide.height) * 100)) +
-                "vw";
+              sizes = "100vw";
             }
 
             $img.attr("sizes", sizes).attr("srcset", slide.opts.srcset);
