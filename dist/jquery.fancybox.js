@@ -146,6 +146,10 @@
     //   "zoom"           - zoom images from/to thumbnail
     //   "fade"
     //   "zoom-in-out"
+    //   'slide'
+		//   'rotate'
+		//   'circular'
+		//   'tube'
     //
     animationEffect: "zoom",
 
