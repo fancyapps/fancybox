@@ -45,7 +45,7 @@
     arrows: true,
 
     // Should display counter at the top left corner
-    infobar: true,
+    infobar: false,
 
     // Should display close button (using `btnTpl.smallBtn` template) over the content
     // Can be true, false, "auto"
