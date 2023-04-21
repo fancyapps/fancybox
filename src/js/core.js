@@ -146,6 +146,9 @@
     // If opacity is "auto", then opacity will be changed if image and thumbnail have different aspect ratios
     zoomOpacity: "auto",
 
+    // maximum zoom factor
+    zoomFactor: 1.0,
+
     // Transition effect between slides
     //
     // Possible values:
@@ -1244,12 +1247,13 @@
 
     scaleToActual: function (x, y, duration) {
       var self = this,
+        opts = self.current ? self.current.opts : self.opts,
         current = self.current,
         $content = current.$content,
         canvasWidth = $.fancybox.getTranslate(current.$slide).width,
         canvasHeight = $.fancybox.getTranslate(current.$slide).height,
-        newImgWidth = current.width,
-        newImgHeight = current.height,
+        newImgWidth = current.width * opts.zoomFactor,
+        newImgHeight = current.height * opts.zoomFactor,
         imgPos,
         posX,
         posY,
@@ -1593,6 +1597,7 @@
 
     isZoomable: function () {
       var self = this,
+        opts = self.current ? self.current.opts : self.opts,
         current = self.current,
         fitPos;
 
@@ -1606,7 +1611,7 @@
 
         fitPos = self.getFitPos(current);
 
-        if (fitPos && (current.width > fitPos.width || current.height > fitPos.height)) {
+        if (fitPos && (current.width * opts.zoomFactor > fitPos.width || current.height * opts.zoomFactor > fitPos.height)) {
           return true;
         }
       }
@@ -1619,15 +1624,16 @@
 
     isScaledDown: function (nextWidth, nextHeight) {
       var self = this,
+        opts = self.current ? self.current.opts : self.opts,
         rez = false,
         current = self.current,
         $content = current.$content;
 
       if (nextWidth !== undefined && nextHeight !== undefined) {
-        rez = nextWidth < current.width && nextHeight < current.height;
+        rez = nextWidth < current.width * opts.zoomFactor && nextHeight < current.height * opts.zoomFactor;
       } else if ($content) {
         rez = $.fancybox.getTranslate($content);
-        rez = rez.width < current.width && rez.height < current.height;
+        rez = rez.width < current.width * opts.zoomFactor && rez.height < current.height * opts.zoomFactor;
       }
 
       return rez;
